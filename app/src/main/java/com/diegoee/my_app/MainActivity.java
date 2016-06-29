@@ -123,8 +123,8 @@ public class MainActivity extends Activity{
             sendApdu(val,isDeviceAbleToRunSmartcardReader);
         }catch (Exception e){
             isDeviceAbleToRunSmartcardReader=false;
-            Log.v(LOG_TAG,"NO famoco librery running");
-            show = show + "\nNO famoco librery running";
+            Log.v(LOG_TAG,"NO famoco framework running");
+            show = show + "\nNO famoco framework running";
         }
 
         //Bono BIColor   ->ID = , (byte)0xBC, (byte)0xB1, (byte)0x34, (byte)0x1B
