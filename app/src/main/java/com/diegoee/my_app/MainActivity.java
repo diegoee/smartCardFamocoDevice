@@ -229,7 +229,7 @@ public class MainActivity extends Activity{
                 int bIndex = 0;
                 for (int j = 0; j < secCount; j++) {// 16 Sectors
                     show = show +"\n\tblock_"+String.format("%d",j+1)+":";
-                    Log.v(LOG_TAG,"block_"+String.format("%d",j+1));
+                    //Log.v(LOG_TAG,"block_"+String.format("%d",j+1));
                     // 6.1) authenticate the sector
                     auth = mfc.authenticateSectorWithKeyA(j, KEYS_A_B[0]);
                     if (auth) {
@@ -238,7 +238,7 @@ public class MainActivity extends Activity{
                         bIndex = 0;
                         for (int i = 0; i < bCount; i++) {// 4 Blocks
                             bIndex = mfc.sectorToBlock(j);
-                            Log.v(LOG_TAG, String.format("%d",bIndex+i));
+                            //Log.v(LOG_TAG, String.format("%d",bIndex+i));
                             // 6.3) Read the block
                             data = mfc.readBlock(bIndex+i);
                             // 7) Convert the data into a string from Hex format.
@@ -254,6 +254,8 @@ public class MainActivity extends Activity{
                 Log.v(LOG_TAG, e.getLocalizedMessage());
             }
         }// End of method
+
+        Log.v(LOG_TAG,show);
         return show;
     }
 
