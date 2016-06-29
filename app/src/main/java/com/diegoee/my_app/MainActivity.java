@@ -90,7 +90,7 @@ public class MainActivity extends Activity{
         }
 
         try {
-            /*
+                        /*
             //List sensor
             mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
