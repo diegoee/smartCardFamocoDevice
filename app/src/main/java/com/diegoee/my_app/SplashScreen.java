@@ -33,7 +33,7 @@ public class SplashScreen extends Activity {
 
         setContentView(R.layout.splash);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-
+        finish();
 
         new Thread(new Runnable() {
             public void run() {

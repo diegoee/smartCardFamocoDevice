@@ -118,7 +118,7 @@ public class MainActivity extends Activity{
                 show = show + "\n\tNo  SmartCart";
             }
 
-            show = show + "\nExample:";
+            show = show + "\n\nExample:";
             byte[] val = new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
             sendApdu(val,isDeviceAbleToRunSmartcardReader);
         }catch (Exception e){
@@ -218,7 +218,8 @@ public class MainActivity extends Activity{
             // 4) Get an instance of the Mifare classic card from this TAG intent
             MifareClassic mfc = MifareClassic.get(tagFromIntent);
             byte[] data;
-            try {       //  5.1) Connect to card
+            try {
+                //  5.1) Connect to card
                 mfc.connect();
                 boolean auth = false;
                 String cardData = null;
@@ -227,35 +228,25 @@ public class MainActivity extends Activity{
                 int bCount = 0;
                 int bIndex = 0;
                 for (int j = 0; j < secCount; j++) {// 16 Sectors
+                    show = show +"\n\tblock_"+String.format("%d",j+1)+":";
+                    Log.v(LOG_TAG,"block_"+String.format("%d",j+1));
                     // 6.1) authenticate the sector
                     auth = mfc.authenticateSectorWithKeyA(j, KEYS_A_B[0]);
-
-                    //if (auth==false) {
-                    //    try {
-                    //        sendApdu(adpdu_cmd);
-                    //        Log.v(LOG_TAG,"key_SAM: "+bytesToHexString(key_SAM));
-                      //      auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
-                      //  } catch (Exception e) {
-                      //      Log.v(LOG_TAG,e.toString());
-                      //  }
-                    //}
-
                     if (auth) {
-                        show = show +"\n\tblock_(keyA)_"+String.format("%d",j+1)+":";
                         // 6.2) In each sector - get the block count
                         bCount = mfc.getBlockCountInSector(j);
                         bIndex = 0;
                         for (int i = 0; i < bCount; i++) {// 4 Blocks
                             bIndex = mfc.sectorToBlock(j);
+                            Log.v(LOG_TAG, String.format("%d",bIndex+i));
                             // 6.3) Read the block
-                            data = mfc.readBlock(bIndex);
+                            data = mfc.readBlock(bIndex+i);
                             // 7) Convert the data into a string from Hex format.
                             show = show +"\n"+ bytesToHexString(data);
-                            bIndex++;
+                            //bIndex=bIndex+1;
                         }
                     } else {
                         show = show +"\n\tAUTH. FAILED";
-                        return show;
                     }
                 }
             } catch (IOException e) {
