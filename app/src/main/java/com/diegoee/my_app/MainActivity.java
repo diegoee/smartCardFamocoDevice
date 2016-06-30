@@ -2,11 +2,8 @@ package com.diegoee.my_app;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
@@ -18,7 +15,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.famoco.secommunication.SmartcardReader;
 
@@ -30,19 +26,17 @@ public class MainActivity extends Activity{
             new byte[]{(byte) 0x3B, (byte) 0xE5, (byte) 0x33, (byte) 0x10 ,(byte) 0x68, (byte) 0x2A}
     };
 
-    Button button;
-    TextView text;
-    Context context;
-    NfcAdapter mNfcAdapter;
-    SensorManager mSensorManager;
 
-    PendingIntent mNfcPendingIntent;
-    IntentFilter[] intentFiltersArray;
+    private Button button;
+    private TextView text;
+    private NfcAdapter mNfcAdapter;
 
-    String show;
-    byte[] key_SAM;
-    boolean isDeviceAbleToRunSmartcardReader;
+    private PendingIntent mNfcPendingIntent;
+    private IntentFilter[] intentFiltersArray;
 
+    private String show;
+    private byte[] key_SAM;
+    private boolean isDeviceAbleToRunSmartcardReader;
 
     //FAMOCO
     private SmartcardReader mSmartcardReader;
@@ -54,7 +48,6 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
 
         //init varibale
-        context = this;
         show = "";
         isDeviceAbleToRunSmartcardReader=true;
 
@@ -83,6 +76,10 @@ public class MainActivity extends Activity{
     protected void onStart() {
         super.onStart();
 
+        //init varibale
+        show = "";
+        isDeviceAbleToRunSmartcardReader=true;
+
         // adding methods
         if (mNfcAdapter != null) {
             show = "NFC enabled.";
@@ -91,20 +88,6 @@ public class MainActivity extends Activity{
         }
 
         try {
-                        /*
-            //List sensor
-            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-            List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-            show = show + "\n\nSENSORS:";
-            if (deviceSensors.size() == 0) {
-                show = show + "\nNo Sensor found";
-            } else {
-                for (int i = 0; i < deviceSensors.size(); i++) {
-                    show = show + "\n" + deviceSensors.get(i).toString();
-                }
-            }
-            */
-
             // obtain smartcard reader instance
             mSmartcardReader = SmartcardReader.getInstance();
             // open smartcard reader.
@@ -152,8 +135,6 @@ public class MainActivity extends Activity{
 
         //Display result
         text.setText(show);
-
-
     }
 
     private boolean sendApdu(byte[] apdu,boolean exe) {
@@ -193,7 +174,6 @@ public class MainActivity extends Activity{
                     byte [] val = bundle.getByteArray(key);
                     show = show + String.format("\n\t-KEY: %s",key);
                     show = show + String.format("\n\t\t*VALUE: %s",bytesToHexString(val));
-                    // TODO: adpdu_cmd
                 }else{
                     Object value = bundle.get(key);
                     show = show + String.format("\n\t-KEY: %s",key);
@@ -206,7 +186,6 @@ public class MainActivity extends Activity{
         }
         text.setText(show);
     }
-
 
     private String resolveIntent(Intent intent) {
         String show = "\n\nDATA:";
@@ -228,9 +207,10 @@ public class MainActivity extends Activity{
                 int secCount = mfc.getSectorCount();
                 int bCount = 0;
                 int bIndex = 0;
+                show = show+ "\nKey_A";
                 for (int j = 0; j < secCount; j++) {// 16 Sectors
-                    show = show +"\n\tblock_"+String.format("%d",j+1)+":";
-                    Log.v(LOG_TAG,"block_"+String.format("%d",j+1));
+                    show = show +"\n\tSector_"+String.format("%d",j)+":";
+                    //Log.v(LOG_TAG,"Sector_"+String.format("%d",j+1));
                     // 6.1) authenticate the sector
                     auth = mfc.authenticateSectorWithKeyA(j, KEYS_A_B[0]);
                     if (auth) {
@@ -239,17 +219,41 @@ public class MainActivity extends Activity{
                         bIndex = 0;
                         for (int i = 0; i < bCount; i++) {// 4 Blocks
                             bIndex = mfc.sectorToBlock(j);
-                            Log.v(LOG_TAG, String.format("%d",bIndex+i));
+                            //Log.v(LOG_TAG, String.format("%d",bIndex+i));
                             // 6.3) Read the block
                             data = mfc.readBlock(bIndex+i);
                             // 7) Convert the data into a string from Hex format.
                             show = show +"\n"+ bytesToHexString(data);
-                            //bIndex=bIndex+1;
                         }
                     } else {
                         show = show +"\n\tAUTH. FAILED";
                     }
                 }
+                show =show + "\n";
+                show = show+ "\nKey_B";
+                for (int j = 0; j < secCount; j++) {// 16 Sectors
+                    show = show +"\n\tSector_"+String.format("%d",j)+":";
+                    //Log.v(LOG_TAG,"Sector_"+String.format("%d",j+1));
+                    // 6.1) authenticate the sector
+                    auth = mfc.authenticateSectorWithKeyB(j, KEYS_A_B[1]);
+                    if (auth) {
+                        // 6.2) In each sector - get the block count
+                        bCount = mfc.getBlockCountInSector(j);
+                        bIndex = 0;
+                        for (int i = 0; i < bCount; i++) {// 4 Blocks
+                            bIndex = mfc.sectorToBlock(j);
+                            //Log.v(LOG_TAG, String.format("%d",bIndex+i));
+                            // 6.3) Read the block
+                            data = mfc.readBlock(bIndex+i);
+                            // 7) Convert the data into a string from Hex format.
+                            show = show +"\n"+ bytesToHexString(data);
+                        }
+                    } else {
+                        show = show +"\n\tAUTH. FAILED";
+                    }
+                }
+
+
             } catch (IOException e) {
                 show = show +"\n"+e.getLocalizedMessage();
                 Log.v(LOG_TAG, e.getLocalizedMessage());
@@ -257,7 +261,6 @@ public class MainActivity extends Activity{
         }// End of method
         return show;
     }
-
 
     public void addButton1(Button button) {
         button.setOnClickListener(new View.OnClickListener() {
@@ -271,7 +274,7 @@ public class MainActivity extends Activity{
             @Override
             public boolean onLongClick(View v) {
                 show="";
-                text.setText("screen cleaned");
+                text.setText("Screen cleaned");
                 return true;
             }
         });
@@ -309,7 +312,6 @@ public class MainActivity extends Activity{
         }
         return true;
     }
-
 
 }
 

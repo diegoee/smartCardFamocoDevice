@@ -15,18 +15,10 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:src="@drawable/splash_image"
-            android:id="@+id/imageView"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:adjustViewBounds="false" />
-
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
+            android:drawableRight="@drawable/cursor"
             android:text="Action"
             android:id="@+id/b1"
             android:textSize="20sp"
@@ -34,7 +26,8 @@
 
         <ScrollView
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            >
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
