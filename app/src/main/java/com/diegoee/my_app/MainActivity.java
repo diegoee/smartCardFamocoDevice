@@ -12,6 +12,7 @@ import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -299,6 +300,14 @@ public class MainActivity extends Activity{
             // close smartcard reader
             mSmartcardReader.closeReader();
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == event.KEYCODE_BACK) {
+            finish();
+        }
+        return true;
     }
 
 
