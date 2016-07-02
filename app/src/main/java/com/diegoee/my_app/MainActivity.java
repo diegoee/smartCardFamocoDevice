@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import com.famoco.secommunication.SmartcardReader;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "log_app";
     private final static byte[][] KEYS_A_B = {
