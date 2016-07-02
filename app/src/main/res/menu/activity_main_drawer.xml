@@ -4,23 +4,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_main"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_main"
             android:title="Principal" />
         <item
             android:id="@+id/nav_detail_mov"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_train"
             android:title="Detalle de Movimientos" />
         <item
             android:id="@+id/nav_detail_card"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_card"
             android:title="Detalle de Tarjeta" />
     </group>
 
     <item android:title="Ajustes">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_manage"
+                android:id="@+id/nav_setting"
+                android:icon="@drawable/ic_settings"
                 android:title="Reset" />
         </menu>
     </item>
@@ -28,9 +28,9 @@
     <item android:title="Ayuda">
         <menu>
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_contact"
                 android:icon="@drawable/ic_info"
-                android:title="Send" />
+                android:title="Contacto" />
         </menu>
     </item>
 

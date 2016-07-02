@@ -6,37 +6,36 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@color/colorAccent">
+    android:background="@color/colorPrimaryDark">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="75dp"
-            android:drawableRight="@drawable/ic_menu_camera"
-            android:text="Action"
-            android:id="@+id/b1"
-            android:textSize="20sp"
-            android:layout_centerHorizontal="true"/>
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/listMain"
+            android:layout_weight="1"/>
 
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            >
+            android:layout_weight="3">
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:text="ACTION"
                 android:textSize="15sp"
                 android:id="@+id/tv1"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@color/colorAccent" />
 
 
         </ScrollView>
 
     </LinearLayout>
+
+
 
 </RelativeLayout>
