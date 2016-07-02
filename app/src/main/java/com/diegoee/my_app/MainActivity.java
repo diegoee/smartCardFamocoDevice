@@ -8,8 +8,14 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,7 +24,7 @@ import java.io.IOException;
 
 import com.famoco.secommunication.SmartcardReader;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
 
     private static final String LOG_TAG = "log_app";
     private final static byte[][] KEYS_A_B = {
@@ -304,6 +310,7 @@ public class MainActivity extends Activity{
             mSmartcardReader.closeReader();
         }
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
