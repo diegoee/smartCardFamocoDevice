@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * Created by Diego on 2/7/16.
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 public class MainFragment extends Fragment {
 
     View myView;
+    TextView textView;
 
     public MainFragment() {
         // Required empty public constructor
