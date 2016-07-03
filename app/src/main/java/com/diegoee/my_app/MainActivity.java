@@ -25,7 +25,7 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String LOG_TAG = "log_app";
+    public static final String LOG_TAG = "log_app";
     private final static byte[][] KEYS_A_B = {
             new byte[]{(byte) 0x1F, (byte) 0x71, (byte) 0x12, (byte) 0x24 ,(byte) 0x84, (byte) 0xC1},
             new byte[]{(byte) 0x3B, (byte) 0xE5, (byte) 0x33, (byte) 0x10 ,(byte) 0x68, (byte) 0x2A}
@@ -36,9 +36,12 @@ public class MainActivity extends AppCompatActivity
     private PendingIntent mNfcPendingIntent;
     private IntentFilter[] intentFiltersArray;
 
+    private Fragment fragment;
     private String console;
     private byte[] key_SAM;
     private boolean isDeviceAbleToRunSmartcardReader;
+
+    private TdmCard tdmCard;
 
     //FAMOCO
     private SmartcardReader mSmartcardReader;
@@ -60,15 +63,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment fragment = new MainFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
-
         //init varibale
         console = "";
         isDeviceAbleToRunSmartcardReader=true;
-
+        tdmCard = new TdmCard();
 
         //adding component
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -83,81 +81,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        boolean fragmentTransaction = false;
-        Fragment fragment = null;
-
-        if (id == R.id.nav_main) {
-            fragment = new MainFragment();
-            fragmentTransaction = true;
-        } else if (id == R.id.nav_detail_mov) {
-            fragment = new DetailFragment();
-            fragmentTransaction = true;
-
-        } else if (id == R.id.nav_detail_card) {
-            fragment = new DetailFragment();
-            fragmentTransaction = true;
-        } else if (id == R.id.nav_setting) {
-            Toast.makeText(getApplicationContext(),"Datos leidos Borrados", Toast.LENGTH_SHORT).show();
-            /*
-            public void addButton1(Button button) {
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onStop();
-                        onStart();
-                    }
-                });
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        console="";
-                        text.setText("Screen cleaned");
-                        return true;
-                    }
-                });
-            }
-            */
-
-        } else if (id == R.id.nav_contact) {
-            fragment = new DetailFragment();
-            fragmentTransaction = true;
-        }
-
-        if(fragmentTransaction) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
 
         //init varibale
-        console = "";
+        console = "Dispositivo Lista para lectura.";
         isDeviceAbleToRunSmartcardReader=true;
 
         // adding methods
         if (mNfcAdapter != null) {
-            console = "NFC enabled.";
+            console = console +"\nNFC disponible en el dispositivo.";
         } else {
-            console = "NFC NOT enabled.";
+            console = console +"\nNFC NO disponible en el dispositivo.";
         }
 
         try {
@@ -166,21 +101,22 @@ public class MainActivity extends AppCompatActivity
             // open smartcard reader.
             mSmartcardReader.openReader();
             // power on smartcard reader
-            console = console + "\n\nSmartCart:";
+
             if (mSmartcardReader.isCardPresent()) {
+                console = console + "\nSmartCart presente.";
                 byte[] atr = mSmartcardReader.powerOn();
-                console = console + "\n\tATR = " + bytesToHexString(atr);
-                Log.v(LOG_TAG, "ATR = " + bytesToHexString(atr));
+                //console = console + "\n\tATR = " + bytesToHexString(atr);
+                //Log.v(LOG_TAG, "ATR = " + bytesToHexString(atr));
             } else {
-                console = console + "\n\tNo  SmartCart";
+                console = console + "\nSmartCart NO presente";
             }
 
-            console = console + "\n\nExample:";
-            byte[] val = new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
-            sendApdu(val,isDeviceAbleToRunSmartcardReader);
+            //console = console + "\n\nExample:";
+            //byte[] val = new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
+            // sendApdu(val,isDeviceAbleToRunSmartcardReader);
         }catch (Exception e){
             isDeviceAbleToRunSmartcardReader=false;
-            Log.v(LOG_TAG,"NO famoco librery running");
+            //Log.v(LOG_TAG,"NO famoco librery running");
             console = console + "\nNO famoco librery running";
         }
 
@@ -208,30 +144,67 @@ public class MainActivity extends AppCompatActivity
 
         //Display result
         //text.setText(console);
+
+        fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        boolean fragmentTransaction = false;
+        Fragment fragment = null;
+
+        if (id == R.id.nav_main) {
+            fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
+            fragmentTransaction = true;
+        } else if (id == R.id.nav_detail_mov) {
+            fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_MOV);
+            fragmentTransaction = true;
+        } else if (id == R.id.nav_detail_card) {
+            fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_CARD);
+            fragmentTransaction = true;
+        } else if (id == R.id.nav_setting) {
+            Toast.makeText(getApplicationContext(),"Datos Borrados", Toast.LENGTH_SHORT).show();
+            console = "Dispositivo Lista para lectura.";
+            tdmCard.eraseInfo();
+            onStop();
+            onStart();
+        } else if (id == R.id.nav_contact) {
+            fragment = new MainFragment(console,tdmCard,MainFragment.CONTACT);
+            fragmentTransaction = true;
+        }
+
+        if(fragmentTransaction) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private boolean sendApdu(byte[] apdu,boolean exe) {
         if (exe) {
             // send APDU
             //Log.v(LOG_TAG,"APDU => " + bytesToHexString(apdu));
-            console = console + "\nAPDU => " + bytesToHexString(apdu);
+            //console = console + "\nAPDU => " + bytesToHexString(apdu);
             key_SAM = mSmartcardReader.sendApdu(apdu);
             //Log.v(LOG_TAG,"APDU <= " + bytesToHexString(key_SAM));
-            console = console + "\nAPDU <= " + bytesToHexString(key_SAM);
+            //console = console + "\nAPDU <= " + bytesToHexString(key_SAM);
         }
         return true;
-    }
-
-    private String bytesToHexString(byte[] bArray) {
-        StringBuilder sb = new StringBuilder(bArray.length);
-        String sTemp;
-        for (byte aBArray : bArray) {
-            sTemp = Integer.toHexString(0xFF & aBArray);
-            if (sTemp.length() < 2)
-                sb.append(0);
-            sb.append(sTemp.toUpperCase());
-        }
-        return sb.toString();
     }
 
     @Override
@@ -239,29 +212,36 @@ public class MainActivity extends AppCompatActivity
         console = "";
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             Bundle bundle;
-            console = console + intent.toString();
-            console = console + "\n\nEXTRAS:";
+            console = console + "Tarjeta descubierta";
+            //console = console + intent.toString();
+            //console = console + "\n\nEXTRAS:";
             bundle = intent.getExtras();
             for (String key : bundle.keySet()) {
                 if (key.equals("android.nfc.extra.ID")) {
                     byte [] val = bundle.getByteArray(key);
-                    console = console + String.format("\n\t-KEY: %s",key);
-                    console = console + String.format("\n\t\t*VALUE: %s",bytesToHexString(val));
-                }else{
-                    Object value = bundle.get(key);
-                    console = console + String.format("\n\t-KEY: %s",key);
-                    console = console + String.format("\n\t\t*VALUE: %s",value.toString());
+                    //console = console + String.format("\n\t-KEY: %s",key);
+                    console = console + String.format("\n\tID_NFC: %s",tdmCard.bytesToHexString(val));
                 }
+                //else{
+                //    Object value = bundle.get(key);
+                //    console = console + String.format("\n\t-KEY: %s",key);
+                //    console = console + String.format("\n\t\t*VALUE: %s",value.toString());
+                //}
             }
         }
         if (isDeviceAbleToRunSmartcardReader) {
             console = console + resolveIntent(intent);
         }
+
+        console = console + "\n"+tdmCard.getInfo();
+
+        Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
     }
 
     private String resolveIntent(Intent intent) {
-        Log.v(LOG_TAG,"AQUIIIIII!!!");
-        String console = "\n\nDATA:";
+        String console = "\nLeyendo datos...";
+        tdmCard.eraseInfo();
         // 1) Parse the intent and get the action that triggered this intent
         String action = intent.getAction();
         // 2) Check if it was triggered by a tag discovered interruption.
@@ -280,9 +260,9 @@ public class MainActivity extends AppCompatActivity
                 int secCount = mfc.getSectorCount();
                 int bCount = 0;
                 int bIndex = 0;
-                console = console+ "\nKey_A";
+                //console = console+ "\nKey_A";
                 for (int j = 0; j < secCount; j++) {// 16 Sectors
-                    console = console +"\n\tSector_"+String.format("%d",j)+":";
+                    //console = console +"\n\tSector_"+String.format("%d",j)+":";
                     //Log.v(LOG_TAG,"Sector_"+String.format("%d",j+1));
                     // 6.1) authenticate the sector
                     auth = mfc.authenticateSectorWithKeyA(j, KEYS_A_B[0]);
@@ -296,42 +276,23 @@ public class MainActivity extends AppCompatActivity
                             // 6.3) Read the block
                             data = mfc.readBlock(bIndex+i);
                             // 7) Convert the data into a string from Hex format.
-                            console = console +"\n"+ bytesToHexString(data);
+                            tdmCard.append(data);
+                            //console = console +"\n"+ bytesToHexString(data);
                         }
                     } else {
-                        console = console +"\n\tAUTH. FAILED";
+                        console = console +"\n\tError de Autentificación";
+                        return console;
                     }
                 }
-                console =console + "\n";
-                console = console+ "\nKey_B";
-                for (int j = 0; j < secCount; j++) {// 16 Sectors
-                    console = console +"\n\tSector_"+String.format("%d",j)+":";
-                    //Log.v(LOG_TAG,"Sector_"+String.format("%d",j+1));
-                    // 6.1) authenticate the sector
-                    auth = mfc.authenticateSectorWithKeyB(j, KEYS_A_B[1]);
-                    if (auth) {
-                        // 6.2) In each sector - get the block count
-                        bCount = mfc.getBlockCountInSector(j);
-                        bIndex = 0;
-                        for (int i = 0; i < bCount; i++) {// 4 Blocks
-                            bIndex = mfc.sectorToBlock(j);
-                            //Log.v(LOG_TAG, String.format("%d",bIndex+i));
-                            // 6.3) Read the block
-                            data = mfc.readBlock(bIndex+i);
-                            // 7) Convert the data into a string from Hex format.
-                            console = console +"\n"+ bytesToHexString(data);
-                        }
-                    } else {
-                        console = console +"\n\tAUTH. FAILED";
-                    }
-                }
-
 
             } catch (IOException e) {
                 console = console +"\n"+e.getLocalizedMessage();
                 Log.v(LOG_TAG, e.getLocalizedMessage());
+                console = console +"\nError en la lectura de los datos,volver a realizar la lectura.";
+                return console;
             }
         }// End of method
+        console = console +"\n\tDatos de la tarjeta leidos.";
         return console;
     }
 

@@ -23,6 +23,7 @@
         android:layout_height="fill_parent"
         android:text="@string/app_name"
         android:gravity="left|center"
+        android:textSize="20dp"
         android:layout_weight="3"/>
 
 
