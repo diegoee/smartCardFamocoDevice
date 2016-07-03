@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
 
         //init varibale
-        console = "Dispositivo Lista para lectura.";
+        console = "Dispositivo Listo para lectura.";
         isDeviceAbleToRunSmartcardReader=true;
 
         // adding methods
@@ -103,12 +103,12 @@ public class MainActivity extends AppCompatActivity
             // power on smartcard reader
 
             if (mSmartcardReader.isCardPresent()) {
-                console = console + "\nSmartCart presente.";
+                console = console + "\nSAM presente.";
                 byte[] atr = mSmartcardReader.powerOn();
                 //console = console + "\n\tATR = " + bytesToHexString(atr);
                 //Log.v(LOG_TAG, "ATR = " + bytesToHexString(atr));
             } else {
-                console = console + "\nSmartCart NO presente";
+                console = console + "\nSAM NO presente";
             }
 
             //console = console + "\n\nExample:";
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction = true;
         } else if (id == R.id.nav_setting) {
             Toast.makeText(getApplicationContext(),"Datos Borrados", Toast.LENGTH_SHORT).show();
-            console = "Dispositivo Lista para lectura.";
+            console = "Dispositivo Listo para lectura.";
             tdmCard.eraseInfo();
             onStop();
             onStart();
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity
                 if (key.equals("android.nfc.extra.ID")) {
                     byte [] val = bundle.getByteArray(key);
                     //console = console + String.format("\n\t-KEY: %s",key);
-                    console = console + String.format("\n\tID_NFC: %s",tdmCard.bytesToHexString(val));
+                    console = console + String.format("\n\tID-NFC: %s",tdmCard.bytesToHexString(val));
                 }
                 //else{
                 //    Object value = bundle.get(key);
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity
             } catch (IOException e) {
                 console = console +"\n"+e.getLocalizedMessage();
                 Log.v(LOG_TAG, e.getLocalizedMessage());
-                console = console +"\nError en la lectura de los datos,volver a realizar la lectura.";
+                console = console +"\nError en la lectura de los datos. Volver a realizar la lectura.";
                 return console;
             }
         }// End of method

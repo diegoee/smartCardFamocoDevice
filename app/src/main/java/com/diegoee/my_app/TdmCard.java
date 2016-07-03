@@ -4,9 +4,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-/**
- * Created by Diego on 2/7/16.
- */
 public class TdmCard {
 
     private String info;
@@ -54,11 +51,17 @@ public class TdmCard {
 
         if (infoByte.size()==64) { //1024bits = 64Bytes
             // SALDO Sector11 bloque 0 byte 12 y parte del 13
-            auxBytes = new byte[]{infoByte.get(11)[12], infoByte.get(11)[13]};
+            auxBytes = new byte[]{infoByte.get(44)[12], infoByte.get(44)[13]};
             result = "Saldo Actual: " + bytesToHexString(auxBytes);
-            result = result + "\nÚltima parada: ";
-            result = result + "\nFecha de última parada: ";
-            result = result + "\nNº de Viajeros: ";
+
+            auxBytes = new byte[]{infoByte.get(44)[1], infoByte.get(44)[2], infoByte.get(44)[3]};
+            result = result + "\nÚltima parada: "+ bytesToHexString(auxBytes);
+
+            auxBytes = new byte[]{infoByte.get(44)[6], infoByte.get(44)[7]};
+            result = result + "\nFecha de última parada: "+ bytesToHexString(auxBytes);
+
+            auxBytes = new byte[]{infoByte.get(44)[4], infoByte.get(44)[5]};
+            result = result + "\nNº de Viajeros: "+ bytesToHexString(auxBytes);
         }
         return result;
     }
@@ -135,13 +138,17 @@ public class TdmCard {
             result="";
             int[] pos =new int[]{44,45,46,48,49,50,52,53,54,56,57};
             for (int i=0;i<pos.length;i++){
-                result = result + "\n"+i+" Movimiento";
+                result = result + "\n"+(i+1)+"º Movimiento";
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
                 result = result + "\n\t- Título: " + bytesToHexString(auxBytes);
-                result = result + "\n\t- Operación: ";
-                result = result + "\n\t- Fecha de la Acción: ";
-                result = result + "\n\t- Nº de Viajeros: ";
-                result = result + "\n\t- Saldo final: ";
+                auxBytes = new byte[]{infoByte.get(pos[i])[0]};
+                result = result + "\n\t- Operación: "+ bytesToHexString(auxBytes);
+                auxBytes = new byte[]{infoByte.get(pos[i])[1], infoByte.get(pos[i])[2], infoByte.get(pos[i])[3]};
+                result = result + "\n\t- Fecha de la Acción: "+ bytesToHexString(auxBytes);
+                auxBytes = new byte[]{infoByte.get(pos[i])[4], infoByte.get(pos[i])[5]};
+                result = result + "\n\t- Nº de Viajeros: "+ bytesToHexString(auxBytes);
+                auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
+                result = result + "\n\t- Saldo final: "+ bytesToHexString(auxBytes);
             }
         }
         return result;
