@@ -3,9 +3,170 @@ package com.diegoee.my_app;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TdmCard {
 
+
+    //public static final List<String> DESC_STATION = Arrays.asList(
+            /*
+            "Estadio Nueva Condomina	2	153	A12-2	Universidades
+            Estadio Nueva Condomina	1	114	A12-1	Universidades
+            La Ladera	1	118	A11-1	Universidades
+            Infantas	1	122	A10-1	Universidades
+            UCAM-Los Jerónimos
+            Príncipe Felipe	1	123	A9-1	Universidades
+            UCAM-Los Jerónimos
+            Churra	1	125	A8-1	Universidades
+            UCAM-Los Jerónimos
+            Alameda	1	126	A7-1	Universidades
+            UCAM-Los Jerónimos
+            Los Cubos	1	128	A6-1	Universidades
+            UCAM-Los Jerónimos
+            Santiago y Zaraiche	1	129	A5-1	Universidades
+            UCAM-Los Jerónimos
+            Príncipe de Asturias	1	130	A4-1	Universidades
+            UCAM-Los Jerónimos
+            Abenarabi	1	131	A3-1	Universidades
+            UCAM-Los Jerónimos
+            Marina Española	1	132	A2-1	Universidades
+            UCAM-Los Jerónimos
+            Plaza Circular	1	134	A1-1	Universidades
+            UCAM-Los Jerónimos
+            Juan Carlos I	1	155	B1-1	Universidades
+            UCAM-Los Jerónimos
+            Biblioteca Regional	1	157	B2-1	Universidades
+            UCAM-Los Jerónimos
+            Senda de Granada	1	158	B3-1	Universidades
+            UCAM-Los Jerónimos
+            Parque Empresarial	1	159	B4-1	Universidades
+            UCAM-Los Jerónimos
+            El Puntal	1	161	B5-1	Universidades
+            UCAM-Los Jerónimos
+            Espinardo	1	162	B6-1	Universidades
+            UCAM-Los Jerónimos
+            Los Rectores - Terra Natura	1	164	B7-1	Universidades
+            UCAM-Los Jerónimos
+            Universidad de Murcia	1	187	C1-1	Estadio Nueva Condomina
+            Servicios de Investigación	1	188	C2-1	Estadio Nueva Condomina
+            Centro Social	1	189	C3-1	Estadio Nueva Condomina
+            Biblioteca General	1	190	C4-1	Estadio Nueva Condomina
+            Residencia Universitaria	1	191	C5-1	Estadio Nueva Condomina
+            Los Rectores - Terra Natura	2	177	B7-2	Estadio Nueva Condomina
+            Espinardo	2	179	B6-2	Estadio Nueva Condomina
+            El Puntal	2	180	B5-2	Estadio Nueva Condomina
+            Parque Empresarial	2	182	B4-2	Estadio Nueva Condomina
+            Senda de Granada	2	183	B3-2	Estadio Nueva Condomina
+            Biblioteca Regional	2	184	B2-2	Estadio Nueva Condomina
+            Juan Carlos I	2	186	B1-2	Estadio Nueva Condomina
+            Plaza Circular	2	135	A1-2	Estadio Nueva Condomina
+            Marina Española	2	137	A2-2	Estadio Nueva Condomina
+            Abenarabi	2	138	A3-2	Estadio Nueva Condomina
+            Príncipe de Asturias	2	139	A4-2	Estadio Nueva Condomina
+            Santiago y Zaraiche	2	140	A5-2	Estadio Nueva Condomina
+            Los Cubos	2	141	A6-2	Estadio Nueva Condomina
+            Alameda	2	143	A7-2	Estadio Nueva Condomina
+            Churra	2	144	A8-2	Estadio Nueva Condomina
+            Príncipe Felipe	2	146	A9-2	Estadio Nueva Condomina
+            Infantas	2	147	A10-2	Estadio Nueva Condomina
+            La Ladera	2	149	A11-2	Estadio Nueva Condomina
+            Guadalupe	1	204	B8-1	Los Rectores-Terra Natura
+            UCAM-Los Jerónimos
+            Estadio Nueva Condomina
+            Reyes Católicos	1	169	B9-1	Los Rectores-Terra Natura
+            UCAM-Los Jerónimos
+            Estadio Nueva Condomina
+            El Portón	1	170	B10-1	Los Rectores-Terra Natura
+            UCAM-Los Jerónimos
+            Estadio Nueva Condomina
+            UCAM - Los Jerónimos	1	192	B11-1	Los Rectores-Terra Natura
+            Estadio Nueva Condomina
+            UCAM - Los Jerónimos	2	172	B11-2	Los Rectores-Terra Natura
+            Estadio Nueva Condomina
+            Talleres y Cocheras	de 3 a 11	65535	Cocheras	Ninguno
+            Los Rectores - Terra Natura	3	195	B7-3	Ninguno
+            Desconocido	n/a	1	Desconocido	Ninguno"*/
+    //);
+
+/*
+    Estadio Nueva Condomina	2	153	A12-2	Universidades
+    Estadio Nueva Condomina	1	114	A12-1	Universidades
+    La Ladera	1	118	A11-1	Universidades
+    Infantas	1	122	A10-1	Universidades
+    UCAM-Los Jerónimos
+    Príncipe Felipe	1	123	A9-1	Universidades
+    UCAM-Los Jerónimos
+    Churra	1	125	A8-1	Universidades
+    UCAM-Los Jerónimos
+    Alameda	1	126	A7-1	Universidades
+    UCAM-Los Jerónimos
+    Los Cubos	1	128	A6-1	Universidades
+    UCAM-Los Jerónimos
+    Santiago y Zaraiche	1	129	A5-1	Universidades
+    UCAM-Los Jerónimos
+    Príncipe de Asturias	1	130	A4-1	Universidades
+    UCAM-Los Jerónimos
+    Abenarabi	1	131	A3-1	Universidades
+    UCAM-Los Jerónimos
+    Marina Española	1	132	A2-1	Universidades
+    UCAM-Los Jerónimos
+    Plaza Circular	1	134	A1-1	Universidades
+    UCAM-Los Jerónimos
+    Juan Carlos I	1	155	B1-1	Universidades
+    UCAM-Los Jerónimos
+    Biblioteca Regional	1	157	B2-1	Universidades
+    UCAM-Los Jerónimos
+    Senda de Granada	1	158	B3-1	Universidades
+    UCAM-Los Jerónimos
+    Parque Empresarial	1	159	B4-1	Universidades
+    UCAM-Los Jerónimos
+    El Puntal	1	161	B5-1	Universidades
+    UCAM-Los Jerónimos
+    Espinardo	1	162	B6-1	Universidades
+    UCAM-Los Jerónimos
+    Los Rectores - Terra Natura	1	164	B7-1	Universidades
+    UCAM-Los Jerónimos
+    Universidad de Murcia	1	187	C1-1	Estadio Nueva Condomina
+    Servicios de Investigación	1	188	C2-1	Estadio Nueva Condomina
+    Centro Social	1	189	C3-1	Estadio Nueva Condomina
+    Biblioteca General	1	190	C4-1	Estadio Nueva Condomina
+    Residencia Universitaria	1	191	C5-1	Estadio Nueva Condomina
+    Los Rectores - Terra Natura	2	177	B7-2	Estadio Nueva Condomina
+    Espinardo	2	179	B6-2	Estadio Nueva Condomina
+    El Puntal	2	180	B5-2	Estadio Nueva Condomina
+    Parque Empresarial	2	182	B4-2	Estadio Nueva Condomina
+    Senda de Granada	2	183	B3-2	Estadio Nueva Condomina
+    Biblioteca Regional	2	184	B2-2	Estadio Nueva Condomina
+    Juan Carlos I	2	186	B1-2	Estadio Nueva Condomina
+    Plaza Circular	2	135	A1-2	Estadio Nueva Condomina
+    Marina Española	2	137	A2-2	Estadio Nueva Condomina
+    Abenarabi	2	138	A3-2	Estadio Nueva Condomina
+    Príncipe de Asturias	2	139	A4-2	Estadio Nueva Condomina
+    Santiago y Zaraiche	2	140	A5-2	Estadio Nueva Condomina
+    Los Cubos	2	141	A6-2	Estadio Nueva Condomina
+    Alameda	2	143	A7-2	Estadio Nueva Condomina
+    Churra	2	144	A8-2	Estadio Nueva Condomina
+    Príncipe Felipe	2	146	A9-2	Estadio Nueva Condomina
+    Infantas	2	147	A10-2	Estadio Nueva Condomina
+    La Ladera	2	149	A11-2	Estadio Nueva Condomina
+    Guadalupe	1	204	B8-1	Los Rectores-Terra Natura
+    UCAM-Los Jerónimos
+    Estadio Nueva Condomina
+    Reyes Católicos	1	169	B9-1	Los Rectores-Terra Natura
+    UCAM-Los Jerónimos
+    Estadio Nueva Condomina
+    El Portón	1	170	B10-1	Los Rectores-Terra Natura
+    UCAM-Los Jerónimos
+    Estadio Nueva Condomina
+    UCAM - Los Jerónimos	1	192	B11-1	Los Rectores-Terra Natura
+    Estadio Nueva Condomina
+    UCAM - Los Jerónimos	2	172	B11-2	Los Rectores-Terra Natura
+    Estadio Nueva Condomina
+    Talleres y Cocheras	de 3 a 11	65535	Cocheras	Ninguno
+    Los Rectores - Terra Natura	3	195	B7-3	Ninguno
+    Desconocido	n/a	1	Desconocido	Ninguno
+*/
     private String info;
     ArrayList<byte[]> infoByte;
 
