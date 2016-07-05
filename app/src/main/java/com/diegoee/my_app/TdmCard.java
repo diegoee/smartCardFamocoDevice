@@ -192,17 +192,26 @@ public class TdmCard {
             if (val.equals("45")) {
                 val = "Anónima-p";
             }
-            if (val.equals("4d")) {
+            if (val.equals("49")) {
+                val = "b100";
+            }
+            if (val.equals("4B")) {
+                val = "empleado";
+            }
+            if (val.equals("4D")) {
                 val = "General";
             }
             if (val.equals("51")) {
-                val = "Joven";
+                val = "estudiante-col";
             }
-            if (val.equals("49")) {
-                val = "Estudiante";
+            if (val.equals("55")) {
+                val = "estudiante-uni";
             }
-            if (val.equals("5d")) {
+            if (val.equals("59")) {
                 val = "Campus";
+            }
+            if (val.equals("5D")) {
+                val = "fne";
             }
             if (val.equals("61")) {
                 val = "fngu";
