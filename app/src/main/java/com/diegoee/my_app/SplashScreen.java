@@ -46,7 +46,7 @@ public class SplashScreen extends Activity {
                 Intent mainIntent = new Intent().setClass(SplashScreen.this, MainActivity.class);
                 startActivity(mainIntent);
 
-                Log.v(MainActivity.LOG_TAG,"finish Splash");
+                //Log.v(MainActivity.LOG_TAG,"finish Splash");
                 progressStatus = 0;
                 finish();
             }
