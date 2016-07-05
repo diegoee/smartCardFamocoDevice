@@ -56,13 +56,13 @@ public class TdmCard {
             result = "Saldo Actual: " + decoData(auxBytes,TdmCard.CAST);
 
             auxBytes = new byte[]{infoByte.get(44)[8], infoByte.get(44)[9]};
-            result = result + "\nÚltima parada: "+ decoData(auxBytes,TdmCard.STATION);
+            result = result + "\nÚltima Parada: "+ decoData(auxBytes,TdmCard.STATION);
 
             auxBytes = new byte[]{infoByte.get(44)[1], infoByte.get(44)[2], infoByte.get(44)[3]};
             result = result + "\nFecha: "+ decoData(auxBytes,TdmCard.DATE);
 
             auxBytes = new byte[]{infoByte.get(44)[4], infoByte.get(44)[5]};
-            result = result + "\nNº de Viajeros: "+ decoData(auxBytes,TdmCard.NUMBER);
+            result = result + "\nNº Viajeros: "+ decoData(auxBytes,TdmCard.NUMBER);
         }
         return result;
     }
@@ -116,13 +116,13 @@ public class TdmCard {
                 result = result + "\n\t- Fecha: "+ decoData(auxBytes,TdmCard.DATE);
 
                 auxBytes = new byte[]{infoByte.get(44)[8], infoByte.get(pos[i])[9]};
-                result = result + "\n\t- Última parada: "+ decoData(auxBytes,TdmCard.STATION);
+                result = result + "\n\t- Parada: "+ decoData(auxBytes,TdmCard.STATION);
 
                 auxBytes = new byte[]{infoByte.get(pos[i])[4], infoByte.get(pos[i])[5]};
-                result = result + "\n\t- Nº de Viajeros: "+ decoData(auxBytes,TdmCard.NUMBER);
+                result = result + "\n\t- Nº Viajeros: "+ decoData(auxBytes,TdmCard.NUMBER);
 
                 auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
-                result = result + "\n\t- Saldo final: "+ decoData(auxBytes,TdmCard.CAST);
+                result = result + "\n\t- Saldo Final: "+ decoData(auxBytes,TdmCard.CAST);
             }
         }
         return result;
@@ -238,57 +238,57 @@ public class TdmCard {
 
     public static final List<String> DESC_STATION = Arrays.asList(
             "Estadio Nueva Condomina <-> Andén 2 <-> Destino: Universidades",
-            "Estadio Nueva Condomina <-> Andén 1 - Destino: Universidades",
-            "La Ladera <-> Andén 1	118	A11-1	Universidades",
-            "Infantas - Andén 1	122	A10-1	Universidades UCAM-Los Jerónimos",
-            "Príncipe Felipe - Andén 1	123	A9-1	Universidades UCAM-Los Jerónimos",
-            "Churra - Andén 1	125	A8-1	Universidades UCAM-Los Jerónimos",
-            "Alameda - Andén 1	126	A7-1	Universidades UCAM-Los Jerónimos",
-            "Los Cubos - Andén 1	128	A6-1	Universidades UCAM-Los Jerónimos",
-            "Santiago y Zaraiche - Andén 1	129	A5-1	Universidades  UCAM-Los Jerónimos",
-            "Príncipe de Asturias - Andén 1	130	A4-1	Universidades  UCAM-Los Jerónimos",
-            "Abenarabi - Andén 1	131	A3-1	Universidades    UCAM-Los Jerónimos",
-            "Marina Española - Andén 1	132	A2-1	Universidades        UCAM-Los Jerónimos",
-            "Plaza Circular - Andén 1	134	A1-1	Universidades          UCAM-Los Jerónimos",
-            "Juan Carlos I - Andén 1	155	B1-1	Universidades           UCAM-Los Jerónimos",
-            "Biblioteca Regional - Andén 1	157	B2-1	Universidades            UCAM-Los Jerónimos",
-            "Senda de Granada - Andén 1	158	B3-1	Universidades            UCAM-Los Jerónimos",
-            "Parque Empresarial - Andén 1	159	B4-1	Universidades            UCAM-Los Jerónimos",
-            "El Puntal <-> Andén 1	161	B5-1	Universidades            UCAM-Los Jerónimos",
-            "Espinardo <-> Andén 1	162	B6-1	Universidades            UCAM-Los Jerónimos",
-            "Los Rectores - Terra Natura <-> Andén 1	164	B7-1	Universidades            UCAM-Los Jerónimos",
-            "Universidad de Murcia <-> Andén 1	187	C1-1	Estadio Nueva Condomina",
-            "Servicios de Investigación <-> Andén 1	188	C2-1	Estadio Nueva Condomina",
-            "Centro Social <-> Andén 1	189	C3-1	Estadio Nueva Condomina",
-            "Biblioteca General <-> Andén 1	190	C4-1	Estadio Nueva Condomina",
-            "Residencia Universitaria <-> Andén 1	191	C5-1	Estadio Nueva Condomina",
-            "Los Rectores - Terra Natura <-> Andén 2	177	B7-2	Estadio Nueva Condomina",
-            "Espinardo <-> Andén 2	179	B6-2	Estadio Nueva Condomina",
-            "El Puntal <-> Andén 2	180	B5-2	Estadio Nueva Condomina",
-            "Parque Empresarial	2	182	B4-2	Estadio Nueva Condomina",
-            "Senda de Granada	2	183	B3-2	Estadio Nueva Condomina",
-            "Biblioteca Regional	2	184	B2-2	Estadio Nueva Condomina",
-            "Juan Carlos I	2	186	B1-2	Estadio Nueva Condomina",
-            "Plaza Circular	2	135	A1-2	Estadio Nueva Condomina",
-            "Marina Española	2	137	A2-2	Estadio Nueva Condomina",
-            "Abenarabi	2	138	A3-2	Estadio Nueva Condomina",
-            "Príncipe de Asturias <-> Andén 2	139	A4-2	Estadio Nueva Condomina",
-            "Santiago y Zaraiche <-> Andén 2	140	A5-2	Estadio Nueva Condomina",
-            "Los Cubos <-> Andén 2	141	A6-2	Estadio Nueva Condomina",
-            "Alameda <-> Andén 2	143	A7-2	Estadio Nueva Condomina",
-            "Churra	2 <-> Andén 144	A8-2	Estadio Nueva Condomina",
-            "Príncipe Felipe	2	146	A9-2	Estadio Nueva Condomina",
-            "Infantas <-> Andén 2	147	A10-2	Estadio Nueva Condomina",
-            "La Ladera <-> Andén 2	149	A11-2	Estadio Nueva Condomina",
-            "Guadalupe <-> Andén 1	204	B8-1	Los Rectores-Terra Natura            UCAM-Los Jerónimos            Estadio Nueva Condomina",
-            "Reyes Católicos	1	169	B9-1	Los Rectores-Terra Natura            UCAM-Los Jerónimos            Estadio Nueva Condomina",
-            "El Portón <-> Andén 1	170	B10-1	Los Rectores-Terra Natura            UCAM-Los Jerónimos            Estadio Nueva Condomina",
-            "UCAM - Los Jerónimos <-> Andén 1	192	B11-1	Los Rectores-Terra Natura            Estadio Nueva Condomina",
-            "UCAM - Los Jerónimos <-> Andén 2	172	B11-2	Los Rectores-Terra Natura            Estadio Nueva Condomina",
+            "Estadio Nueva Condomina <-> Andén 1 <-> Destino: Universidades",
+            "La Ladera <-> Andén 1 <-> Destino: Universidades",
+            "Infantas <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Príncipe Felipe <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Churra <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Alameda <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Los Cubos <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Santiago y Zaraiche <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Príncipe de Asturias <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Abenarabi <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Marina Española <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Plaza Circular <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Juan Carlos I <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Biblioteca Regional <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Senda de Granada <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Parque Empresarial <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "El Puntal <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Espinardo <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Los Rectores - Terra Natura <-> Andén 1 <-> Destino: Universidades UCAM-Los Jerónimos",
+            "Universidad de Murcia <-> Andén 1 <-> Destino: Estadio Nueva Condomina",
+            "Servicios de Investigación <-> Andén 1 <-> Destino: Estadio Nueva Condomina",
+            "Centro Social <-> Andén 1 <-> Destino: Estadio Nueva Condomina",
+            "Biblioteca General <-> Andén 1 <-> Destino: Estadio Nueva Condomina",
+            "Residencia Universitaria <-> Andén 1 <-> Destino: Estadio Nueva Condomina",
+            "Los Rectores - Terra Natura <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Espinardo <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "El Puntal <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Parque Empresarial <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Senda de Granada <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Biblioteca Regional <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Juan Carlos I <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Plaza Circular <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Marina Española <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Abenarabi <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Príncipe de Asturias <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Santiago y Zaraiche <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Los Cubos <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Alameda <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Churra	<-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Príncipe Felipe<-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Infantas <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "La Ladera <-> Andén 2 <-> Destino: Estadio Nueva Condomina",
+            "Guadalupe <-> Andén 1 <-> Destino: Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina",
+            "Reyes Católicos<-> Andén 1 <-> Destino: Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina",
+            "El Portón <-> Andén 1 <-> Destino: Los Rectores-Terra Natura  UCAM-Los Jerónimos  Estadio Nueva Condomina",
+            "UCAM - Los Jerónimos <-> Andén 1 <-> Destino: Los Rectores-Terra Natura Estadio Nueva Condomina",
+            "UCAM - Los Jerónimos <-> Andén 2 <-> Destino: Los Rectores-Terra Natura  Estadio Nueva Condomina",
             "Talleres y Cocheras",
             "Los Rectores - Terra Natura <-> Andén 3	195	B7-3	Ninguno",
             "Desconocido <-> Andén n/a <-> Destino: Desconocido",
-            "No Hay dato"
+            "No hay dato"
     );
 
     public static final List<Integer> ID_STATION = Arrays.asList(
