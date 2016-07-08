@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private PendingIntent mNfcPendingIntent;
     private IntentFilter[] intentFiltersArray;
+    private NavigationView navigationView;
 
     private Fragment fragment;
     private String console;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //init varibale
@@ -145,6 +146,8 @@ public class MainActivity extends AppCompatActivity
         //Display result
         //text.setText(console);
 
+
+        navigationView.getMenu().getItem(0).setChecked(true);
         fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
     }

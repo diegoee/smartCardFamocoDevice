@@ -68,24 +68,7 @@ public class TdmCard {
     }
 
     public String getCtrlData(){
-
-        byte[] auxBytes;
-        String result = "Esperando lectura...";
-
-        if (infoByte.size()==64) { //1024bits = 64Bytes
-
-            auxBytes = new byte[]{infoByte.get(44)[12], infoByte.get(44)[13]};
-            result = "Saldo Actual: " + decoData(auxBytes,TdmCard.CAST);
-
-            auxBytes = new byte[]{infoByte.get(44)[8], infoByte.get(44)[9]};
-            result = result + "\nÚltima Parada: "+ decoData(auxBytes,TdmCard.STATION);
-
-            auxBytes = new byte[]{infoByte.get(44)[1], infoByte.get(44)[2], infoByte.get(44)[3]};
-            result = result + "\nFecha: "+ decoData(auxBytes,TdmCard.DATE);
-
-            auxBytes = new byte[]{infoByte.get(44)[4], infoByte.get(44)[5]};
-            result = result + "\nNº Viajeros: "+ decoData(auxBytes,TdmCard.NUMBER);
-        }
+        String result = "En desarrollo.";
         return result;
     }
 
