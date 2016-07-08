@@ -22,7 +22,8 @@ public class MainFragment extends Fragment {
     public static int MAIN=1;
     public static int DETAIL_MOV=2;
     public static int DETAIL_CARD=3;
-    public static int CONTACT=4;
+    public static int DETAIL_CTRL=4;
+    public static int CONTACT=5;
 
     View myView;
     String console;
@@ -30,6 +31,7 @@ public class MainFragment extends Fragment {
     int load;
 
     public MainFragment() {
+        super();
         this.console="";
         this.myView = null;
         this.tdmcard = new TdmCard();
@@ -37,6 +39,7 @@ public class MainFragment extends Fragment {
     }
 
     public MainFragment(String console,TdmCard tdmcard, int load) {
+        super();
         this.console=console;
         this.myView = null;
         this.tdmcard=tdmcard;
@@ -52,20 +55,23 @@ public class MainFragment extends Fragment {
         String result="";
 
         if (load==MainFragment.MAIN){
-            tittle="Principal";
-            result= tdmcard.getMainData();
+            tittle=getText(R.string.menu_main).toString();
+            result= tdmcard.getMainData()+"\n\n"+console;
         }
         if (load==MainFragment.DETAIL_MOV){
-            tittle="Detalle de Movimientos";
+            tittle=getText(R.string.menu_mov).toString();
             result= tdmcard.getMovData();
         }
         if (load==MainFragment.DETAIL_CARD){
-            tittle="Detalle de Tarjeta";
+            tittle=getText(R.string.menu_card).toString();
             result= tdmcard.getCardData();
-
+        }
+        if (load==MainFragment.DETAIL_CTRL){
+            tittle=getText(R.string.menu_ctrl).toString();
+            result= tdmcard.getCtrlData();
         }
         if (load==MainFragment.CONTACT){
-            tittle="Información de contacto";
+            tittle=getText(R.string.menu_cont).toString();
             result = getText(R.string.contact).toString();
 
         }
@@ -75,10 +81,6 @@ public class MainFragment extends Fragment {
 
         TextView textView2 = (TextView) myView.findViewById(R.id.result);
         textView2.setText(result);
-
-        TextView textView3 = (TextView) myView.findViewById(R.id.console);
-        textView3.setText(console);
-
         return myView;
     }
 

@@ -5,15 +5,19 @@
         <item
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_main"
-            android:title="Principal" />
+            android:title="@string/menu_main" />
         <item
             android:id="@+id/nav_detail_mov"
             android:icon="@drawable/ic_train"
-            android:title="Detalle de Movimientos" />
+            android:title="@string/menu_mov" />
         <item
             android:id="@+id/nav_detail_card"
             android:icon="@drawable/ic_card"
-            android:title="Detalle de Tarjeta" />
+            android:title="@string/menu_card" />
+        <item
+            android:id="@+id/nav_detail_ctrl"
+            android:icon="@drawable/ic_control"
+            android:title="@string/menu_ctrl" />
     </group>
 
     <item android:title="Ajustes">

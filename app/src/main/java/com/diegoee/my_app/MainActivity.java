@@ -175,9 +175,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_detail_card) {
             fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_CARD);
             fragmentTransaction = true;
+        } else if (id == R.id.nav_detail_ctrl) {
+            fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_CTRL);
+            fragmentTransaction = true;
         } else if (id == R.id.nav_setting) {
             Toast.makeText(getApplicationContext(),"Datos Borrados", Toast.LENGTH_SHORT).show();
-            console = "Dispositivo Listo para lectura.";
             tdmCard.eraseInfo();
             onStop();
             onStart();
