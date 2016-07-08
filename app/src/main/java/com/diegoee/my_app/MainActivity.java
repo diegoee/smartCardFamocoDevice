@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity
 
         console = console + "\n"+tdmCard.getInfo();
 
+        navigationView.getMenu().getItem(0).setChecked(true);
         Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
     }

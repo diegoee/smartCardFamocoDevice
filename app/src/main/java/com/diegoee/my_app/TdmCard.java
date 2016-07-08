@@ -2,8 +2,11 @@ package com.diegoee.my_app;
 
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class TdmCard {
@@ -81,7 +84,8 @@ public class TdmCard {
         if (infoByte.size()==64) {
             // Nº de tarjeta Sector1 bloque 0 byte 0,1,2 y 3
             auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
-            result = "N º de Tarjeta: " + bytesToHexString(auxBytes);
+            result = "Número de Tarjeta: 0x" + bytesToHexString(auxBytes);
+            result = result + "\nNúmero de Tarjeta: " + decoData(auxBytes,TdmCard.NUMBER);
 
             //tipo de tarjeta sector 1 bloque 0 byte 4
             auxBytes = new byte[]{infoByte.get(4)[4]};
@@ -157,7 +161,13 @@ public class TdmCard {
         }
 
         if (type==TdmCard.DATE){
-            val="0x"+bytesToHexString(bArray);
+            Calendar c1 = GregorianCalendar.getInstance();
+            c1.set(2000, Calendar.JANUARY, 1);
+            c1.add(Calendar.DAY_OF_YEAR, hex2decimal(bytesToHexString(bArray)));
+            //c1.add(Calendar.DAY_OF_MONTH, hex2decimal(bytesToHexString(bArray)));
+            SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy");
+            //Log.v(MainActivity.LOG_TAG,format1.format(c1.getTime()));
+            val=format1.format(c1.getTime());
         }
 
         if (type==TdmCard.STATION){
