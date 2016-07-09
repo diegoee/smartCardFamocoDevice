@@ -54,9 +54,13 @@ public class MainFragment extends Fragment {
         String tittle="";
         String result="";
 
+        TextView textView1 = (TextView) myView.findViewById(R.id.tittle);
+        TextView textView2 = (TextView) myView.findViewById(R.id.result);
+
         if (load==MainFragment.MAIN){
             tittle=getText(R.string.menu_main).toString();
             result= tdmcard.getMainData()+"\n\n"+console;
+            //textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         }
         if (load==MainFragment.DETAIL_MOV){
             tittle=getText(R.string.menu_mov).toString();
@@ -75,12 +79,10 @@ public class MainFragment extends Fragment {
             result = getText(R.string.contact).toString();
 
         }
-        TextView textView1 = (TextView) myView.findViewById(R.id.tittle);
+
         textView1.setText(tittle);
-
-
-        TextView textView2 = (TextView) myView.findViewById(R.id.result);
         textView2.setText(result);
+
         return myView;
     }
 
