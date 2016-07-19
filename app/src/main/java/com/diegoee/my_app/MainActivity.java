@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity
             if (isDeviceAbleToRunSmartcardReader) {
                 console = console + "\nSAM presente.";
                 byte[] atr = mSmartcardReader.powerOn();
-                //console = console + "\n\tATR = " + bytesToHexString(atr);
+                //console = console + "\nATR = " + tdmCard.bytesToHexString(atr);
                 //Log.v(LOG_TAG, "ATR = " + bytesToHexString(atr));
             } else {
                 console = console + "\nSAM NO presente";
@@ -200,19 +200,70 @@ public class MainActivity extends AppCompatActivity
 
     //TODO: Implemetar método
     private byte[] getKeysFromSAM(){
+
         byte[] key;
-        byte[] apdu = new byte[]{
-                (byte) 0x1F,
-                (byte) 0x71,
-                (byte) 0x12,
-                (byte) 0x24,
-                (byte) 0x84,
-                (byte) 0xC1
-        };
+        byte[] apdu = new byte[16];
+
+
+        apdu[0]  = (byte) 0x0D; // Longitud de los datos de despues
+        apdu[1]  = (byte) 0x00; //APDU - cla
+        apdu[2]  = (byte) 0xA4; //APDU - ins
+        apdu[3]  = (byte) 0x04; //APDU - P1
+        apdu[4]  = (byte) 0x00; //APDU - P2
+        apdu[5]  = (byte) 0x08; //APDU - LC: tamaño de los datos
+        apdu[6]  = (byte) 0xF0; //APDU - datos: id de la aplicacion a seleccionar
+        apdu[7]  = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
+        apdu[8]  = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
+        apdu[9]  = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
+        apdu[10] = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
+        apdu[11] = (byte) 0x41; //APDU - datos: id de la aplicacion a seleccionar
+        apdu[12] = (byte) 0x59; //APDU - datos: id de la aplicacion a seleccionar
+        apdu[13] = (byte) 0x4D; //APDU - datos: id de la aplicacion a seleccionar
+
+        Log.v(LOG_TAG,"APDU => " + tdmCard.bytesToHexString(apdu));
+        key = mSmartcardReader.sendApdu(apdu);
+        Log.v(LOG_TAG,"APDU <= " + tdmCard.bytesToHexString(key));
+
+
+        apdu = new byte[16];
+        apdu[0]  = (byte) 0x05; //Longitud de los datos de despues!!!!!!!
+        apdu[1]  = (byte) 0x90; //APDU - cla
+        apdu[2]  = (byte) 0x10; //APDU - ins
+        apdu[3]  = (byte) 0x00; //APDU - P1
+        apdu[4]  = (byte) 0x00; //APDU - P2
+        apdu[5]  = (byte) 0x14; //APDU - LE : longitud de datos a obtener
+
+        Log.v(LOG_TAG,"APDU => " + tdmCard.bytesToHexString(apdu));
+        key = mSmartcardReader.sendApdu(apdu);
+        Log.v(LOG_TAG,"APDU <= " + tdmCard.bytesToHexString(key));
+
+
+        apdu = new byte[16];
+        byte btVers = (byte) 0x00;
+        byte[] uid =  new byte[4];
+        uid[0] = (byte) 0xBC;
+        uid[1] = (byte) 0xB1;
+        uid[2] = (byte) 0x34;
+        uid[3] = (byte) 0x1B;
+
+        apdu[0]  = (byte) 0x0A; //Longitud de los datos de despues!!!!!!!
+        apdu[1]  = (byte) 0x90; //APDU - cla
+        apdu[2]  = (byte) 0x48; //APDU - ins
+        apdu[3]  = btVers; //APDU - P1 - version de claves a utilizar
+        apdu[4]  = (byte) 0x00; //APDU - P2
+        apdu[5]  = (byte) 0x04; //APDU - LC : longitud de datos que se envian
+        apdu[6]  = uid[0]; //APDU - datos: valor rh
+        apdu[7]  = uid[1]; //APDU - datos: valor rh
+        apdu[8]  = uid[2]; //APDU - datos: valor rh
+        apdu[9]  = uid[3]; //APDU - datos: valor rh
+        apdu[10] = (byte)0x00; //APDU - le, datos de respuesta
+
         // send APDU
         Log.v(LOG_TAG,"APDU => " + tdmCard.bytesToHexString(apdu));
         key = mSmartcardReader.sendApdu(apdu);
         Log.v(LOG_TAG,"APDU <= " + tdmCard.bytesToHexString(key));
+
+        key=KEYS_A_B[0];
         return key;
     }
 
@@ -279,6 +330,11 @@ public class MainActivity extends AppCompatActivity
                     auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
                     if (!auth) {
                         key_SAM = getKeysFromSAM();
+                        if (key_SAM.length==6) {
+                            auth = mfc.authenticateSectorWithKeyA(j, key_SAM);
+                        }else{
+                            auth=false;
+                        }
                     }
                     if (auth) {
                         // 6.2) In each sector - get the block count
