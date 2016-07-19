@@ -10,7 +10,7 @@
 
     <string name="menu_main">Principal</string>
     <string name="menu_card">Datos de Tarjeta</string>
-    <string name="menu_mov">Historico de Tarjeta</string>
+    <string name="menu_mov" >Historico de Tarjeta</string>
     <string name="menu_ctrl">Datos de Control</string>
     <string name="menu_cont">Contacto</string>
 

@@ -49,7 +49,7 @@ public class TdmCard {
     }
 
     public String getMainData(){
-        String result = "En desarrollo...";
+        String result = "";
         return result;
     }
 
@@ -66,7 +66,7 @@ public class TdmCard {
         if (infoByte.size()==64) {
             // Nº de tarjeta Sector1 bloque 0 byte 0,1,2 y 3
             auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
-            result = "Número de Tarjeta:\n\t0x" + bytesToHexString(auxBytes)+" <-> "+ decoData(auxBytes,TdmCard.NUMBER);
+            result = "Número de Tarjeta:\n\t(Hex.)" + bytesToHexString(auxBytes)+"  -  "+ decoData(auxBytes,TdmCard.NUMBER);
 
             //tipo de tarjeta sector 1 bloque 0 byte 4
             auxBytes = new byte[]{infoByte.get(4)[4]};
@@ -95,7 +95,7 @@ public class TdmCard {
             result="";
             int[] pos =new int[]{44,45,46,48,49,50,52,53,54,56,57};
             for (int i=0;i<pos.length;i++){
-                result = result + "\n("+(i+1)+"º) ******Movimiento******:";
+                result = result + "\n"+(i+1)+"º  ******Movimiento******:";
 
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
                 result = result + "\n\t- Títulos: " + decoData(auxBytes,TdmCard.TITTLE);
@@ -400,23 +400,23 @@ public class TdmCard {
         "Universidades",
         "Universidades",
         "Universidades",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
-        "Universidades UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
+        "Uni. UCAM-Los Jerónimos",
         "Estadio Nueva Condomina",
         "Estadio Nueva Condomina",
         "Estadio Nueva Condomina",

@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity
 
         //init varibale
         console = "Dispositivo Listo para lectura.";
-        isDeviceAbleToRunSmartcardReader=true;
+        isDeviceAbleToRunSmartcardReader=false;
 
         // adding methods
         if (mNfcAdapter != null) {
@@ -100,10 +100,10 @@ public class MainActivity extends AppCompatActivity
             // obtain smartcard reader instance
             mSmartcardReader = SmartcardReader.getInstance();
             // open smartcard reader.
-            mSmartcardReader.openReader();
+            isDeviceAbleToRunSmartcardReader = mSmartcardReader.openReader();
             // power on smartcard reader
 
-            if (mSmartcardReader.isCardPresent()) {
+            if (isDeviceAbleToRunSmartcardReader) {
                 console = console + "\nSAM presente.";
                 byte[] atr = mSmartcardReader.powerOn();
                 //console = console + "\n\tATR = " + bytesToHexString(atr);
@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity
             //byte[] val = new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
             // sendApdu(val,isDeviceAbleToRunSmartcardReader);
         }catch (Exception e){
-            isDeviceAbleToRunSmartcardReader=false;
             //Log.v(LOG_TAG,"NO famoco librery running");
             console = console + "\nNO famoco librery running";
         }
@@ -145,7 +144,6 @@ public class MainActivity extends AppCompatActivity
 
         //Display result
         //text.setText(console);
-
 
         navigationView.getMenu().getItem(0).setChecked(true);
         fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
@@ -200,16 +198,22 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private boolean sendApdu(byte[] apdu,boolean exe) {
-        if (exe) {
-            // send APDU
-            //Log.v(LOG_TAG,"APDU => " + bytesToHexString(apdu));
-            //console = console + "\nAPDU => " + bytesToHexString(apdu);
-            key_SAM = mSmartcardReader.sendApdu(apdu);
-            //Log.v(LOG_TAG,"APDU <= " + bytesToHexString(key_SAM));
-            //console = console + "\nAPDU <= " + bytesToHexString(key_SAM);
-        }
-        return true;
+    //TODO: Implemetar método
+    private byte[] getKeysFromSAM(){
+        byte[] key;
+        byte[] apdu = new byte[]{
+                (byte) 0x1F,
+                (byte) 0x71,
+                (byte) 0x12,
+                (byte) 0x24,
+                (byte) 0x84,
+                (byte) 0xC1
+        };
+        // send APDU
+        Log.v(LOG_TAG,"APDU => " + tdmCard.bytesToHexString(apdu));
+        key = mSmartcardReader.sendApdu(apdu);
+        Log.v(LOG_TAG,"APDU <= " + tdmCard.bytesToHexString(key));
+        return key;
     }
 
     @Override
@@ -271,7 +275,11 @@ public class MainActivity extends AppCompatActivity
                     //console = console +"\n\tSector_"+String.format("%d",j)+":";
                     //Log.v(LOG_TAG,"Sector_"+String.format("%d",j+1));
                     // 6.1) authenticate the sector
-                    auth = mfc.authenticateSectorWithKeyA(j, KEYS_A_B[0]);
+                    key_SAM = KEYS_A_B[0];
+                    auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
+                    if (!auth) {
+                        key_SAM = getKeysFromSAM();
+                    }
                     if (auth) {
                         // 6.2) In each sector - get the block count
                         bCount = mfc.getBlockCountInSector(j);
