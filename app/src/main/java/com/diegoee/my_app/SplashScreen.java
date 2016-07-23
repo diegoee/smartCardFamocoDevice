@@ -57,7 +57,6 @@ public class SplashScreen extends Activity {
     protected void onStart() {
         super.onStart();
 
-
     }
 
 }

@@ -7,6 +7,8 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.famoco.secommunication.SmartcardReader;
@@ -79,6 +82,19 @@ public class MainActivity extends AppCompatActivity
                 new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED),
                 new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
         };
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, getText(R.string.float_button_snackbar).toString(), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                tdmCard.eraseInfo();
+                onStop();
+                onStart();
+            }
+        });
+
     }
 
     @Override
@@ -102,7 +118,6 @@ public class MainActivity extends AppCompatActivity
             // open smartcard reader.
             isDeviceAbleToRunSmartcardReader = mSmartcardReader.openReader();
             // power on smartcard reader
-
             if (isDeviceAbleToRunSmartcardReader) {
                 console = console + "\nSAM presente.";
                 byte[] atr = mSmartcardReader.powerOn();
@@ -111,39 +126,12 @@ public class MainActivity extends AppCompatActivity
             } else {
                 console = console + "\nSAM NO presente";
             }
-
-            //console = console + "\n\nExample:";
-            //byte[] val = new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
             // sendApdu(val,isDeviceAbleToRunSmartcardReader);
         }catch (Exception e){
-            //Log.v(LOG_TAG,"NO famoco librery running");
             console = console + "\nNO famoco librery running";
         }
 
-        //Bono BIColor   ->ID = , (byte)0xBC, (byte)0xB1, (byte)0x34, (byte)0x1B
-        //key A + ACs + Key B ->1F71122484C1+11223344+3BE53310682A
-        //Bono MONOColor ->ID = , (byte)0x62, (byte)0xED, (byte)0x4A, (byte)0x92
-
-        //Log.v(LOG_TAG,"1:");
-        //val = new byte[]{(byte)0x00, (byte)0xA4, (byte)0x04, (byte)0x00, (byte)0x00};
-        //sendApdu(val);
-
-        //Log.v(LOG_TAG,"2:");
-        //val = new byte[]{(byte)0x00, (byte)0xA4, (byte)0x04, (byte)0x00, (byte)0x08
-        //        , (byte)0xF0,(byte)0x00, (byte)0x00 , (byte)0x00, (byte)0x00, (byte)0x46, (byte)0x52, (byte)0x4D
-        //        , (byte)0x00};
-        //sendApdu(val);
-
-
-        //Respond:
-        //6A82 - file not found
-        //6A86 - Incorrect P1or P2 parameter
-        //6D00 - Command (instruction) not supported
-        //6700 - Length incorrect.
-        //6E00 - Class not supported.
-
-        //Display result
-        //text.setText(console);
+        this.getKeysFromSAM();
 
         navigationView.getMenu().getItem(0).setChecked(true);
         fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
@@ -179,11 +167,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_detail_ctrl) {
             fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_CTRL);
             fragmentTransaction = true;
-        } else if (id == R.id.nav_setting) {
-            Toast.makeText(getApplicationContext(),"Datos Borrados", Toast.LENGTH_SHORT).show();
-            tdmCard.eraseInfo();
-            onStop();
-            onStart();
         } else if (id == R.id.nav_contact) {
             fragment = new MainFragment(console,tdmCard,MainFragment.CONTACT);
             fragmentTransaction = true;
@@ -204,8 +187,9 @@ public class MainActivity extends AppCompatActivity
         byte[] key;
         byte[] apdu = new byte[16];
 
+        console=console+"\n";
 
-        apdu[0]  = (byte) 0x0D; // Longitud de los datos de despues
+        apdu[0]  = (byte) 0x0D; //Longitud de los datos de despues
         apdu[1]  = (byte) 0x00; //APDU - cla
         apdu[2]  = (byte) 0xA4; //APDU - ins
         apdu[3]  = (byte) 0x04; //APDU - P1
@@ -220,9 +204,9 @@ public class MainActivity extends AppCompatActivity
         apdu[12] = (byte) 0x59; //APDU - datos: id de la aplicacion a seleccionar
         apdu[13] = (byte) 0x4D; //APDU - datos: id de la aplicacion a seleccionar
 
-        Log.v(LOG_TAG,"APDU => " + tdmCard.bytesToHexString(apdu));
+        console=console+"\nAPDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
-        Log.v(LOG_TAG,"APDU <= " + tdmCard.bytesToHexString(key));
+        console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 
 
         apdu = new byte[16];
@@ -233,9 +217,9 @@ public class MainActivity extends AppCompatActivity
         apdu[4]  = (byte) 0x00; //APDU - P2
         apdu[5]  = (byte) 0x14; //APDU - LE : longitud de datos a obtener
 
-        Log.v(LOG_TAG,"APDU => " + tdmCard.bytesToHexString(apdu));
+        console=console+"\nAPDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
-        Log.v(LOG_TAG,"APDU <= " + tdmCard.bytesToHexString(key));
+        console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 
 
         apdu = new byte[16];
@@ -259,11 +243,14 @@ public class MainActivity extends AppCompatActivity
         apdu[10] = (byte)0x00; //APDU - le, datos de respuesta
 
         // send APDU
-        Log.v(LOG_TAG,"APDU => " + tdmCard.bytesToHexString(apdu));
+        console=console+"\nAPDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
-        Log.v(LOG_TAG,"APDU <= " + tdmCard.bytesToHexString(key));
+        console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 
         key=KEYS_A_B[0];
+
+        Log.v(LOG_TAG,console);
+
         return key;
     }
 

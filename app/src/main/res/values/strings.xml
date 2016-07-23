@@ -14,4 +14,6 @@
     <string name="menu_ctrl">Datos de Control</string>
     <string name="menu_cont">Contacto</string>
 
+    <string name="float_button_snackbar">Pulsado botón de Reset</string>
+
 </resources>
