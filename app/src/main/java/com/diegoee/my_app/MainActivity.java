@@ -120,7 +120,8 @@ public class MainActivity extends AppCompatActivity
             // power on smartcard reader
             if (isDeviceAbleToRunSmartcardReader) {
                 console = console + "\nSAM presente.";
-                byte[] atr = mSmartcardReader.powerOn();
+                byte[] atr = mSmartcardReader.powerOn();                this.getKeysFromSAM();
+
                 //console = console + "\nATR = " + tdmCard.bytesToHexString(atr);
                 //Log.v(LOG_TAG, "ATR = " + bytesToHexString(atr));
             } else {
@@ -131,7 +132,6 @@ public class MainActivity extends AppCompatActivity
             console = console + "\nNO famoco librery running";
         }
 
-        this.getKeysFromSAM();
 
         navigationView.getMenu().getItem(0).setChecked(true);
         fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
