@@ -51,7 +51,6 @@ public class TdmCard {
 
         byte[] auxBytes;
         int startTittle = 0;
-        int firstMov = 0;
         String result = "Esperando lectura...";
         String aux = "";
 
@@ -65,7 +64,6 @@ public class TdmCard {
             }
             if (Arrays.equals(infoByte.get(8), infoByte.get(10))) {
                 startTittle = 8;
-                firstMov = 1;
             }
 
             auxBytes = new byte[]{infoByte.get(startTittle)[3]};
@@ -84,37 +82,31 @@ public class TdmCard {
                 startTittle = 36;
             }
 
-            result= "Últimos Datos Guardados:\n";
+            result= "Titul Actual";
             for (int i=0;i<2;i++){
+                result = result + "\n"+(i+1)+"º Dato Guardado:\n";
                 // FIJOS
                 auxBytes = new byte[]{
-                        infoByte.get(startTittle+firstMov)[0],
-                        infoByte.get(startTittle+firstMov)[1],
-                        infoByte.get(startTittle+firstMov)[2],
-                        infoByte.get(startTittle+firstMov)[3]
+                        infoByte.get(startTittle+i)[0],
+                        infoByte.get(startTittle+i)[1],
+                        infoByte.get(startTittle+i)[2],
+                        infoByte.get(startTittle+i)[3]
                 };
                 result = result + "Saldo:\n\t"+ decoData(auxBytes,TdmCard.CAST);
 
-                auxBytes = new byte[]{infoByte.get(startTittle+firstMov+2)[2]};
+                auxBytes = new byte[]{infoByte.get(startTittle+i+2)[2]};
                 result = result + "\nTipo Título:\n\t"+ decoData(auxBytes,TdmCard.TYPE_OF_TITTLE);
 
                 //CONSUMO
-                auxBytes = new byte[]{infoByte.get(startTittle+firstMov+5)[0],infoByte.get(startTittle+firstMov+5)[1], infoByte.get(startTittle+firstMov+5)[2]};
+                auxBytes = new byte[]{infoByte.get(startTittle+i+5)[0],infoByte.get(startTittle+i+5)[1], infoByte.get(startTittle+i+5)[2]};
                 result = result + "\nFecha/hora Inicio Viaje:\n\t" + decoData(auxBytes,TdmCard.DATE_MOV);
 
-                auxBytes = new byte[]{infoByte.get(startTittle+firstMov+5)[3]};
+                auxBytes = new byte[]{infoByte.get(startTittle+i+5)[3]};
                 result = result + "\nÚltima Linea:" + decoData(auxBytes,TdmCard.STATION);
 
-                if (i==0) {
-                    if (firstMov == 1) {
-                        firstMov = 0;
-                    } else {
-                        firstMov = 1;
-                    }
-                    result = result + "\n\nPenúltimos Datos Guardados:\n";
-                }
+                result = result + "\n";
             }
-            result = result + "\n\n\n";
+            result = result + "\n";
 
         }
         return result;
