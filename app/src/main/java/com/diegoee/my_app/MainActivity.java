@@ -119,11 +119,10 @@ public class MainActivity extends AppCompatActivity
             isDeviceAbleToRunSmartcardReader = mSmartcardReader.openReader();
             // power on smartcard reader
             if (isDeviceAbleToRunSmartcardReader) {
-                console = console + "\nSAM presente.";
-                byte[] atr = mSmartcardReader.powerOn();                this.getKeysFromSAM();
+                console = console + "\nOpen SAM";
+                byte[] atr = mSmartcardReader.powerOn();
+                this.getKeysFromSAM();
 
-                //console = console + "\nATR = " + tdmCard.bytesToHexString(atr);
-                //Log.v(LOG_TAG, "ATR = " + bytesToHexString(atr));
             } else {
                 console = console + "\nSAM NO presente";
             }
@@ -187,8 +186,6 @@ public class MainActivity extends AppCompatActivity
         byte[] key;
         byte[] apdu = new byte[16];
 
-        console=console+"\n";
-
         apdu[0]  = (byte) 0x0D; //Longitud de los datos de despues
         apdu[1]  = (byte) 0x00; //APDU - cla
         apdu[2]  = (byte) 0xA4; //APDU - ins
@@ -204,7 +201,7 @@ public class MainActivity extends AppCompatActivity
         apdu[12] = (byte) 0x59; //APDU - datos: id de la aplicacion a seleccionar
         apdu[13] = (byte) 0x4D; //APDU - datos: id de la aplicacion a seleccionar
 
-        console=console+"\nAPDU => " + tdmCard.bytesToHexString(apdu);
+        console=console+"\nSAM_SelectSAMApp APDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
         console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 
@@ -217,7 +214,7 @@ public class MainActivity extends AppCompatActivity
         apdu[4]  = (byte) 0x00; //APDU - P2
         apdu[5]  = (byte) 0x14; //APDU - LE : longitud de datos a obtener
 
-        console=console+"\nAPDU => " + tdmCard.bytesToHexString(apdu);
+        console=console+"\nSAM_Autenticate APDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
         console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 
@@ -243,7 +240,7 @@ public class MainActivity extends AppCompatActivity
         apdu[10] = (byte)0x00; //APDU - le, datos de respuesta
 
         // send APDU
-        console=console+"\nAPDU => " + tdmCard.bytesToHexString(apdu);
+        console=console+"\nSAM_GetMIF1KKeys APDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
         console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 

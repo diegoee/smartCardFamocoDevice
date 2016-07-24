@@ -1,7 +1,6 @@
 package com.diegoee.my_app;
 
 import android.util.Log;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,12 +48,129 @@ public class TdmCard {
     }
 
     public String getMainData(){
-        String result = "";
+
+        byte[] auxBytes;
+        int startTittle = 0;
+        int firstMov = 0;
+        String result = "Esperando lectura...";
+        String aux = "";
+
+        if (infoByte.size()==64) {
+
+            if (Arrays.equals(infoByte.get(8), infoByte.get(9))) {
+                startTittle = 8;
+            }
+            if (Arrays.equals(infoByte.get(9), infoByte.get(10))) {
+                startTittle = 9;
+            }
+            if (Arrays.equals(infoByte.get(8), infoByte.get(10))) {
+                startTittle = 8;
+                firstMov = 1;
+            }
+
+            auxBytes = new byte[]{infoByte.get(startTittle)[3]};
+            aux = decoData(auxBytes, TdmCard.LAST_TITTLE);
+
+            if (aux.equals("0")) {
+                startTittle = 12;
+            }
+            if (aux.equals("1")) {
+                startTittle = 20;
+            }
+            if (aux.equals("2")) {
+                startTittle = 28;
+            }
+            if (aux.equals("3")) {
+                startTittle = 36;
+            }
+
+            result= "Últimos Datos Guardados:\n";
+            for (int i=0;i<2;i++){
+                // FIJOS
+                auxBytes = new byte[]{
+                        infoByte.get(startTittle+firstMov)[0],
+                        infoByte.get(startTittle+firstMov)[1],
+                        infoByte.get(startTittle+firstMov)[2],
+                        infoByte.get(startTittle+firstMov)[3]
+                };
+                result = result + "Saldo:\n\t"+ decoData(auxBytes,TdmCard.CAST);
+
+                auxBytes = new byte[]{infoByte.get(startTittle+firstMov+2)[2]};
+                result = result + "\nTipo Título:\n\t"+ decoData(auxBytes,TdmCard.TYPE_OF_TITTLE);
+
+                //CONSUMO
+                auxBytes = new byte[]{infoByte.get(startTittle+firstMov+5)[0],infoByte.get(startTittle+firstMov+5)[1], infoByte.get(startTittle+firstMov+5)[2]};
+                result = result + "\nFecha/hora Inicio Viaje:\n\t" + decoData(auxBytes,TdmCard.DATE_MOV);
+
+                auxBytes = new byte[]{infoByte.get(startTittle+firstMov+5)[3]};
+                result = result + "\nÚltima Linea:" + decoData(auxBytes,TdmCard.STATION);
+
+                if (i==0) {
+                    if (firstMov == 1) {
+                        firstMov = 0;
+                    } else {
+                        firstMov = 1;
+                    }
+                    result = result + "\n\nPenúltimos Datos Guardados:\n";
+                }
+            }
+            result = result + "\n\n\n";
+
+        }
         return result;
     }
 
     public String getCtrlData(){
-        String result = "En desarrollo...";
+
+        byte[] auxBytes;
+        int selSector = 0;
+        String result = "Esperando lectura...";
+
+        if(Arrays.equals(infoByte.get(8),infoByte.get(9))){
+            selSector=8;
+        }
+        if(Arrays.equals(infoByte.get(9),infoByte.get(10))){
+            selSector=9;
+        }
+        if(Arrays.equals(infoByte.get(8),infoByte.get(10))){
+            selSector=8;
+        }
+
+        if (infoByte.size()==64) {
+            auxBytes = new byte[]{infoByte.get(selSector)[0], infoByte.get(selSector)[1]};
+            result = "Número de Transacción:\n\t"+ decoData(auxBytes,TdmCard.NUMBER);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[2]};
+            result = result + "\nMovimiento Actual:\n\t"+ decoData(auxBytes,TdmCard.FIRST_4BYTES);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[3]};
+            result = result + "\nTitulo Activo:\n\t" + decoData(auxBytes,TdmCard.TITTLE);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[3]};
+            result = result + "\nÚltimo Título en Uso:\n\t" + decoData(auxBytes,TdmCard.LAST_TITTLE);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[3]};
+            result = result + "\nRegitro de fin de transacción:\n\t" + decoData(auxBytes,TdmCard.TRANS_END);;
+
+            auxBytes = new byte[]{infoByte.get(selSector)[3]};
+            result = result + "\nCopia en historia:\n\t" + decoData(auxBytes,TdmCard.HIS_COPY);;
+
+            auxBytes = new byte[]{infoByte.get(selSector)[4]};
+            result = result + "\nPrioridades:\n\t(Hex.)" + bytesToHexString(auxBytes)+"  -  "+ decoData(auxBytes,TdmCard.NUMBER);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[5]};
+            result = result + "\nOrden de Uso:\n\t" + decoData(auxBytes,TdmCard.NUMBER);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[7]};
+            result = result + "\nTítulo Propio:\n\t" + decoData(auxBytes,TdmCard.SECOND_4BYTES);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[8],infoByte.get(selSector)[9]};
+            result = result + "\nIdentificador de última recarga:\n\t" + decoData(auxBytes,TdmCard.NUMBER);
+
+            auxBytes = new byte[]{infoByte.get(selSector)[10],infoByte.get(selSector)[11]};
+            result = result + "\nFecha Anulación/Recuperación:\n\t" + decoData(auxBytes,TdmCard.DATE);
+        }
+
         return result;
     }
 
@@ -107,7 +223,7 @@ public class TdmCard {
                 result = result + "\n\t- Fecha/hora: "+ decoData(auxBytes,TdmCard.DATE_MOV);
 
                 auxBytes = new byte[]{infoByte.get(44)[8], infoByte.get(pos[i])[9]};
-                result = result + "\n\t- Parada: "+decoData(auxBytes,TdmCard.STATION);
+                result = result + "\n\t- Linea: "+decoData(auxBytes,TdmCard.STATION);
 
                 //auxBytes = new byte[]{infoByte.get(pos[i])[4], infoByte.get(pos[i])[5]};
                 //result = result + "\n\t- Nº Viajeros: "+ decoData(auxBytes,TdmCard.NUMBER);
@@ -128,10 +244,82 @@ public class TdmCard {
     private static final int OWNER=7;
     private static final int NUMBER=8;
     private static final int DATE_MOV=9;
+    private static final int FIRST_4BYTES=10;
+    private static final int SECOND_4BYTES=11;
+    private static final int LAST_TITTLE=12;
+    private static final int HIS_COPY=13;
+    private static final int TRANS_END=14;
+    private static final int TYPE_OF_TITTLE=15;
 
     public static String decoData(byte[] bArray, int type) {
         String val = "";
         int auxInt;
+
+        if (type==TdmCard.TYPE_OF_TITTLE) {
+            val = bytesToHexString(bArray).substring(0,1);
+            if (val.equals("1")) {
+                val = "Viajes";
+            }else if (val.equals("2")) {
+                val = "Tiempo";
+            }else if (val.equals("3")) {
+                val = "Monedero";
+            }else{
+                val = "(Hex.) "+val;
+            }
+        }
+
+        if ((type==TdmCard.FIRST_4BYTES)||(type==TdmCard.SECOND_4BYTES)){
+            val = bytesToHexString(bArray).substring(0,1);
+            if (type==TdmCard.SECOND_4BYTES) {
+                val = bytesToHexString(bArray).substring(1,2);
+            }
+            if (val.equals("A")) { val = "10";  }
+            if (val.equals("B")) { val = "11";  }
+            if (val.equals("C")) { val = "12";  }
+            if (val.equals("D")) { val = "13";  }
+            if (val.equals("E")) { val = "14";  }
+            if (val.equals("F")) { val = "15";  }
+        }
+
+        if ((type==TdmCard.HIS_COPY)||(type==TdmCard.TRANS_END)){
+            val = bytesToHexString(bArray).substring(1,2);
+            if (type==TdmCard.HIS_COPY) {
+                if (val.equals("0")) { val = "NO"; }
+                if (val.equals("1")) { val = "SI"; }
+                if (val.equals("2")) { val = "NO"; }
+                if (val.equals("3")) { val = "SI"; }
+                if (val.equals("4")) { val = "NO"; }
+                if (val.equals("5")) { val = "SI"; }
+                if (val.equals("6")) { val = "NO"; }
+                if (val.equals("7")) { val = "SI"; }
+                if (val.equals("8")) { val = "NO"; }
+                if (val.equals("9")) { val = "SI"; }
+                if (val.equals("A")) { val = "NO"; }
+                if (val.equals("B")) { val = "SI"; }
+                if (val.equals("C")) { val = "NO"; }
+                if (val.equals("D")) { val = "SI"; }
+                if (val.equals("E")) { val = "NO"; }
+                if (val.equals("F")) { val = "SI"; }
+            }
+            if (type==TdmCard.TRANS_END) {
+                if (val.equals("0")) { val = "0"; }
+                if (val.equals("1")) { val = "0"; }
+                if (val.equals("2")) { val = "1"; }
+                if (val.equals("3")) { val = "1"; }
+                if (val.equals("4")) { val = "0"; }
+                if (val.equals("5")) { val = "0"; }
+                if (val.equals("6")) { val = "1"; }
+                if (val.equals("7")) { val = "1"; }
+                if (val.equals("8")) { val = "0"; }
+                if (val.equals("9")) { val = "0"; }
+                if (val.equals("A")) { val = "1"; }
+                if (val.equals("B")) { val = "1"; }
+                if (val.equals("C")) { val = "0"; }
+                if (val.equals("D")) { val = "0"; }
+                if (val.equals("E")) { val = "1"; }
+                if (val.equals("F")) { val = "1"; }
+            }
+        }
 
         if (type==TdmCard.OPERATION){
             val=bytesToHexString(bArray).substring(1,2);
@@ -155,8 +343,30 @@ public class TdmCard {
             }
         }
 
+
+        if (type==TdmCard.LAST_TITTLE) {
+            val = bytesToHexString(bArray).substring(0,1);
+            if (val.equals("0")) { val = "0"; }
+            if (val.equals("1")) { val = "0"; }
+            if (val.equals("2")) { val = "0"; }
+            if (val.equals("3")) { val = "0"; }
+            if (val.equals("4")) { val = "1"; }
+            if (val.equals("5")) { val = "1"; }
+            if (val.equals("6")) { val = "1"; }
+            if (val.equals("7")) { val = "1"; }
+            if (val.equals("8")) { val = "2"; }
+            if (val.equals("9")) { val = "2"; }
+            if (val.equals("A")) { val = "2"; }
+            if (val.equals("B")) { val = "2"; }
+            if (val.equals("C")) { val = "3"; }
+            if (val.equals("D")) { val = "3"; }
+            if (val.equals("E")) { val = "3"; }
+            if (val.equals("F")) { val = "3"; }
+        }
+
+
         if (type==TdmCard.TITTLE){
-            val=bytesToHexString(bArray).substring(0,1);
+            val = bytesToHexString(bArray).substring(0,1);
             if (val.equals("0")) { val = "(binario) 0000";  }
             if (val.equals("1")) { val = "(binario) 0001";  }
             if (val.equals("2")) { val = "(binario) 0010";  }
