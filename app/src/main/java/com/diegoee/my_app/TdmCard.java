@@ -82,7 +82,7 @@ public class TdmCard {
                 startTittle = 36;
             }
 
-            result= "Titul Actual";
+            result= "Titulo Actual \n\t"+aux+"\n";
             for (int i=0;i<2;i++){
                 result = result + "\n"+(i+1)+"º Dato Guardado:\n";
                 // FIJOS
@@ -101,8 +101,8 @@ public class TdmCard {
                 auxBytes = new byte[]{infoByte.get(startTittle+i+5)[0],infoByte.get(startTittle+i+5)[1], infoByte.get(startTittle+i+5)[2]};
                 result = result + "\nFecha/hora Inicio Viaje:\n\t" + decoData(auxBytes,TdmCard.DATE_MOV);
 
-                auxBytes = new byte[]{infoByte.get(startTittle+i+5)[3]};
-                result = result + "\nÚltima Linea:" + decoData(auxBytes,TdmCard.STATION);
+                auxBytes = new byte[]{infoByte.get(startTittle+i+5)[4], infoByte.get(startTittle+i+5)[5]};
+                result = result + "\nÚltima Linea:\n\t" + decoData(auxBytes,TdmCard.NUMBER);
 
                 result = result + "\n";
             }
@@ -117,18 +117,17 @@ public class TdmCard {
         byte[] auxBytes;
         int selSector = 0;
         String result = "Esperando lectura...";
-
-        if(Arrays.equals(infoByte.get(8),infoByte.get(9))){
-            selSector=8;
-        }
-        if(Arrays.equals(infoByte.get(9),infoByte.get(10))){
-            selSector=9;
-        }
-        if(Arrays.equals(infoByte.get(8),infoByte.get(10))){
-            selSector=8;
-        }
-
         if (infoByte.size()==64) {
+            if(Arrays.equals(infoByte.get(8),infoByte.get(9))){
+                selSector=8;
+            }
+            if(Arrays.equals(infoByte.get(9),infoByte.get(10))){
+                selSector=9;
+            }
+            if(Arrays.equals(infoByte.get(8),infoByte.get(10))){
+                selSector=8;
+            }
+
             auxBytes = new byte[]{infoByte.get(selSector)[0], infoByte.get(selSector)[1]};
             result = "Número de Transacción:\n\t"+ decoData(auxBytes,TdmCard.NUMBER);
 
@@ -394,7 +393,10 @@ public class TdmCard {
         }
 
         if (type==TdmCard.STATION){
+            //Log.v(MainActivity.LOG_TAG,"STATION0: " + bytesToHexString(bArray));
+            //Log.v(MainActivity.LOG_TAG,"STATION1: " + hex2decimal(bytesToHexString(bArray)));
             auxInt = ID_STATION.lastIndexOf(hex2decimal(bytesToHexString(bArray)));
+            //Log.v(MainActivity.LOG_TAG,"STATION2: " + auxInt);
             if (auxInt==-1) {
                 val="\n\t\tNo existe Id de parada";
             }else{
