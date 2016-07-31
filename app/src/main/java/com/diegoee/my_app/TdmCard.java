@@ -83,37 +83,45 @@ public class TdmCard {
                 startTittle = 36;
             }
 
-            auxBytes = new byte[]{infoByte.get(0)[0], infoByte.get(0)[1], infoByte.get(0)[2], infoByte.get(0)[3]};
-            result = decoData(auxBytes, TdmCard.CARD_NUMBER);
+            result= "Titulo Actual: \t"+aux + "\n";
+            for (int ii=0;ii<4;ii++){
+                if (ii==0) {
+                    startTittle = 12;
+                }
+                if (ii==1) {
+                    startTittle = 20;
+                }
+                if (ii==2) {
+                    startTittle = 28;
+                }
+                if (ii==3) {
+                    startTittle = 36;
+                }
+                result = result + "\nTítulo n=" + (ii + 1)+"\n";
+                for (int i=0;i<2;i++) {
+                    result = result + "\t" + (i + 1) + "º Dato Guardado.";
+                    // FIJOS
+                    auxBytes = new byte[]{
+                            infoByte.get(startTittle + i)[0],
+                            infoByte.get(startTittle + i)[1],
+                            infoByte.get(startTittle + i)[2],
+                            infoByte.get(startTittle + i)[3]
+                    };
+                    //result = result + "\n\t\tSaldo:" + decoData(auxBytes, TdmCard.MAIN_CAST);
 
-            /*
-            result= "Titulo Actual \n\t"+aux+"\n";
-            for (int i=0;i<2;i++) {
-                result = result + "\n" + (i + 1) + "º Dato Guardado:\n";
-                // FIJOS
-                auxBytes = new byte[]{
-                        infoByte.get(startTittle + i)[0],
-                        infoByte.get(startTittle + i)[1],
-                        infoByte.get(startTittle + i)[2],
-                        infoByte.get(startTittle + i)[3]
-                };
-                result = result + "Saldo:\n\t" + decoData(auxBytes, TdmCard.MOV_TITTLE);
+                    auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[2]};
+                    result = result + "\n\t\tCódigo Título:" + decoData(auxBytes, TdmCard.MAIN_CODE_TITTLE);
 
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[2]};
-                result = result + "\nTipo Título:\n\t" + decoData(auxBytes, TdmCard.MOV_TITTLE);
+                    //CONSUMO
+                    auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
+                    //result = result + "\n\t\tFecha/hora Inicio Viaje:" + decoData(auxBytes, TdmCard.MAIN_DATE_EXPIRED);
 
-                //CONSUMO
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-                result = result + "\nFecha/hora Inicio Viaje:\n\t" + decoData(auxBytes, TdmCard.MOV_TITTLE);
+                    auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[4], infoByte.get(startTittle + i + 5)[5]};
+                    //result = result + "\n\t\tÚltima Linea:" + decoData(auxBytes, TdmCard.MAIN_LASTLINE);
 
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[4], infoByte.get(startTittle + i + 5)[5]};
-                result = result + "\nÚltima Linea:\n\t" + decoData(auxBytes, TdmCard.MOV_TITTLE);
-
-                result = result + "\n";
+                    result = result + "\n";
+                }
             }
-            result = result + "\n";
-            */
-
         }
         return result;
     }
