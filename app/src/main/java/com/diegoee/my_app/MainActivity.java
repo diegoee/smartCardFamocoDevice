@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity
 
         byte[] key;
         byte[] apdu = new byte[16];
-
+/*
         apdu[0]  = (byte) 0x0D; //Longitud de los datos de despues
         apdu[1]  = (byte) 0x00; //APDU - cla
         apdu[2]  = (byte) 0xA4; //APDU - ins
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity
         console=console+"\nSAM_GetMIF1KKeys APDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
         console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
-
+*/
         key=KEYS_A_B[0];
 
         Log.v(LOG_TAG,console);
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity
             console = console + resolveIntent(intent);
         }
 
-        console = console + "\n"+tdmCard.getInfo();
+        console = console + "\n"+tdmCard.getInfoHexByte();
 
         navigationView.getMenu().getItem(0).setChecked(true);
         Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
