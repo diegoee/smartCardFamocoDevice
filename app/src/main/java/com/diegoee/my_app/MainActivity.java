@@ -106,9 +106,7 @@ public class MainActivity extends AppCompatActivity
         isDeviceAbleToRunSmartcardReader=false;
 
         // adding methods
-        if (mNfcAdapter != null) {
-            console = console +"\nNFC disponible en el dispositivo.";
-        } else {
+        if (mNfcAdapter == null) {
             console = console +"\nNFC NO disponible en el dispositivo.";
         }
 
@@ -119,8 +117,9 @@ public class MainActivity extends AppCompatActivity
             isDeviceAbleToRunSmartcardReader = mSmartcardReader.openReader();
             // power on smartcard reader
             if (isDeviceAbleToRunSmartcardReader) {
-                console = console + "\nOpen SAM";
+                //console = console + "\nOpen SAM";
                 byte[] atr = mSmartcardReader.powerOn();
+                //console=console+"\nATR: " + tdmCard.bytesToHexString(atr);
                 this.getKeysFromSAM();
 
             } else {
@@ -184,66 +183,82 @@ public class MainActivity extends AppCompatActivity
     private byte[] getKeysFromSAM(){
 
         byte[] key;
-        byte[] apdu = new byte[16];
-/*
-        apdu[0]  = (byte) 0x0D; //Longitud de los datos de despues
-        apdu[1]  = (byte) 0x00; //APDU - cla
-        apdu[2]  = (byte) 0xA4; //APDU - ins
-        apdu[3]  = (byte) 0x04; //APDU - P1
-        apdu[4]  = (byte) 0x00; //APDU - P2
-        apdu[5]  = (byte) 0x08; //APDU - LC: tamaño de los datos
-        apdu[6]  = (byte) 0xF0; //APDU - datos: id de la aplicacion a seleccionar
-        apdu[7]  = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
-        apdu[8]  = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
-        apdu[9]  = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
-        apdu[10] = (byte) 0x00; //APDU - datos: id de la aplicacion a seleccionar
-        apdu[11] = (byte) 0x41; //APDU - datos: id de la aplicacion a seleccionar
-        apdu[12] = (byte) 0x59; //APDU - datos: id de la aplicacion a seleccionar
-        apdu[13] = (byte) 0x4D; //APDU - datos: id de la aplicacion a seleccionar
+        byte[] apdu;
 
-        console=console+"\nSAM_SelectSAMApp APDU => " + tdmCard.bytesToHexString(apdu);
+        apdu = new byte[]{
+                (byte) 0x00,
+                (byte) 0xA4,
+                (byte) 0x04,
+                (byte) 0x00,
+                (byte) 0x08,
+                (byte) 0xF0,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x41,
+                (byte) 0x59,
+                (byte) 0x4D,
+                (byte) 0x0D
+        };
+
+        console=console+"\n(SAM_SelectSAMApp)\nAPDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
         console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 
 
-        apdu = new byte[16];
-        apdu[0]  = (byte) 0x05; //Longitud de los datos de despues!!!!!!!
-        apdu[1]  = (byte) 0x90; //APDU - cla
-        apdu[2]  = (byte) 0x10; //APDU - ins
-        apdu[3]  = (byte) 0x00; //APDU - P1
-        apdu[4]  = (byte) 0x00; //APDU - P2
-        apdu[5]  = (byte) 0x14; //APDU - LE : longitud de datos a obtener
+        apdu = new byte[]{
+                (byte) 0x90,
+                (byte) 0x10,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x14
 
-        console=console+"\nSAM_Autenticate APDU => " + tdmCard.bytesToHexString(apdu);
+        };
+
+        console=console+"\n(SAM_GetSAMProps)\nAPDU => " + tdmCard.bytesToHexString(apdu);
+        key = mSmartcardReader.sendApdu(apdu);
+        console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
+
+        /*
+        apdu = new byte[]{
+                (byte) 0x90,
+                (byte) 0x48,
+                (byte) 0x01,
+                (byte) 0x00,
+                (byte) 0x04,
+                (byte) 0xBC,
+                (byte) 0xB1,
+                (byte) 0x34,
+                (byte) 0x1B,
+                (byte) 0x00
+        };
+
+        console=console+"\n(SAM_Autenticate)\nAPDU => " + tdmCard.bytesToHexString(apdu);
+        key = mSmartcardReader.sendApdu(apdu);
+        console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
+        */
+
+        console=console+"\n(SAM_Autenticate)\nPending...";
+
+        apdu = new byte[]{
+                (byte) 0x90,
+                (byte) 0x48,
+                (byte) 0x01,
+                (byte) 0x00,
+                (byte) 0x04,
+                (byte) 0xBC,
+                (byte) 0xB1,
+                (byte) 0x34,
+                (byte) 0x1B,
+                (byte) 0x00
+        };
+
+        console=console+"\n(SAM_GetMIF1KKeys)\nAPDU => " + tdmCard.bytesToHexString(apdu);
         key = mSmartcardReader.sendApdu(apdu);
         console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
 
 
-        apdu = new byte[16];
-        byte btVers = (byte) 0x00;
-        byte[] uid =  new byte[4];
-        uid[0] = (byte) 0xBC;
-        uid[1] = (byte) 0xB1;
-        uid[2] = (byte) 0x34;
-        uid[3] = (byte) 0x1B;
-
-        apdu[0]  = (byte) 0x0A; //Longitud de los datos de despues!!!!!!!
-        apdu[1]  = (byte) 0x90; //APDU - cla
-        apdu[2]  = (byte) 0x48; //APDU - ins
-        apdu[3]  = btVers; //APDU - P1 - version de claves a utilizar
-        apdu[4]  = (byte) 0x00; //APDU - P2
-        apdu[5]  = (byte) 0x04; //APDU - LC : longitud de datos que se envian
-        apdu[6]  = uid[0]; //APDU - datos: valor rh
-        apdu[7]  = uid[1]; //APDU - datos: valor rh
-        apdu[8]  = uid[2]; //APDU - datos: valor rh
-        apdu[9]  = uid[3]; //APDU - datos: valor rh
-        apdu[10] = (byte)0x00; //APDU - le, datos de respuesta
-
-        // send APDU
-        console=console+"\nSAM_GetMIF1KKeys APDU => " + tdmCard.bytesToHexString(apdu);
-        key = mSmartcardReader.sendApdu(apdu);
-        console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
-*/
         key=KEYS_A_B[0];
 
         Log.v(LOG_TAG,console);
@@ -256,7 +271,7 @@ public class MainActivity extends AppCompatActivity
         console = "";
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             Bundle bundle;
-            console = console + "Tarjeta descubierta";
+            console = console + "Tarjeta descubierta ->";
             //console = console + intent.toString();
             //console = console + "\n\nEXTRAS:";
             bundle = intent.getExtras();
@@ -264,7 +279,7 @@ public class MainActivity extends AppCompatActivity
                 if (key.equals("android.nfc.extra.ID")) {
                     byte [] val = bundle.getByteArray(key);
                     //console = console + String.format("\n\t-KEY: %s",key);
-                    console = console + String.format("\n\tID-NFC: %s",tdmCard.bytesToHexString(val));
+                    console = console + String.format(" ID-NFC: %s",tdmCard.bytesToHexString(val));
                 }
                 //else{
                 //    Object value = bundle.get(key);
@@ -277,7 +292,7 @@ public class MainActivity extends AppCompatActivity
             console = console + resolveIntent(intent);
         }
 
-        console = console + "\n"+tdmCard.getInfoHexByte();
+        console = console + "\n";//+tdmCard.getInfoHexByte();
 
         navigationView.getMenu().getItem(0).setChecked(true);
         Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
@@ -285,7 +300,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private String resolveIntent(Intent intent) {
-        String console = "\nLeyendo datos...";
+        String console = "";
         tdmCard.eraseInfo();
         // 1) Parse the intent and get the action that triggered this intent
         String action = intent.getAction();
@@ -334,7 +349,7 @@ public class MainActivity extends AppCompatActivity
                             //console = console +"\n"+ bytesToHexString(data);
                         }
                     } else {
-                        console = console +"\n\tError de Autentificación";
+                        console = console +"\nError de Autentificación";
                         return console;
                     }
                 }
@@ -346,7 +361,7 @@ public class MainActivity extends AppCompatActivity
                 return console;
             }
         }// End of method
-        console = console +"\n\tDatos de la tarjeta leidos.";
+        console = console +"\nDatos de la tarjeta leidos.";
         return console;
     }
 

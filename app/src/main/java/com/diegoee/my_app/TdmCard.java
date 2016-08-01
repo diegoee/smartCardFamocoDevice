@@ -83,44 +83,81 @@ public class TdmCard {
                 startTittle = 36;
             }
 
-            result= "Titulo Actual: \t"+aux + "\n";
+            result= "****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+aux ;
+
+            auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
+            result = result + "\nFecha de Caducidad (Datos de Tarjeta):\n\t" + decoData(auxBytes,TdmCard.CARD_DATE);
+
+            int val1,val2;
             for (int ii=0;ii<4;ii++){
-                if (ii==0) {
-                    startTittle = 12;
-                }
-                if (ii==1) {
-                    startTittle = 20;
-                }
-                if (ii==2) {
-                    startTittle = 28;
-                }
-                if (ii==3) {
-                    startTittle = 36;
-                }
-                result = result + "\nTítulo n=" + (ii + 1)+"\n";
-                for (int i=0;i<2;i++) {
-                    result = result + "\t" + (i + 1) + "º Dato Guardado.";
-                    // FIJOS
-                    auxBytes = new byte[]{
-                            infoByte.get(startTittle + i)[0],
-                            infoByte.get(startTittle + i)[1],
-                            infoByte.get(startTittle + i)[2],
-                            infoByte.get(startTittle + i)[3]
-                    };
-                    //result = result + "\n\t\tSaldo:" + decoData(auxBytes, TdmCard.MAIN_CAST);
+                if (ii==0) { startTittle = 12; }
+                if (ii==1) { startTittle = 20; }
+                if (ii==2) { startTittle = 28; }
+                if (ii==3) { startTittle = 36; }
+                result = result + "\nTítulo n=" + (ii + 1);
 
-                    auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[2]};
-                    result = result + "\n\t\tCódigo Título:" + decoData(auxBytes, TdmCard.MAIN_CODE_TITTLE);
+                int i=0;
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
+                val1 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
+                i=1;
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
+                val2 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
 
-                    //CONSUMO
-                    auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-                    //result = result + "\n\t\tFecha/hora Inicio Viaje:" + decoData(auxBytes, TdmCard.MAIN_DATE_EXPIRED);
-
-                    auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[4], infoByte.get(startTittle + i + 5)[5]};
-                    //result = result + "\n\t\tÚltima Linea:" + decoData(auxBytes, TdmCard.MAIN_LASTLINE);
-
-                    result = result + "\n";
+                if (val1>val2){
+                    i=0;
+                }else{
+                    i=1;
                 }
+                // FIJOS
+                result = result + "\n\tFijos: ";
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[0], infoByte.get(startTittle + i + 2)[1]};
+                result = result + "\n\t\tCódigo Título:\n\t\t\t" + decoData(auxBytes, TdmCard.MAIN_CODE_TITTLE);
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[2]};
+                result = result + "\n\t\tTipo:\n" +
+                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_TYPE_TITTLE);
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[5], infoByte.get(startTittle + i + 5)[6], infoByte.get(startTittle + i + 5)[7]};
+                result = result + "\n\t\tFecha inicio caducidad:\n" +
+                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_DATE_EXPIRED);
+
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[8],infoByte.get(startTittle + i + 2)[9]};
+                result = result + "\n\t\tNº periodo Caducidad:\n" +
+                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_N_EXPIRED);
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[8],infoByte.get(startTittle + i + 2)[9]};
+                result = result + "\n\t\tTipo per. de cad.:\n" +
+                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_TYPE_EXPIRED);
+
+                result = result + "\n\tVariable: ";
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
+                result = result + "\n\t\tFecha/hora Inicio Viaje:\n" +
+                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_DATE_TRAVEL);
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[4], infoByte.get(startTittle + i + 5)[5]};
+                result = result + "\n\t\tÚltima Linea:\n" +
+                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_LASTLINE);
+
+                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[10], infoByte.get(startTittle + i + 5)[11]};
+                result = result + "\n\t\tViajeros:\n" +
+                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_TRAVELLER);
+
+
+                result = result + "\n\tSaldo: ";
+                auxBytes = new byte[]{
+                        infoByte.get(startTittle + i)[0],
+                        infoByte.get(startTittle + i)[1],
+                        infoByte.get(startTittle + i)[2],
+                        infoByte.get(startTittle + i)[3]
+                };
+                result = result + "\n\t\tViajes o Monedero:\n" +
+                        "\t\t" + decoData(auxBytes, TdmCard.MAIN_CAST);
+
+
+                result = result + "\n";
             }
         }
         return result;
@@ -305,13 +342,14 @@ public class TdmCard {
     private static final int CTRL_DATE=23;
 
     private static final int MAIN_CODE_TITTLE=24;
-    private static final int MAIN_DATE_EXPIRED=25;
-    private static final int MAIN_N_EXPIRED=26;
-    private static final int MAIN_TYPE_EXPIRED=27;
-    private static final int MAIN_DATE_TRAVEL=28;
-    private static final int MAIN_LASTLINE=29;
-    private static final int MAIN_TRAVELLER=30;
-    private static final int MAIN_CAST=31;
+    private static final int MAIN_TYPE_TITTLE=25;
+    private static final int MAIN_DATE_EXPIRED=26;
+    private static final int MAIN_N_EXPIRED=27;
+    private static final int MAIN_TYPE_EXPIRED=28;
+    private static final int MAIN_DATE_TRAVEL=29;
+    private static final int MAIN_LASTLINE=30;
+    private static final int MAIN_TRAVELLER=31;
+    private static final int MAIN_CAST=32;
 
 
 
@@ -320,12 +358,44 @@ public class TdmCard {
         int auxInt;
 
         // ----------------------------PRINCIPAL
-        /*
+        if (type==TdmCard.MAIN_CODE_TITTLE)
+        {
+            val=String.format("%d",hex2decimal(bytesToHexString(bArray)));
+            if (val.equals("117")){
+                val="UNIBONO GENERAL";
+            }
+            if (val.equals("0")){
+                val="BONO10";
+            }
+        }
+        if (type==TdmCard.MAIN_N_EXPIRED) {
+            val = hex2Binary(bytesToHexString(bArray)).substring(0, 6);
+            val = String.format("%d", Integer.parseInt(val, 2));
+        }
+
+        if (type==TdmCard.MAIN_TYPE_EXPIRED) {
+            val = hex2Binary(bytesToHexString(bArray)).substring(6, 12);
+            val = String.format("%d", Integer.parseInt(val, 2));
+            if (val.equals("2")){
+                val="Día(s)";
+            }
+            if (val.equals("0")){
+                val="Año(s)";
+            }
+        }
+
+        if ((type==TdmCard.MAIN_TRAVELLER)){
+            val = hex2Binary(bytesToHexString(bArray)).substring(4, 10);
+            //Log.v(MainActivity.LOG_TAG,bytesToHexString(bArray));
+            //Log.v(MainActivity.LOG_TAG,hex2Binary(bytesToHexString(bArray)));
+            //Log.v(MainActivity.LOG_TAG,hex2Binary(bytesToHexString(bArray)).substring(4, 10));
+            val = String.format("%d", Integer.parseInt(val, 2));
+        }
 
 
-        if (type==TdmCard.TYPE_OF_TITTLE) {
+        if (type==TdmCard.MAIN_TYPE_TITTLE) {
             val = bytesToHexString(bArray).substring(0,1);
-            if (val.equals("1")) {
+            if (val.equals("1")||val.equals("0")) {
                 val = "Viajes";
             }else if (val.equals("2")) {
                 val = "Tiempo";
@@ -336,27 +406,10 @@ public class TdmCard {
             }
         }
 
-        if (type==TdmCard.LAST_TITTLE) {
-            val = bytesToHexString(bArray).substring(0,1);
-            if (val.equals("0")) { val = "0"; }
-            if (val.equals("1")) { val = "0"; }
-            if (val.equals("2")) { val = "0"; }
-            if (val.equals("3")) { val = "0"; }
-            if (val.equals("4")) { val = "1"; }
-            if (val.equals("5")) { val = "1"; }
-            if (val.equals("6")) { val = "1"; }
-            if (val.equals("7")) { val = "1"; }
-            if (val.equals("8")) { val = "2"; }
-            if (val.equals("9")) { val = "2"; }
-            if (val.equals("A")) { val = "2"; }
-            if (val.equals("B")) { val = "2"; }
-            if (val.equals("C")) { val = "3"; }
-            if (val.equals("D")) { val = "3"; }
-            if (val.equals("E")) { val = "3"; }
-            if (val.equals("F")) { val = "3"; }
+        if ((type==TdmCard.MAIN_CAST)){
+            val = hex2Binary(bytesToHexString(bArray));
+            val = String.format("%d", Integer.parseInt(val, 2));
         }
-        */
-
 
         // ----------------------------HISTORICO DE TARJETA
         if ((type==TdmCard.MOV_TITTLE)||(type==TdmCard.CTRL_TITTLE)||(type==TdmCard.CTRL_MOV)){
@@ -401,7 +454,9 @@ public class TdmCard {
             }
         }
 
-        if ((type==TdmCard.CARD_DATE)||(type==TdmCard.MOV_DATE)||(type==TdmCard.CTRL_DATE)){
+        if ((type==TdmCard.CARD_DATE)||(type==TdmCard.MOV_DATE)
+                ||(type==TdmCard.CTRL_DATE)||(type==TdmCard.MAIN_DATE_EXPIRED)
+                ||(type==TdmCard.MAIN_DATE_TRAVEL)){
             Calendar c1 = GregorianCalendar.getInstance();
             c1.set(2000, Calendar.JANUARY, 1,0,0,0);
             SimpleDateFormat format1;
@@ -421,13 +476,14 @@ public class TdmCard {
             val = String.format("%d",Integer.parseInt(val,2));
         }
 
-        if (type==TdmCard.MOV_LASTLINE) {
+        if ((type==TdmCard.MOV_LASTLINE)||(type==TdmCard.MAIN_LASTLINE)) {
             val = hex2Binary(bytesToHexString(bArray)).substring(0,14);
             val = String.format("%d",Integer.parseInt(val,2));
         }
 
         if (type==TdmCard.MOV_WAY) {
-            val = hex2Binary(bytesToHexString(bArray)).substring(15);
+            val = hex2Binary(bytesToHexString(bArray)).substring(14,16);
+
             val = String.format("%d",Integer.parseInt(val,2));
             if (val.equals("1")) {
                 val = "Ida";

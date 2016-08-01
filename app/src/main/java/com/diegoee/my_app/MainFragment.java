@@ -59,7 +59,7 @@ public class MainFragment extends Fragment {
 
         if (load==MainFragment.MAIN){
             tittle=getText(R.string.menu_main).toString();
-            result= tdmcard.getMainData()+"\n"+console;
+            result= console+"\n"+tdmcard.getMainData();
             //textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         }
         if (load==MainFragment.DETAIL_MOV){
