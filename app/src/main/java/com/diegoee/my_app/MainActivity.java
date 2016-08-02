@@ -434,7 +434,7 @@ public class MainActivity extends AppCompatActivity
             console = console + "\nAPDU <= " + tdmCard.bytesToHexString(key);
 
         }catch(Exception e){
-            console = console + "\n"+ e.toString();
+            console = console + "\n"+ e;
 
         }
         Log.v(LOG_TAG, console);
