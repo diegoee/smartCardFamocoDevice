@@ -185,16 +185,27 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //TODO: Dudosa implementación
     private byte[] tdes(byte[] info, byte[] keyAtr) throws Exception{
 
+        byte [] aa=keyAtr;
+        if (keyAtr.length<=24){
+            aa = new byte[]{
+                    (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,
+                    (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,
+                    (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,
+                    (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,
+                    (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00,
+                    (byte) 0x00,(byte) 0x00,(byte) 0x00,(byte) 0x00
+            };
+            for (int i=0;i<keyAtr.length;i++){
+                aa[i]=keyAtr[i];
+            }
+        }
 
-        console = console + "\n---";
-        DESedeKeySpec keyspec = new DESedeKeySpec(keyAtr);
 
-        console = console + "\n---";
+        DESedeKeySpec keyspec = new DESedeKeySpec(aa);
         SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
-
-        console = console + "\n---";
         SecretKey key = keyfactory.generateSecret(keyspec);
 
         Cipher cipher = Cipher.getInstance("DESede");
@@ -206,7 +217,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    //TODO: Implemetar método
+    //TODO: Dudosa implementación
     private byte[] getKeysFromSAM() {
 
         byte[] key = KEYS_A_B[0];
@@ -230,9 +241,10 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x0D
             };
 
-            console = console + "\n1 - (SAM_SelectSAMApp)\nAPDU => " + tdmCard.bytesToHexString(apdu);
+            console = console + "\n1 - (SAM_SelectSAMApp)";
+            console = console +"\n\t->"+tdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\nAPDU <= " + tdmCard.bytesToHexString(key);
+            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
 
 
             apdu = new byte[]{
@@ -243,13 +255,14 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x14
             };
 
-            console=console+"\n1.1 - (Opt)(SAM_GetSAMProps)\nAPDU => " + tdmCard.bytesToHexString(apdu);
+            console=console+"\n1.1 - (Opt)(SAM_GetSAMProps)\n\t->" + tdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console=console+"\nAPDU <= " + tdmCard.bytesToHexString(key);
+            console=console+"\n\t<-" + tdmCard.bytesToHexString(key);
 
             console = console + "\n2 - (SAM_Autenticate)";
 
             //1º Generamos un número aleatorio (Rh)
+            console = console + "\n\t1º Gen. random para Rh";
             SecureRandom csprng = new SecureRandom();
             byte[] btRh = new byte[8];
             csprng.nextBytes(btRh);
@@ -270,11 +283,10 @@ public class MainActivity extends AppCompatActivity
                     btRh[6],
                     btRh[7]
             };
-
-            console = console + "\nAPDU => " + tdmCard.bytesToHexString(apdu);
+            console = console + "\n\t2º Initialize Update";
+            console = console + "\n\t->" + tdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\nAPDU <= " + tdmCard.bytesToHexString(key);
-
+            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
 
             byte[] btKa = new byte[]{
                     (byte) 0x76,
@@ -295,9 +307,8 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x90
             };
 
-
-
             //3º obtnemos Rc  por tanto tenemos Rh, Rc y Ka
+            console = console + "\n\t3º Rc tenemos Rh, Rc y Ka";
             byte[] btRc;
             if (key[key.length-2]==(byte)0x90) {
                 btRc = new byte[]{
@@ -312,18 +323,18 @@ public class MainActivity extends AppCompatActivity
                 };
             }else{
                 btRc = new byte[]{
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x00
+                    (byte) 0x11,
+                    (byte) 0x22,
+                    (byte) 0x33,
+                    (byte) 0x44,
+                    (byte) 0x55,
+                    (byte) 0x66,
+                    (byte) 0x77,
+                    (byte) 0x88
                 };
             }
 
-
+            console = console + "\n\t4º calculamos Ks para Ch";
             // 4º calculamos Ks que nos hará falta para calcular Ch
             byte[] aux;
             aux = new byte[]{
@@ -360,6 +371,7 @@ public class MainActivity extends AppCompatActivity
                     btKs2[4], btKs2[5], btKs2[6], btKs2[7],
             };
 
+            console = console + "\n\t5º Cálculo de Ch";
             //5º Cálculo de Ch
             //Ch' = Rc TDES Ks
             aux = tdes(btRc, btKs);
@@ -392,8 +404,7 @@ public class MainActivity extends AppCompatActivity
             btCh = tdes(aux, btKs);
 
             //-------------------
-
-
+            console = console + "\n\t6º external authenticate";
             //6º external authenticate
             apdu = new byte[]{
                     (byte) 0x80,
@@ -411,9 +422,9 @@ public class MainActivity extends AppCompatActivity
                     btCh[7]
             };
 
-            console = console + "\nAPDU => " + tdmCard.bytesToHexString(apdu);
+            console = console + "\n\t->" + tdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\nAPDU <= " + tdmCard.bytesToHexString(key);
+            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
 
 
             apdu = new byte[]{
@@ -429,9 +440,9 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00
             };
 
-            console = console + "\n3 - (SAM_GetMIF1KKeys)\nAPDU => " + tdmCard.bytesToHexString(apdu);
+            console = console + "\n3 - (SAM_GetMIF1KKeys)\n\t->" + tdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\nAPDU <= " + tdmCard.bytesToHexString(key);
+            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
 
         }catch(Exception e){
             console = console + "\n"+ e;
@@ -569,8 +580,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-/*
-
+/*---------IMPLEMENTACION DE IKUSI----------------
 /// <summary>
 /// Comando que autentifica el SAM
 /// </summary>
