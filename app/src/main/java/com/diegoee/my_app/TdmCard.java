@@ -351,8 +351,6 @@ public class TdmCard {
     private static final int MAIN_TRAVELLER=31;
     private static final int MAIN_CAST=32;
 
-
-
     public static String decoData(byte[] bArray, int type) {
         String val = "";
         int auxInt;
@@ -361,12 +359,30 @@ public class TdmCard {
         if (type==TdmCard.MAIN_CODE_TITTLE)
         {
             val=String.format("%d",hex2decimal(bytesToHexString(bArray)));
-            if (val.equals("117")){
-                val="UNIBONO GENERAL";
-            }
-            if (val.equals("0")){
-                val="BONO10";
-            }
+            if (val.equals("0")){ val="0"; }
+            if (val.equals("100")){ val="Billete sencillo zona urbana"; }
+            if (val.equals("103")){ val="Billete sencillo zona interurbana"; }
+            if (val.equals("104")){ val="Sin billete"; }
+            if (val.equals("110")){ val="Bono 10 CARTON"; }
+            if (val.equals("111")){ val="Bono 10 PVC"; }
+            if (val.equals("116")){ val="Bono 100"; }
+            if (val.equals("117")){ val="Unibono General"; }
+            if (val.equals("120")){ val="Estudiante Universitario"; }
+            if (val.equals("121")){ val="Bono Campus"; }
+            if (val.equals("122")){ val="FNE (familia numerosa especial)"; }
+            if (val.equals("123")){ val="FNG (familia numerosa general)"; }
+            if (val.equals("901")||val.equals("902")){ val="Sanción"; }
+            if (val.equals("903")){ val="Empleado TDM"; }
+            if (val.equals("904")){ val="Bono 2"; }
+            if (val.equals("905")){ val="Bono Evento"; }
+            if (val.equals("906")){ val="Devolución de viajes"; }
+            if (val.equals("907")){ val="Devolución de días"; }
+            if (val.equals("2501")){ val="Bono Urbano"; }
+            if (val.equals("2511")){ val="B100 Ayuntamiento"; }
+            if (val.equals("2521")){ val="FNE Ayuntamiento"; }
+            if (val.equals("2531")){ val="FNG Ayuntamiento"; }
+            if (val.equals("2551")){ val="Bono Murcia Estudiante"; }
+
         }
         if (type==TdmCard.MAIN_N_EXPIRED) {
             val = hex2Binary(bytesToHexString(bArray)).substring(0, 6);

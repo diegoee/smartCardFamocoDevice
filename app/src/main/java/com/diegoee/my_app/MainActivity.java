@@ -478,7 +478,7 @@ public class MainActivity extends AppCompatActivity
             console = console + resolveIntent(intent);
         }
 
-        console = console + "\n";//+tdmCard.getInfoHexByte();
+        console = console + "\n"+tdmCard.getInfoHexByte();
 
         navigationView.getMenu().getItem(0).setChecked(true);
         Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
