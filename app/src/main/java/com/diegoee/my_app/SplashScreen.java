@@ -13,8 +13,8 @@ public class SplashScreen extends Activity {
     // Set the duration of the splash screen
     private static final long SPLASH_SCREEN_DELAY = 50;
 
-    ProgressBar progressBar;
-    int progressStatus ;
+    private ProgressBar progressBar;
+    private int progressStatus ;
 
 
     @Override

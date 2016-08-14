@@ -478,7 +478,8 @@ public class MainActivity extends AppCompatActivity
             console = console + resolveIntent(intent);
         }
 
-        console = console + "\n"+tdmCard.getInfoHexByte();
+        //Descomentarsi se quieren ver los Bytes por Sector.
+        //console = console + "\n"+tdmCard.getInfoHexByte();
 
         navigationView.getMenu().getItem(0).setChecked(true);
         Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);

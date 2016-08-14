@@ -54,6 +54,7 @@ public class TdmCard {
         int startTittle = 0;
         String result = "Esperando lectura...";
         String aux = "";
+        int auxInt=0;
 
         if (infoByte.size()==64) {
 
@@ -72,21 +73,25 @@ public class TdmCard {
 
             if (aux.equals("0")) {
                 startTittle = 12;
+                auxInt=1;
             }
             if (aux.equals("1")) {
                 startTittle = 20;
+                auxInt=2;
             }
             if (aux.equals("2")) {
                 startTittle = 28;
+                auxInt=3;
             }
             if (aux.equals("3")) {
                 startTittle = 36;
+                auxInt=4;
             }
 
-            result= "****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+aux ;
+            result= "****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+auxInt ;
 
             auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
-            result = result + "\nFecha de Caducidad (Datos de Tarjeta):\n\t" + decoData(auxBytes,TdmCard.CARD_DATE);
+            result = result + "\nFecha de Caducidad (Datos de Tarjeta):\n\t" + decoData(auxBytes,TdmCard.CARD_DATE)+"\n";
 
             int val1,val2;
             for (int ii=0;ii<4;ii++){
@@ -430,22 +435,22 @@ public class TdmCard {
         // ----------------------------HISTORICO DE TARJETA
         if ((type==TdmCard.MOV_TITTLE)||(type==TdmCard.CTRL_TITTLE)||(type==TdmCard.CTRL_MOV)){
             val = bytesToHexString(bArray).substring(0,1);
-            if (val.equals("0")) { val = "0";  }
-            if (val.equals("1")) { val = "1";  }
-            if (val.equals("2")) { val = "2";  }
-            if (val.equals("3")) { val = "3";  }
-            if (val.equals("4")) { val = "4";  }
-            if (val.equals("5")) { val = "5";  }
-            if (val.equals("6")) { val = "6";  }
-            if (val.equals("7")) { val = "7";  }
-            if (val.equals("8")) { val = "8";  }
-            if (val.equals("9")) { val = "9";  }
-            if (val.equals("A")) { val = "10";  }
-            if (val.equals("B")) { val = "11";  }
-            if (val.equals("C")) { val = "12";  }
-            if (val.equals("D")) { val = "13";  }
-            if (val.equals("E")) { val = "14";  }
-            if (val.equals("F")) { val = "15";  }
+            if (val.equals("0")) { val = "Ninguno";  }
+            if (val.equals("1")) { val = "4";  }
+            if (val.equals("2")) { val = "3";  }
+            if (val.equals("3")) { val = "3 y 4";  }
+            if (val.equals("4")) { val = "2";  }
+            if (val.equals("5")) { val = "2 y 4";  }
+            if (val.equals("6")) { val = "2 y 3";  }
+            if (val.equals("7")) { val = "2,3 y 4";  }
+            if (val.equals("8")) { val = "1";  }
+            if (val.equals("9")) { val = "1 y 4";  }
+            if (val.equals("A")) { val = "1 y 3";  }
+            if (val.equals("B")) { val = "1,3 y 4";  }
+            if (val.equals("C")) { val = "1 y 2";  }
+            if (val.equals("D")) { val = "1,2 y 4";  }
+            if (val.equals("E")) { val = "1,2 y 3";  }
+            if (val.equals("F")) { val = "1,2,3 y 4";  }
         }
 
         if (type==TdmCard.MOV_OPER){
