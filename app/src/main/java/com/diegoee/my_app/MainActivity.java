@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity
     private IntentFilter[] intentFiltersArray;
     private NavigationView navigationView;
 
-    private Fragment fragment;
     private int exit;
     private String console;
     private byte[] key_SAM;
@@ -142,7 +141,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         navigationView.getMenu().getItem(0).setChecked(true);
-        fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
+        MainFragment fragment = new MainFragment();
+        fragment.setConsole(console);
+        fragment.setTdmCard(tdmCard);
+        fragment.setLoad(MainFragment.MAIN);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,fragment).commit();
     }
 
@@ -167,22 +169,24 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
         boolean fragmentTransaction = false;
-        Fragment fragment = null;
+        MainFragment fragment = new MainFragment();
+        fragment.setConsole(console);
+        fragment.setTdmCard(tdmCard);
 
         if (id == R.id.nav_main) {
-            fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
+            fragment.setLoad(MainFragment.MAIN);
             fragmentTransaction = true;
         } else if (id == R.id.nav_detail_mov) {
-            fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_MOV);
+            fragment.setLoad(MainFragment.DETAIL_MOV);
             fragmentTransaction = true;
         } else if (id == R.id.nav_detail_card) {
-            fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_CARD);
+            fragment.setLoad(MainFragment.DETAIL_CARD);
             fragmentTransaction = true;
         } else if (id == R.id.nav_detail_ctrl) {
-            fragment = new MainFragment(console,tdmCard,MainFragment.DETAIL_CTRL);
+            fragment.setLoad(MainFragment.DETAIL_CTRL);
             fragmentTransaction = true;
         } else if (id == R.id.nav_contact) {
-            fragment = new MainFragment(console,tdmCard,MainFragment.CONTACT);
+            fragment.setLoad(MainFragment.CONTACT);
             fragmentTransaction = true;
         }
 
@@ -211,7 +215,12 @@ public class MainActivity extends AppCompatActivity
         console = console + resolveIntent(intent);
 
         navigationView.getMenu().getItem(0).setChecked(true);
-        Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
+
+        MainFragment fragment = new MainFragment();
+        fragment.setConsole(console);
+        fragment.setTdmCard(tdmCard);
+        fragment.setLoad(MainFragment.MAIN);
+
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
     }
 

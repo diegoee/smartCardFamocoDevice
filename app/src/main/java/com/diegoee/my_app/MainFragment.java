@@ -19,25 +19,29 @@ public class MainFragment extends Fragment {
     public static int DETAIL_CTRL=4;
     public static int CONTACT=5;
 
-    View myView;
-    String console;
-    TdmCard tdmcard;
-    int load;
+    private View myView;
+    private String console;
+    private TdmCard tdmcard;
+    private int load;
 
-    public MainFragment() {
-        super();
-        this.console="";
-        this.myView = null;
-        this.tdmcard = new TdmCard();
-        this.load = MainFragment.MAIN;
+    public void setConsole(String console){
+        this.console=console;
+    }
+    public void setTdmCard(TdmCard tdmcard){
+        this.tdmcard=tdmcard;
+    }
+    public void setLoad(int load){
+        this.load=load;
     }
 
-    public MainFragment(String console,TdmCard tdmcard,int load) {
-        super();
-        this.console=console;
-        this.myView = null;
-        this.tdmcard=tdmcard;
-        this.load=load;
+    public String getConsole(){
+        return console;
+    }
+    public TdmCard getTdmCard(){
+        return tdmcard;
+    }
+    public int getLoad(){
+        return load;
     }
 
     @Override
