@@ -24,17 +24,20 @@ import android.widget.Toast;
 import com.famoco.secommunication.SmartcardReader;
 
 import java.io.IOException;
+/* Framework utilizados para el método: getKeysFromSAM()
 import java.security.SecureRandom;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
+*/
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String LOG_TAG = "log_app";
+
+    //Claves estáticas:
     private final static byte[][] KEYS_A_B = {
             new byte[]{(byte) 0x1F, (byte) 0x71, (byte) 0x12, (byte) 0x24 ,(byte) 0x84, (byte) 0xC1},
             new byte[]{(byte) 0x3B, (byte) 0xE5, (byte) 0x33, (byte) 0x10 ,(byte) 0x68, (byte) 0x2A}
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
 
     private Fragment fragment;
+    private int exit;
     private String console;
     private byte[] key_SAM;
     private boolean isDeviceAbleToRunSmartcardReader;
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //init varibale
+        exit=1;
         console = "";
         isDeviceAbleToRunSmartcardReader=true;
         tdmCard = new TdmCard();
@@ -81,7 +86,7 @@ public class MainActivity extends AppCompatActivity
         //adding component
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-        // INTENT management
+        //INTENT management
         mNfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         intentFiltersArray = new IntentFilter[]{
                 new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED),
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity
         //init varibale
         console = "Dispositivo Listo para lectura.";
         isDeviceAbleToRunSmartcardReader=false;
+        exit=1;
 
         // adding methods
         if (mNfcAdapter == null) {
@@ -117,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         try {
-            // obtain smartcard reader instance
+            // obtain smartcard reader instance. Ver uso del librería.
             mSmartcardReader = SmartcardReader.getInstance();
             // open smartcard reader.
             isDeviceAbleToRunSmartcardReader = mSmartcardReader.openReader();
@@ -125,21 +131,19 @@ public class MainActivity extends AppCompatActivity
             if (isDeviceAbleToRunSmartcardReader) {
                 //console = console + "\nOpen SAM";
                 byte[] atr = mSmartcardReader.powerOn();
-                //console=console+"\nATR: " + tdmCard.bytesToHexString(atr);
-                this.getKeysFromSAM();
+                console=console+"\nSAM ->ATR: " + TdmCard.bytesToHexString(atr);
 
             } else {
                 console = console + "\nSAM NO presente";
             }
-            // sendApdu(val,isDeviceAbleToRunSmartcardReader);
+
         }catch (Exception e){
             console = console + "\nNO famoco librery running";
         }
 
-
         navigationView.getMenu().getItem(0).setChecked(true);
         fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,fragment).commit();
     }
 
     @Override
@@ -147,14 +151,20 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            exit=1;
         } else {
-            super.onBackPressed();
+            if (exit==0) {
+                super.onBackPressed();
+            }else{
+                exit--;
+                Toast.makeText(this,getText(R.string.Toast_exit).toString(),Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         int id = item.getItemId();
         boolean fragmentTransaction = false;
         Fragment fragment = null;
@@ -185,7 +195,129 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    //TODO: Dudosa implementación
+    @Override
+    public void onNewIntent(Intent intent) {
+        console = "";
+
+        Bundle bundle = intent.getExtras();
+        console = console + "Tarjeta descubierta ->";
+        for (String key : bundle.keySet()) {
+            if (key.equals("android.nfc.extra.ID")) {
+                byte [] val = bundle.getByteArray(key);
+                console = console + String.format(" ID-NFC: %s",TdmCard.bytesToHexString(val));
+            }
+        }
+
+        console = console + resolveIntent(intent);
+
+        navigationView.getMenu().getItem(0).setChecked(true);
+        Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+    }
+
+    private String resolveIntent(Intent intent) {
+        String console = "";
+        tdmCard.eraseInfo();
+        // 1) Parse the intent and get the action that triggered this intent
+        String action = intent.getAction();
+        // 2) Check if it was triggered by a tag discovered interruption.
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) { //ACTION_TECH_DISCOVERED
+            //  3) Get an instance of the TAG from the NfcAdapter
+            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            byte[] data;
+            try {
+                // 4) Get an instance of the Mifare classic card from this TAG intent
+                MifareClassic mfc = MifareClassic.get(tagFromIntent);
+                // 5.1) Connect to card
+                mfc.connect();
+                boolean auth = false;
+                // 5.2) and get the number of sectors this card has..and loop thru these sectors
+                int secCount = mfc.getSectorCount();
+                int bCount = 0;
+                int bIndex = 0;
+                //console = console+ "\nKey_A";
+                for (int j = 0; j < secCount; j++) {// 16 Sectors
+                    // 6.1) authenticate the sector
+                    key_SAM = KEYS_A_B[0];
+                    auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
+                    //TODO: Cuando se tenga implementado: getKeysFromSAM()
+
+                    //if (!auth) {
+                    //    //IMPLEMENTAR: key_SAM = getKeysFromSAM();
+                    //    if (key_SAM.length==6) {
+                    //        auth = mfc.authenticateSectorWithKeyA(j, key_SAM);
+                    //    }else{
+                    //        auth=false;
+                    //    }
+                    //}
+                    if (auth) {
+                        // 6.2) In each sector - get the block count
+                        bCount = mfc.getBlockCountInSector(j);
+                        bIndex = 0;
+                        for (int i = 0; i < bCount; i++) {// 4 Blocks
+                            bIndex = mfc.sectorToBlock(j);
+                            // 6.3) Read the block
+                            data = mfc.readBlock(bIndex+i);
+                            // 7) Convert the data into a string from Hex format.
+                            tdmCard.append(data);
+                            //console = console +"\n"+ bytesToHexString(data);
+                        }
+                    } else {
+                        console = console +"\nError de Autentificación";
+                        return console;
+                    }
+                }
+            } catch (IOException e) {
+                console = console +"\n"+e.getLocalizedMessage();
+                Log.v(LOG_TAG, e.getLocalizedMessage());
+                console = console +"\nError en la lectura de los datos. Volver a realizar la lectura.";
+                return console;
+            } catch (NullPointerException e) {
+                console = console +"\n"+e.toString();
+                Log.v(LOG_TAG,e.toString());
+                return console;
+            }
+            console = console +"\nDatos de la tarjeta leidos.";
+
+            //Descomentar si se quieren ver los Bytes por Sector.
+            console = console + "\nDatos en hexadecimal:\n"+tdmCard.getInfoHexByte();
+
+        }else {
+            console = console +"\nDatos de la NO tarjeta leidos.";
+        }
+
+        return console;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mNfcAdapter != null) {
+            mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, intentFiltersArray, null);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mNfcAdapter.disableForegroundDispatch(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isDeviceAbleToRunSmartcardReader) {
+            // power off smartcard reader
+            mSmartcardReader.powerOff();
+            // close smartcard reader
+            mSmartcardReader.closeReader();
+        }
+    }
+
+
+    /*Métodos SAM
+
+    //TODO: Metodod utilizado en la comunicación con la SAM
     private byte[] tdes(byte[] info, byte[] keyAtr) throws Exception{
 
         byte [] aa=keyAtr;
@@ -203,7 +335,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-
         DESedeKeySpec keyspec = new DESedeKeySpec(aa);
         SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
         SecretKey key = keyfactory.generateSecret(keyspec);
@@ -212,12 +343,10 @@ public class MainActivity extends AppCompatActivity
         cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] encrypted = cipher.doFinal(info);
 
-
         return encrypted;
     }
 
-
-    //TODO: Dudosa implementación
+    //TODO: Metodo para comunicar con laSAM y obtener la key para decodificar tarjeta.
     private byte[] getKeysFromSAM() {
 
         byte[] key = KEYS_A_B[0];
@@ -242,9 +371,9 @@ public class MainActivity extends AppCompatActivity
             };
 
             console = console + "\n1 - (SAM_SelectSAMApp)";
-            console = console +"\n\t->"+tdmCard.bytesToHexString(apdu);
+            console = console +"\n\t->"+TdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
+            console = console + "\n\t<-" + TdmCard.bytesToHexString(key);
 
 
             apdu = new byte[]{
@@ -255,9 +384,9 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x14
             };
 
-            console=console+"\n1.1 - (Opt)(SAM_GetSAMProps)\n\t->" + tdmCard.bytesToHexString(apdu);
+            console=console+"\n1.1 - (Opt)(SAM_GetSAMProps)\n\t->" + TdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console=console+"\n\t<-" + tdmCard.bytesToHexString(key);
+            console=console+"\n\t<-" + TdmCard.bytesToHexString(key);
 
             console = console + "\n2 - (SAM_Autenticate)";
 
@@ -284,9 +413,9 @@ public class MainActivity extends AppCompatActivity
                     btRh[7]
             };
             console = console + "\n\t2º Initialize Update";
-            console = console + "\n\t->" + tdmCard.bytesToHexString(apdu);
+            console = console + "\n\t->" + TdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
+            console = console + "\n\t<-" + TdmCard.bytesToHexString(key);
 
             byte[] btKa = new byte[]{
                     (byte) 0x76,
@@ -312,25 +441,25 @@ public class MainActivity extends AppCompatActivity
             byte[] btRc;
             if (key[key.length-2]==(byte)0x90) {
                 btRc = new byte[]{
-                    key[0],
-                    key[1],
-                    key[2],
-                    key[3],
-                    key[4],
-                    key[5],
-                    key[6],
-                    key[7]
+                        key[0],
+                        key[1],
+                        key[2],
+                        key[3],
+                        key[4],
+                        key[5],
+                        key[6],
+                        key[7]
                 };
             }else{
                 btRc = new byte[]{
-                    (byte) 0x11,
-                    (byte) 0x22,
-                    (byte) 0x33,
-                    (byte) 0x44,
-                    (byte) 0x55,
-                    (byte) 0x66,
-                    (byte) 0x77,
-                    (byte) 0x88
+                        (byte) 0x11,
+                        (byte) 0x22,
+                        (byte) 0x33,
+                        (byte) 0x44,
+                        (byte) 0x55,
+                        (byte) 0x66,
+                        (byte) 0x77,
+                        (byte) 0x88
                 };
             }
 
@@ -422,9 +551,9 @@ public class MainActivity extends AppCompatActivity
                     btCh[7]
             };
 
-            console = console + "\n\t->" + tdmCard.bytesToHexString(apdu);
+            console = console + "\n\t->" + TdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
+            console = console + "\n\t<-" + TdmCard.bytesToHexString(key);
 
 
             apdu = new byte[]{
@@ -440,9 +569,9 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00
             };
 
-            console = console + "\n3 - (SAM_GetMIF1KKeys)\n\t->" + tdmCard.bytesToHexString(apdu);
+            console = console + "\n3 - (SAM_GetMIF1KKeys)\n\t->" + TdmCard.bytesToHexString(apdu);
             key = mSmartcardReader.sendApdu(apdu);
-            console = console + "\n\t<-" + tdmCard.bytesToHexString(key);
+            console = console + "\n\t<-" + TdmCard.bytesToHexString(key);
 
         }catch(Exception e){
             console = console + "\n"+ e;
@@ -451,340 +580,6 @@ public class MainActivity extends AppCompatActivity
         Log.v(LOG_TAG, console);
         return key;
     }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        console = "";
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            Bundle bundle;
-            console = console + "Tarjeta descubierta ->";
-            //console = console + intent.toString();
-            //console = console + "\n\nEXTRAS:";
-            bundle = intent.getExtras();
-            for (String key : bundle.keySet()) {
-                if (key.equals("android.nfc.extra.ID")) {
-                    byte [] val = bundle.getByteArray(key);
-                    //console = console + String.format("\n\t-KEY: %s",key);
-                    console = console + String.format(" ID-NFC: %s",tdmCard.bytesToHexString(val));
-                }
-                //else{
-                //    Object value = bundle.get(key);
-                //    console = console + String.format("\n\t-KEY: %s",key);
-                //    console = console + String.format("\n\t\t*VALUE: %s",value.toString());
-                //}
-            }
-        }
-        if (isDeviceAbleToRunSmartcardReader) {
-            console = console + resolveIntent(intent);
-        }
-
-        //Descomentarsi se quieren ver los Bytes por Sector.
-        //console = console + "\n"+tdmCard.getInfoHexByte();
-
-        navigationView.getMenu().getItem(0).setChecked(true);
-        Fragment fragment = new MainFragment(console,tdmCard,MainFragment.MAIN);
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
-    }
-
-    private String resolveIntent(Intent intent) {
-        String console = "";
-        tdmCard.eraseInfo();
-        // 1) Parse the intent and get the action that triggered this intent
-        String action = intent.getAction();
-        // 2) Check if it was triggered by a tag discovered interruption.
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            //  3) Get an instance of the TAG from the NfcAdapter
-            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            // 4) Get an instance of the Mifare classic card from this TAG intent
-            MifareClassic mfc = MifareClassic.get(tagFromIntent);
-            byte[] data;
-            try {
-                //  5.1) Connect to card
-                mfc.connect();
-                boolean auth = false;
-                String cardData = null;
-                // 5.2) and get the number of sectors this card has..and loop thru these sectors
-                int secCount = mfc.getSectorCount();
-                int bCount = 0;
-                int bIndex = 0;
-                //console = console+ "\nKey_A";
-                for (int j = 0; j < secCount; j++) {// 16 Sectors
-                    //console = console +"\n\tSector_"+String.format("%d",j)+":";
-                    //Log.v(LOG_TAG,"Sector_"+String.format("%d",j+1));
-                    // 6.1) authenticate the sector
-                    key_SAM = KEYS_A_B[0];
-                    auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
-                    if (!auth) {
-                        key_SAM = getKeysFromSAM();
-                        if (key_SAM.length==6) {
-                            auth = mfc.authenticateSectorWithKeyA(j, key_SAM);
-                        }else{
-                            auth=false;
-                        }
-                    }
-                    if (auth) {
-                        // 6.2) In each sector - get the block count
-                        bCount = mfc.getBlockCountInSector(j);
-                        bIndex = 0;
-                        for (int i = 0; i < bCount; i++) {// 4 Blocks
-                            bIndex = mfc.sectorToBlock(j);
-                            //Log.v(LOG_TAG, String.format("%d",bIndex+i));
-                            // 6.3) Read the block
-                            data = mfc.readBlock(bIndex+i);
-                            // 7) Convert the data into a string from Hex format.
-                            tdmCard.append(data);
-                            //console = console +"\n"+ bytesToHexString(data);
-                        }
-                    } else {
-                        console = console +"\nError de Autentificación";
-                        return console;
-                    }
-                }
-
-            } catch (IOException e) {
-                console = console +"\n"+e.getLocalizedMessage();
-                Log.v(LOG_TAG, e.getLocalizedMessage());
-                console = console +"\nError en la lectura de los datos. Volver a realizar la lectura.";
-                return console;
-            }
-        }// End of method
-        console = console +"\nDatos de la tarjeta leidos.";
-        return console;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mNfcAdapter != null) {
-            mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, intentFiltersArray, null);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mNfcAdapter.disableForegroundDispatch(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (isDeviceAbleToRunSmartcardReader) {
-            // power off smartcard reader
-            mSmartcardReader.powerOff();
-            // close smartcard reader
-            mSmartcardReader.closeReader();
-        }
-    }
-
-}
-
-
-
-/*---------IMPLEMENTACION DE IKUSI----------------
-/// <summary>
-/// Comando que autentifica el SAM
-/// </summary>
-/// <returns>0 si ok, -1 si falla</returns>
-public int SAM_Autenticate()
-{
-	int iRes = -1, i = 0;
-	bool bRet = false;
-
-	try
-	{
-		byte[] m_InputData = new byte[128];
-		byte[] m_OutputData = new byte[255];
-
-		byte[] btRh; //Reto aleatorio
-		byte[] btRc; //Reto cifrado
-		byte[] btCc; //Criptograma
-		byte[] btRh1; //Almacena la 1º parte (4 bytes) de btRh
-		byte[] btRh2; //Almacena la 2º parte (4 bytes) de btRh
-		byte[] btRc1; //Almacena la 1º parte (4 bytes) de btRc
-		byte[] btRc2; //Almacena la 2º parte (4 bytes) de btRc
-		byte[] btKa; //Almacena la clave de autenticacion (16 bytes)
-		byte[] btKs; //Almacena la clave de sesion (16 bytes)
-		byte[] btKs1; //Almacena la 1º parte (8 bytes) de la clave de sesion
-		byte[] btKs2; //Almacena la 2º parte (8 bytes) de la clave de sesion
-		byte[] btCcGen; // Almacena el Cc generado a partir de Rh, Ks y Rc
-		byte[] btCh; //Almacena el criptograma del terminal, que hay que enviar al SAM
-
-		btRh = new byte[8];
-		btRc = new byte[8];
-		btCc = new byte[8];
-		btRh1 = new byte[4];
-		btRh2 = new byte[4];
-		btRc1 = new byte[4];
-		btRc2 = new byte[4];
-		btKa = new byte[16];
-		btKs = new byte[16];
-		btKs1 = new byte[8];
-		btKs2 = new byte[8];
-		btCcGen = new byte[8];
-		btCh = new byte[8];
-
-		RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-		rng.GetBytes(btRh);
-
-		//INITIALIZE UPDATE
-		m_InputData[0] = 0x0E; //Longitud de los datos de despues!!!!!!!
-		m_InputData[1] = 0x80; //APDU - cla
-		m_InputData[2] = 0x50; //APDU - ins
-		m_InputData[3] = 0x00; //APDU - P1
-		m_InputData[4] = 0x00; //APDU - P2
-		m_InputData[5] = 0x08; //APDU - LC : num bytes que se envian
-		m_InputData[6] = btRh[0]; //APDU - datos: valor rh
-		m_InputData[7] = btRh[1]; //APDU - datos: valor rh
-		m_InputData[8] = btRh[2]; //APDU - datos: valor rh
-		m_InputData[9] = btRh[3]; //APDU - datos: valor rh
-		m_InputData[10] = btRh[4]; //APDU - datos: valor rh
-		m_InputData[11] = btRh[5]; //APDU - datos: valor rh
-		m_InputData[12] = btRh[6]; //APDU - datos: valor rh
-		m_InputData[13] = btRh[7]; //APDU - datos: valor rh
-		m_InputData[14] = 0x10; //APDU - le, datos de respuesta
-
-		if (m_RFReader.SendSAMCommand(true, m_InputData))
-			iRes = 0;
-
-		bRet = m_RFReader.GetSAMData(m_OutputData);
-
-		int longData = m_OutputData[0];
-		if (m_OutputData[longData - 1] == 0x90)
-		{
-			//Obtener Rc(reto) y Cc(criptograma calculado por la SAM)
-			Array.Copy(m_OutputData, 1, btRc, 0, 8);
-			Array.Copy(m_OutputData, 9, btCc, 0, 8);
-		}
-
-		//Obtener Ks(clave de sesion calculado a partir de Rh, Rc y clave de autenticacion)
-		//Partir en 2 Rh:
-		//Rh1
-		Array.Copy(btRh, 0, btRh1, 0, 4);
-		//Rh2
-		Array.Copy(btRh, 4, btRh2, 0, 4);
-
-		//Partir en 2 Rc
-		//Rc1
-		Array.Copy(btRc, 0, btRc1, 0, 4);
-		//Rc2
-		Array.Copy(btRc, 4, btRc2, 0, 4);
-
-		//LCR 01.08.2013. Nueva clave de produccion
-		//clave autenticacion - son 16 bytes -->  00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF
-		//btKa = new byte[16] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
-		btKa = new byte[16] { 0x76, 0x8E, 0x92, 0x78, 0x28, 0x75, 0xAC, 0xAC, 0xF6, 0x8E, 0x59, 0x48, 0x04, 0x5F, 0xD5, 0x90 };
-
-		//Calculo de Clave de sesion  Ks1 y Ks2
-		//Ks1 = Rc2 Rh1 TDES Ka
-		byte[] btKs1Aux = new byte[8];
-		Array.Copy(btRc2, 0, btKs1Aux, 0, 4);
-		Array.Copy(btRh1, 0, btKs1Aux, 4, 4);
-		btKs1 = Encriptar(btKs1Aux, btKa);
-
-		//Ks2 = Rc1 Rh2 TDES Ka
-		byte[] btKs2Aux = new byte[8];
-		Array.Copy(btRc1, 0, btKs2Aux, 0, 4);
-		Array.Copy(btRh2, 0, btKs2Aux, 4, 4);
-		btKs2 = Encriptar(btKs2Aux, btKa);
-
-		//Ks = Ks1 + Ks2
-		Array.Copy(btKs1, 0, btKs, 0, 8);
-		Array.Copy(btKs2, 0, btKs, 8, 8);
-
-		//Generar Cc para comparar con el Cc obtenido con el comando btCcGen
-		//Cc' = Rh TDES Ks
-		byte[] btCcGenAux1 = new byte[8];
-		btCcGenAux1 = Encriptar(btRh, btKs);
-
-		//Cc'' = Cc' XOR Rc
-		byte[] btCcGenAux2 = new byte[8];
-		for (i = 0; i < 8; i++)
-			btCcGenAux2[i] = (byte)(btCcGenAux1[i] ^ btRc[i]);
-
-		//Cc''' = Cc'' TDES Ks
-		byte[] btCcGenAux3 = new byte[8];
-		btCcGenAux3 = Encriptar(btCcGenAux2, btKs);
-
-		//Cc'''' = Cc''' XOR 80 00 00 00 00 00 00 00
-		byte[] btCcGenAux4 = new byte[8];
-		byte[] btOch = new byte[8] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-		for (i = 0; i < 8; i++)
-			btCcGenAux4[i] = (byte)(btCcGenAux3[i] ^ btOch[i]);
-
-		//Cc = Cc'''' TDES Ks
-		btCcGen = Encriptar(btCcGenAux4, btKs);
-
-		//Hay que comparar si el btCcGen generado por nosotros y btCc devuelto por el SAM son el mismo - TODO OK
-		for (int cm = 0; cm < 8; cm++)
-		{
-			if (btCcGen[cm] != btCc[cm])
-			{
-				return -1;
-			}
-		}
-
-		//Calcular Ch para comando external authenticate(criptograma calculado en funcion de Rc, Rh, y clave de sesion)
-		//Ch' = Rc TDES Ks
-		byte[] btChAux1 = new byte[8];
-		btChAux1 = Encriptar(btRc, btKs);
-
-		//Ch'' = Ch' XOR Rh
-		byte[] btChAux2 = new byte[8];
-		for (i = 0; i < 8; i++)
-			btChAux2[i] = (byte)(btChAux1[i] ^ btRh[i]);
-
-		//Ch''' = Ch'' TDES Ks
-		byte[] btChAux3 = new byte[8];
-		btChAux3 = Encriptar(btChAux2, btKs);
-
-		//Ch'''' = Ch''' XOR 80 00 00 00 00 00 00 00
-		byte[] btChAux4 = new byte[8];
-		btOch = new byte[8] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-		for (i = 0; i < 8; i++)
-			btChAux4[i] = (byte)(btChAux3[i] ^ btOch[i]);
-
-		//Ch = Ch'''' TDES Ks
-		btCh = Encriptar(btChAux4, btKs);
-		//-------------------
-
-
-		//EXTERNAL AUTENTICATE
-		m_InputData[0] = 0x0D; //Longitud de los datos de despues!!!!!!!
-		m_InputData[1] = 0x80; //APDU - cla
-		m_InputData[2] = 0x82; //APDU - ins
-		m_InputData[3] = 0x00; //APDU - P1
-		m_InputData[4] = 0x00; //APDU - P2
-		m_InputData[5] = 0x08; //APDU - LC : num bytes que se envian
-		m_InputData[6] = btCh[0]; //APDU - datos: valor rh
-		m_InputData[7] = btCh[1]; //APDU - datos: valor rh
-		m_InputData[8] = btCh[2]; //APDU - datos: valor rh
-		m_InputData[9] = btCh[3]; //APDU - datos: valor rh
-		m_InputData[10] = btCh[4]; //APDU - datos: valor rh
-		m_InputData[11] = btCh[5]; //APDU - datos: valor rh
-		m_InputData[12] = btCh[6]; //APDU - datos: valor rh
-		m_InputData[13] = btCh[7]; //APDU - datos: valor rh
-
-		if (m_RFReader.SendSAMCommand(true, m_InputData))
-			iRes = 0;
-
-		bRet = m_RFReader.GetSAMData(m_OutputData);
-
-		longData = m_OutputData[0];
-		if (m_OutputData[longData - 1] == 0x90)
-		{
-			iRes = 0;
-		}
-		else
-		{
-			iRes = -1;
-		}
-
-		return iRes;
-	}
-	catch (Exception ex)
-	{
-		return -1;
-	}
-}
 */
+}
+

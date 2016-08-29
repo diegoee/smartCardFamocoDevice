@@ -1,6 +1,5 @@
 package com.diegoee.my_app;
 
-import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +9,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class TdmCard {
+
+    public static final String START_STR = "...";
 
     private String info;
     ArrayList<byte[]> infoByte;
@@ -52,7 +53,7 @@ public class TdmCard {
 
         byte[] auxBytes;
         int startTittle = 0;
-        String result = "Esperando lectura...";
+        String result = START_STR;
         String aux = "";
         int auxInt=0;
 
@@ -172,7 +173,7 @@ public class TdmCard {
 
         byte[] auxBytes;
         int selSector = 0;
-        String result = "Esperando lectura...";
+        String result = START_STR;
         if (infoByte.size()==64) {
             if(Arrays.equals(infoByte.get(8),infoByte.get(9))){
                 selSector=8;
@@ -224,7 +225,7 @@ public class TdmCard {
     public String getCardData(){
 
         byte[] auxBytes;
-        String result = "Esperando lectura...";
+        String result = START_STR;
 
         if (infoByte.size()==64) {
             // Nº de tarjeta Sector1 bloque 0 byte 0,1,2 y 3
@@ -253,7 +254,7 @@ public class TdmCard {
 
     public String getMovData(){
         byte[] auxBytes;
-        String result = "Esperando lectura...";
+        String result = START_STR;
 
         class Mov implements Comparable<Mov> {
             int date;

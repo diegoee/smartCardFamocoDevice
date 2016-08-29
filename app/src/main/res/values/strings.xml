@@ -16,4 +16,6 @@
 
     <string name="float_button_snackbar">Pulsado botón de Reset</string>
 
+    <string name="Toast_exit">Pulsar otra vez para salir</string>
+
 </resources>

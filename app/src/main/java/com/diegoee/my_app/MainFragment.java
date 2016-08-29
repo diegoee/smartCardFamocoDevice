@@ -2,17 +2,11 @@ package com.diegoee.my_app;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Diego on 2/7/16.
@@ -38,7 +32,7 @@ public class MainFragment extends Fragment {
         this.load = MainFragment.MAIN;
     }
 
-    public MainFragment(String console,TdmCard tdmcard, int load) {
+    public MainFragment(String console,TdmCard tdmcard,int load) {
         super();
         this.console=console;
         this.myView = null;
