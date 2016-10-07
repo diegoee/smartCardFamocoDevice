@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 public class SplashScreen extends Activity {
 
@@ -56,6 +58,11 @@ public class SplashScreen extends Activity {
     protected void onStart() {
         super.onStart();
 
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Disable back button..............
+        return false;
     }
 
 }

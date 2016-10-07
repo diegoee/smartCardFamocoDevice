@@ -2,6 +2,7 @@ package com.diegoee.my_app;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,7 @@ public class MainFragment extends Fragment {
         if (load==MainFragment.MAIN){
             tittle=getText(R.string.menu_main).toString();
             result= console+"\n"+tdmcard.getMainData();
-            //textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+            textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         }
         if (load==MainFragment.DETAIL_MOV){
             tittle=getText(R.string.menu_mov).toString();
