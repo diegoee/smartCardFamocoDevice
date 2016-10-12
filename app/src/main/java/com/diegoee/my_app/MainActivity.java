@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity
 
         SecretKey key = new SecretKeySpec(keyAtr, "DESede");
         Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding");
-        IvParameterSpec iv= new IvParameterSpec(new byte[]{
+        IvParameterSpec iv = new IvParameterSpec(new byte[]{
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
         });
@@ -340,6 +340,7 @@ public class MainActivity extends AppCompatActivity
 
         return encrypted;
     }
+
     /*
     public byte[] Encriptar(byte[] message, byte[] btKey)
     {
@@ -395,6 +396,7 @@ public class MainActivity extends AppCompatActivity
 
         try {
 
+
             btVar = new byte[]{
                 (byte) 0xB4,
                 (byte) 0x88,
@@ -426,12 +428,12 @@ public class MainActivity extends AppCompatActivity
 
             console=console+"\nRh  = "+TdmCard.bytesToHexString(btVar);
             console=console+"\nKs  = "+TdmCard.bytesToHexString(btKs);
-            console=console+"\nRES = tdes(Rh, Ks)";
+            console=console+"\nCc' = tdes(Rh, Ks)";
             btVar = tdes(btVar, btKs);
-            console=console+"\nRES = "+TdmCard.bytesToHexString(btVar);
-            console=console+"\nSOL = A64DF8232D4E7103";
+            console=console+"\nCc' (Resultado) = "+TdmCard.bytesToHexString(btVar);
+            console=console+"\nCc' (Solución)  = A64DF8232D4E7103";
 
-            /*
+/*
             apduRequest = new byte[]{
                 (byte) 0x00,
                 (byte) 0xA4,
@@ -479,7 +481,7 @@ public class MainActivity extends AppCompatActivity
 
             //1º Generamos un número aleatorio (Rh)
             console = console + "\n\n**Autenticación**";
-            console = console + "\n1º Gen. random Rh";
+            console = console + "\n1º Generar random Rh";
             //SecureRandom csprng = new SecureRandom();
             btRh = new byte[8];
             //csprng.nextBytes(btRh);
@@ -512,7 +514,7 @@ public class MainActivity extends AppCompatActivity
                     btRh[6],
                     btRh[7]
             };
-            console = console + "\n2º Initialize Update";
+            console = console + "\n2º Initialize Update (APDU):";
             console = console + "\n->" + TdmCard.bytesToHexString(apduRequest);
             //apduResponse = mSmartcardReader.sendApdu(apduRequest);
             apduResponse = new byte[]{
@@ -659,7 +661,7 @@ public class MainActivity extends AppCompatActivity
             console = console + "\n\t4.5 Cc     = Cc'''' TDES Ks = " + TdmCard.bytesToHexString(btVar);
 
             console = console + "\n\tCc (calculado) = " + TdmCard.bytesToHexString(btVar);
-            console = console + "\n\tCc (original)  = " + TdmCard.bytesToHexString(btRc);
+            console = console + "\n\tCc (original)  = " + TdmCard.bytesToHexString(btCc);
 
 
             console = console + "\n5º Cálculamos en Ch";
@@ -686,7 +688,7 @@ public class MainActivity extends AppCompatActivity
 
             console = console + "\n\tCh = " + TdmCard.bytesToHexString(btCh);
 
-            console = console + "\n6º External authenticate";
+            console = console + "\n6º External authenticate (APDU):";
             apduRequest = new byte[]{
                     (byte) 0x80,
                     (byte) 0x82,
@@ -710,7 +712,7 @@ public class MainActivity extends AppCompatActivity
             };
             console = console + "\n<-" + TdmCard.bytesToHexString(apduResponse);
 
-        */
+*/
         }catch(Exception e){
             console = console + "\n"+ e;
 
