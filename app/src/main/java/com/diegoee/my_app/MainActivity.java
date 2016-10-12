@@ -329,18 +329,14 @@ public class MainActivity extends AppCompatActivity
     private byte[] tdes(byte[] info, byte[] keyAtr) throws Exception{
 
         SecretKey key = new SecretKeySpec(keyAtr, "DESede");
-        Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding"); //DESede
+        Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding");
         IvParameterSpec iv= new IvParameterSpec(new byte[]{
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
         });
         cipher.init(Cipher.ENCRYPT_MODE, key, iv);
 
-        //Log.v(LOG_TAG,""+TdmCard.bytesToHexString(cipher.getIV()));
-
-        cipher.doFinal(info);
-        byte[] encrypted;
-        encrypted = cipher.doFinal(info);
+        byte[] encrypted = cipher.doFinal(info);
 
         return encrypted;
     }
@@ -427,6 +423,10 @@ public class MainActivity extends AppCompatActivity
                 (byte) 0x03,
                 (byte) 0xC2
             };
+
+            console=console+"\nRh  = "+TdmCard.bytesToHexString(btVar);
+            console=console+"\nKs  = "+TdmCard.bytesToHexString(btKs);
+            console=console+"\nRES = tdes(Rh, Ks)";
             btVar = tdes(btVar, btKs);
             console=console+"\nRES = "+TdmCard.bytesToHexString(btVar);
             console=console+"\nSOL = A64DF8232D4E7103";
