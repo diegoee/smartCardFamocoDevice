@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //TODO: Metodo utilizado en la comunicación con la SAM
+
     private byte[] tdes(byte[] info, byte[] keyAtr) throws Exception{
 
         SecretKey key = new SecretKeySpec(keyAtr, "DESede");
@@ -340,386 +340,263 @@ public class MainActivity extends AppCompatActivity
 
         return encrypted;
     }
-
-    /*
-    public byte[] Encriptar(byte[] message, byte[] btKey)
-    {
-            byte[] IV;
-            byte[] Key;
-            UTF8Encoding encoding = new UTF8Encoding();
-            TripleDESCryptoServiceProvider criptoProvider = new TripleDESCryptoServiceProvider();
-            //IV = criptoProvider.IV;
-            IV = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            //Key = criptoProvider.Key;
-            Key = btKey;
-            criptoProvider.Mode = CipherMode.CBC;
-            criptoProvider.Padding = PaddingMode.None;
-            ICryptoTransform criptoTransform = criptoProvider.CreateEncryptor(Key, IV);
-            MemoryStream memoryStream = new MemoryStream();
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, criptoTransform, CryptoStreamMode.Write);
-            cryptoStream.Write(message, 0, message.Length);
-            cryptoStream.FlushFinalBlock();
-            byte[] encriptado = memoryStream.ToArray();
-            return encriptado;
-        }
-     */
-
-    //TODO: Metodo para comunicar con la SAM y obtener la key para decodificar tarjeta.
-    private byte[] getKeysFromSAM() {
+    
+    //TODO: Metodo utilizado en la comunicación con la SAM
+    private byte[] getKeysFromSAM(){
 
         int i;
 
         byte[] key = KEYS_A_B[0];
-        byte[] apduRequest;
-        byte[] apduResponse;
+        byte[] apduRequest,apduResponse;
 
-        byte[] btRh;
-        byte[] btRc;
-        byte[] btKs1;
-        byte[] btKs2;
-        byte[] btKs;
-        byte[] btKa;
-        byte[] btCh;
-        byte[] btCc;
+        byte[] btRh,bt80,btVar1,btVar2,btRc,btKs1,btKs2,btKs,btKa,btCh,btCc;
 
-        byte[] btVar;
-        byte[] bt80 = new byte[]{
-                (byte) 0x80,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x00
+
+        bt80 = new byte[]{
+                (byte) 0x80, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+        };
+        btKa = new byte[]{
+                (byte) 0x76, (byte) 0x8E, (byte) 0x92, (byte) 0x78,
+                (byte) 0x28, (byte) 0x75, (byte) 0xAC, (byte) 0xAC,
+                (byte) 0xF6, (byte) 0x8E, (byte) 0x59, (byte) 0x48,
+                (byte) 0x04, (byte) 0x5F, (byte) 0xD5, (byte) 0x90
+        };
+        btVar1  = new byte[]{
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+        };
+        btVar2  = new byte[]{
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
 
+        console=console+"\nPaso 1: Initialize Update";
+        btRh = new byte[]{
+                (byte) 0xA0, (byte) 0x74, (byte) 0x4A, (byte) 0x3C,
+                (byte) 0xB5, (byte) 0xF1, (byte) 0x5E, (byte) 0xDE
+        };
+        console=console+"\n\tRh  = "+TdmCard.bytesToHexString(btRh);
+
+
+        apduRequest = new byte[]{
+                (byte) 0xBD, (byte) 0x00,
+                (byte) 0x80, (byte) 0x50, (byte) 0x00, (byte) 0x00, (byte) 0x08,
+                (byte) 0xA0, (byte) 0x74, (byte) 0x4A, (byte) 0x3C, (byte) 0xB5, (byte) 0xF1, (byte) 0x5E, (byte) 0xDE, (byte) 0x10
+        };
+        console=console+"\n\t->"+TdmCard.bytesToHexString(apduRequest);
+        apduResponse = new byte[]{
+                (byte) 0x61, (byte) 0x10
+        };
+        console=console+"\n\t<-"+TdmCard.bytesToHexString(apduResponse);
+
+        apduRequest = new byte[]{
+                (byte) 0xBD, (byte) 0x01,
+                (byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x10
+        };
+        console=console+"\n\t->"+TdmCard.bytesToHexString(apduRequest);
+        apduResponse = new byte[]{
+                (byte) 0xB1, (byte) 0x53, (byte) 0x30, (byte) 0xF6,
+                (byte) 0xF9, (byte) 0xEF, (byte) 0x3B, (byte) 0x54,
+                (byte) 0x9D, (byte) 0xBC, (byte) 0xDA, (byte) 0x19,
+                (byte) 0xE4, (byte) 0xFE, (byte) 0x5E, (byte) 0x59,
+                (byte) 0x90, (byte) 0x00
+        };
+        console=console+"\n\t<-"+TdmCard.bytesToHexString(apduResponse);
+
+        btRc = new byte[]{
+                apduResponse[0],
+                apduResponse[1],
+                apduResponse[2],
+                apduResponse[3],
+                apduResponse[4],
+                apduResponse[5],
+                apduResponse[6],
+                apduResponse[7]
+        };
+        console=console+"\n\tRc  = "+TdmCard.bytesToHexString(btRc);
+
+        btCc = new byte[]{
+                apduResponse[8],
+                apduResponse[9],
+                apduResponse[10],
+                apduResponse[11],
+                apduResponse[12],
+                apduResponse[13],
+                apduResponse[14],
+                apduResponse[15]
+        };
+        console=console+"\n\tCc  = "+TdmCard.bytesToHexString(btCc);
+
+        btVar1 = new byte[]{
+                btRc[4],
+                btRc[5],
+                btRc[6],
+                btRc[7],
+                btRh[0],
+                btRh[1],
+                btRh[2],
+                btRh[3]
+        };
         try {
-
-
-            btVar = new byte[]{
-                (byte) 0xB4,
-                (byte) 0x88,
-                (byte) 0x94,
-                (byte) 0x4A,
-                (byte) 0x4D,
-                (byte) 0xC6,
-                (byte) 0x03,
-                (byte) 0xC2
+            btKs1 = tdes(btVar1, btKa);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btKs1  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
-            btKs = new byte[]{
-                (byte) 0x84,
-                (byte) 0x5F,
-                (byte) 0x19,
-                (byte) 0xA0,
-                (byte) 0xB4,
-                (byte) 0x88,
-                (byte) 0x94,
-                (byte) 0x4A,
-                (byte) 0x22,
-                (byte) 0xC1,
-                (byte) 0xA4,
-                (byte) 0xCE,
-                (byte) 0x4D,
-                (byte) 0xC6,
-                (byte) 0x03,
-                (byte) 0xC2
-            };
-
-            console=console+"\nRh  = "+TdmCard.bytesToHexString(btVar);
-            console=console+"\nKs  = "+TdmCard.bytesToHexString(btKs);
-            console=console+"\nCc' = tdes(Rh, Ks)";
-            btVar = tdes(btVar, btKs);
-            console=console+"\nCc' (Resultado) = "+TdmCard.bytesToHexString(btVar);
-            console=console+"\nCc' (Solución)  = A64DF8232D4E7103";
-
-/*
-            apduRequest = new byte[]{
-                (byte) 0x00,
-                (byte) 0xA4,
-                (byte) 0x04,
-                (byte) 0x00,
-                (byte) 0x08,
-                (byte) 0xF0,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x00,
-                (byte) 0x41,
-                (byte) 0x59,
-                (byte) 0x4D,
-                (byte) 0x0D
-            };
-            console = console + "\n\n**Pre- Autenticación**";
-            console = console + "\n1º SAM_SelectSAMApp";
-            console = console +"\n->"+TdmCard.bytesToHexString(apduRequest);
-            //apduResponse = mSmartcardReader.sendApdu(apduRequest);
-            apduResponse = new byte[]{
-                    (byte) 0x90,
-                    (byte) 0x00
-            };
-            console = console + "\n<-" + TdmCard.bytesToHexString(apduResponse);
-
-
-            apduRequest = new byte[]{
-                    (byte) 0x90,
-                    (byte) 0x10,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x14
-            };
-
-            console=console+"\n2º (Opt)SAM_GetSAMProps";
-            console=console+"\n->"+TdmCard.bytesToHexString(apduRequest);
-            //apduResponse = mSmartcardReader.sendApdu(apduRequest);
-            apduResponse = new byte[]{
-                    (byte) 0x90,
-                    (byte) 0x00
-            };
-            console=console+"\n<-" + TdmCard.bytesToHexString(apduResponse);
-
-
-            //1º Generamos un número aleatorio (Rh)
-            console = console + "\n\n**Autenticación**";
-            console = console + "\n1º Generar random Rh";
-            //SecureRandom csprng = new SecureRandom();
-            btRh = new byte[8];
-            //csprng.nextBytes(btRh);
-            btRh = new byte[]{
-                    (byte) 0xB4,
-                    (byte) 0x88,
-                    (byte) 0x94,
-                    (byte) 0x4A,
-                    (byte) 0x4D,
-                    (byte) 0xC6,
-                    (byte) 0x03,
-                    (byte) 0xC2
-            };
-
-            console = console + "\n\tRh = " + TdmCard.bytesToHexString(btRh);
-
-            //2º Enviado
-            apduRequest = new byte[]{
-                    (byte) 0x80,
-                    (byte) 0x50,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x08,
-                    btRh[0],
-                    btRh[1],
-                    btRh[2],
-                    btRh[3],
-                    btRh[4],
-                    btRh[5],
-                    btRh[6],
-                    btRh[7]
-            };
-            console = console + "\n2º Initialize Update (APDU):";
-            console = console + "\n->" + TdmCard.bytesToHexString(apduRequest);
-            //apduResponse = mSmartcardReader.sendApdu(apduRequest);
-            apduResponse = new byte[]{
-                    (byte) 0x22,
-                    (byte) 0xC1,
-                    (byte) 0xA4,
-                    (byte) 0xCE,
-                    (byte) 0x84,
-                    (byte) 0x5F,
-                    (byte) 0x19,
-                    (byte) 0xA0,
-                    (byte) 0x2F,
-                    (byte) 0xED,
-                    (byte) 0x52,
-                    (byte) 0xBF,
-                    (byte) 0x23,
-                    (byte) 0xFE,
-                    (byte) 0xC3,
-                    (byte) 0xA8,
-                    (byte) 0x90,
-                    (byte) 0x00
-            };
-            console = console + "\n<-" + TdmCard.bytesToHexString(apduResponse);
-
-            btRc = new byte[8];
-            btCc = new byte[8];
-            if (apduResponse[apduResponse.length-2]==(byte)0x90) {
-                btRc = new byte[]{
-                    apduResponse[0],
-                    apduResponse[1],
-                    apduResponse[2],
-                    apduResponse[3],
-                    apduResponse[4],
-                    apduResponse[5],
-                    apduResponse[6],
-                    apduResponse[7]
-                };
-                btCc = new byte[]{
-                    apduResponse[8],
-                    apduResponse[9],
-                    apduResponse[10],
-                    apduResponse[11],
-                    apduResponse[12],
-                    apduResponse[13],
-                    apduResponse[14],
-                    apduResponse[15]
-                };
-            }else{
-                console = console + "\nError al obtener Respuesta APDU: Initialize Update";
-            }
-
-            console = console + "\n\tCc = " + TdmCard.bytesToHexString(btCc);
-            console = console + "\n\tRc = " + TdmCard.bytesToHexString(btRc);
-            console = console + "\n3º Clave de Sesión";
-
-            btKa = new byte[]{
-                    (byte) 0x76,
-                    (byte) 0x8E,
-                    (byte) 0x92,
-                    (byte) 0x78,
-                    (byte) 0x28,
-                    (byte) 0x75,
-                    (byte) 0xAC,
-                    (byte) 0xAC,
-                    (byte) 0xF6,
-                    (byte) 0x8E,
-                    (byte) 0x59,
-                    (byte) 0x48,
-                    (byte) 0x04,
-                    (byte) 0x5F,
-                    (byte) 0xD5,
-                    (byte) 0x90
-            };
-            console = console + "\n\tKa  = " + TdmCard.bytesToHexString(btKa);
-
-            btVar = new byte[]{
-                    btRc[4],
-                    btRc[5],
-                    btRc[6],
-                    btRc[7],
-                    btRh[0],
-                    btRh[1],
-                    btRh[2],
-                    btRh[3]
-            };
-            btKs1 = tdes(btVar, btKa);
-            console = console + "\n\tKs1 = Rc2+Rh1 TDES Ka = " + TdmCard.bytesToHexString(btKs1);
-
-            btVar = new byte[]{
-                    btRc[0],
-                    btRc[1],
-                    btRc[2],
-                    btRc[3],
-                    btRh[4],
-                    btRh[5],
-                    btRh[6],
-                    btRh[7]
-            };
-            btKs2= tdes(btVar, btKa);
-            console = console + "\n\tKs2 = Rc1+Rh2 TDES Ka = " + TdmCard.bytesToHexString(btKs2);
-
-            //Ks = Ks1 + Ks2
-            btKs = new byte[]{
-                    btKs1[0],
-                    btKs1[1],
-                    btKs1[2],
-                    btKs1[3],
-                    btKs1[4],
-                    btKs1[5],
-                    btKs1[6],
-                    btKs1[7],
-                    btKs2[0],
-                    btKs2[1],
-                    btKs2[2],
-                    btKs2[3],
-                    btKs2[4],
-                    btKs2[5],
-                    btKs2[6],
-                    btKs2[7]
-            };
-            console = console + "\n\tKs  = Ks1 + Ks2 = " + TdmCard.bytesToHexString(btKs);
-
-
-            console = console + "\n4º Cálculo de Cc:";
-
-            btVar = tdes(btRh, btKs);
-            console = console + "\n\t4.1 Cc'    = Rh     TDES Ks = " + TdmCard.bytesToHexString(btVar);
-
-
-            for (i = 0; i < 8; i++) {
-                btVar[i] = (byte) (btVar[i] ^ btRc[i]);
-            }
-            console = console + "\n\t4.2 Cc''   = Cc'    XOR  Rc = " + TdmCard.bytesToHexString(btVar);
-
-            btVar = tdes(btVar, btKs);
-            console = console + "\n\t4.3 Cc'''  = Cc''   TDES Ks = " + TdmCard.bytesToHexString(btVar);
-
-
-            for (i = 0; i < 8; i++)
-                btVar[i] = (byte) (btVar[i] ^ bt80[i]);
-            console = console + "\n\t4.4 Cc'''' = Cc'''  XOR  80 = " + TdmCard.bytesToHexString(btVar);
-
-            btVar = tdes(btVar, btKs);
-            console = console + "\n\t4.5 Cc     = Cc'''' TDES Ks = " + TdmCard.bytesToHexString(btVar);
-
-            console = console + "\n\tCc (calculado) = " + TdmCard.bytesToHexString(btVar);
-            console = console + "\n\tCc (original)  = " + TdmCard.bytesToHexString(btCc);
-
-
-            console = console + "\n5º Cálculamos en Ch";
-            btVar = tdes(btRc, btKs);
-            console = console + "\n\t5.1 Ch'    = Rc     TDES Ks = " + TdmCard.bytesToHexString(btVar);
-
-            for (i = 0; i < 8; i++) {
-                btVar[i] = (byte) (btVar[i] ^ btRh[i]);
-            }
-            console = console + "\n\t5.2 Ch''   = Ch'    XOR  Rh = " + TdmCard.bytesToHexString(btVar);
-
-            btVar = tdes(btVar, btKs);
-            console = console + "\n\t5.3 Ch'''  = Ch''   TDES Ks = " + TdmCard.bytesToHexString(btVar);
-
-
-            for (i = 0; i < 8; i++) {
-                btVar[i] = (byte) (btVar[i] ^ bt80[i]);
-            }
-            //console = console + "\n\t5.4 Ch'''' = Ch'''  XOR  80 = " + TdmCard.bytesToHexString(btVar);
-
-
-            btCh = tdes(btVar, btKs);
-            console = console + "\n\t5.5 Ch     = Ch'''' TDES Ks = " + TdmCard.bytesToHexString(btVar);
-
-            console = console + "\n\tCh = " + TdmCard.bytesToHexString(btCh);
-
-            console = console + "\n6º External authenticate (APDU):";
-            apduRequest = new byte[]{
-                    (byte) 0x80,
-                    (byte) 0x82,
-                    (byte) 0x00,
-                    (byte) 0x00,
-                    (byte) 0x08,
-                    btCh[0],
-                    btCh[1],
-                    btCh[2],
-                    btCh[3],
-                    btCh[4],
-                    btCh[5],
-                    btCh[6],
-                    btCh[7]
-            };
-            console = console + "\n->" + TdmCard.bytesToHexString(apduRequest);
-            //apduResponse = mSmartcardReader.sendApdu(apduRequest);
-            apduResponse = new byte[]{
-                    (byte) 0x69,
-                    (byte) 0x99
-            };
-            console = console + "\n<-" + TdmCard.bytesToHexString(apduResponse);
-
-*/
-        }catch(Exception e){
-            console = console + "\n"+ e;
-
         }
-        Log.v(LOG_TAG, console);
+        console=console+"\n\tKs1 = "+TdmCard.bytesToHexString(btVar1)+" TDES Ka = "+TdmCard.bytesToHexString(btKs1);
+
+        btVar1 = new byte[]{
+                btRc[0],
+                btRc[1],
+                btRc[2],
+                btRc[3],
+                btRh[4],
+                btRh[5],
+                btRh[6],
+                btRh[7]
+        };
+        try {
+            btKs2 = tdes(btVar1, btKa);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btKs2  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            };
+        }
+        console=console+"\n\tKs2 = "+TdmCard.bytesToHexString(btVar1)+" TDES Ka = "+TdmCard.bytesToHexString(btKs2);
+        btKs  = new byte[]{
+                btKs1[0],btKs1[1],btKs1[2],btKs1[3],btKs1[4],btKs1[5],btKs1[6],btKs1[7],
+                btKs2[0],btKs2[1],btKs2[2],btKs2[3],btKs2[4],btKs2[5],btKs2[6],btKs2[7]
+        };
+
+        console=console+"\n\tKs = "+TdmCard.bytesToHexString(btKs);
+
+        console=console+"\n\tCálculo de Cc.";
+
+        try {
+            btVar1 = tdes(btRh, btKs);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btVar1  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            };
+        }
+        console=console+"\n\tCc'    = "+TdmCard.bytesToHexString(btRh)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+
+        for (i = 0; i < 8; i++)
+            btVar2[i] = (byte) (btVar1[i] ^ btRc[i]);
+
+        console=console+"\n\tCc''   = "+TdmCard.bytesToHexString(btVar1)+" XOR Rc  = "+TdmCard.bytesToHexString(btVar2);
+
+        try {
+            btVar1 = tdes(btVar2, btKs);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btVar1  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            };
+        }
+        console=console+"\n\tCc'''  = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+
+        for (i = 0; i < 8; i++)
+            btVar2[i] = (byte) (btVar1[i] ^ bt80[i]);
+
+        console=console+"\n\tCc'''' = "+TdmCard.bytesToHexString(btVar1)+" XOR 80... = "+TdmCard.bytesToHexString(btVar2);
+
+        try {
+            btVar1 = tdes(btVar2, btKs);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btVar1  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            };
+        }
+        console=console+"\n\tCc = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+        console=console+"\n\tCc -> "+TdmCard.bytesToHexString(btVar1)+"  == "+TdmCard.bytesToHexString(btCc);
+
+
+        console=console+"\n\tCálculo de Ch.";
+
+        try {
+            btVar1 = tdes(btRc, btKs);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btVar1  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            };
+        }
+        console=console+"\n\tCh'    = "+TdmCard.bytesToHexString(btRh)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+
+        for (i = 0; i < 8; i++)
+            btVar2[i] = (byte) (btVar1[i] ^ btRh[i]);
+
+        console=console+"\n\tCh''   = "+TdmCard.bytesToHexString(btVar1)+" XOR Kh  = "+TdmCard.bytesToHexString(btVar2);
+
+        try {
+            btVar1 = tdes(btVar2, btKs);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btVar1  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            };
+        }
+        console=console+"\n\tCh'''  = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+
+        for (i = 0; i < 8; i++)
+            btVar2[i] = (byte) (btVar1[i] ^ bt80[i]);
+
+        console=console+"\n\tCh'''' = "+TdmCard.bytesToHexString(btVar1)+" XOR 80... = "+TdmCard.bytesToHexString(btVar2);
+
+        try {
+            btVar1 = tdes(btVar2, btKs);
+        }catch (Exception e){
+            console=console+"\n\tError using tdes()";
+            btVar1  = new byte[]{
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            };
+        }
+        btCh = btVar1;
+        console=console+"\n\tCh = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btCh);
+
+
+        console=console+"\nPaso 2: External Authenticate";
+
+        apduRequest = new byte[]{
+                (byte) 0xBD, (byte) 0x00,
+                (byte) 0x80, (byte) 0x82,(byte) 0x00, (byte) 0x00,(byte) 0x08,
+                btVar1[0],btVar1[1],btVar1[2],btVar1[3],btVar1[4],btVar1[5],btVar1[6],btVar1[7],
+        };
+        console=console+"\n\t->"+TdmCard.bytesToHexString(apduRequest);
+
+        apduResponse = new byte[]{
+                (byte) 0x90, (byte) 0x00
+        };
+        console=console+"\n\t<-"+TdmCard.bytesToHexString(apduResponse);
+
+
         return key;
     }
 
 }
+
+
+
+
+
+
+
+
+
+
 
