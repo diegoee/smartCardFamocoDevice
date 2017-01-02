@@ -325,7 +325,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     private byte[] tdes(byte[] info, byte[] keyAtr) throws Exception{
 
         SecretKey key = new SecretKeySpec(keyAtr, "DESede");
@@ -340,7 +339,7 @@ public class MainActivity extends AppCompatActivity
 
         return encrypted;
     }
-    
+
     //TODO: Metodo utilizado en la comunicación con la SAM
     private byte[] getKeysFromSAM(){
 
