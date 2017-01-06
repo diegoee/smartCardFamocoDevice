@@ -57,7 +57,6 @@ public class SplashScreen extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
