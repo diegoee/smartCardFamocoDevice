@@ -18,13 +18,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.famoco.secommunication.SmartcardReader;
 
 import java.io.IOException;
-
 import java.security.SecureRandom;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -136,10 +137,11 @@ public class MainActivity extends AppCompatActivity
             }
 
         }catch (Exception e){
-            console = console + e.toString();
+            console = console+"\n"+e.toString();
         }
 
-        this.getKeysFromSAM();
+        //this.getKeysFromSAM();
+        //console = console+"\nwer\nwerw\nwerwer\nwerwer\nrwerw\nwerw\nwerwer" + "\nwerwe\nwerwer\nwerwe\n1341\n123123\n123123\nsfdwdf\n123\nafadfa\n" + "\nqwqwqeq\n";
 
         navigationView.getMenu().getItem(0).setChecked(true);
         MainFragment fragment = new MainFragment();
@@ -204,6 +206,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onNewIntent(Intent intent) {
         console = "";
+        byte [] uid = new byte[]{
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+        };
 
         Bundle bundle = intent.getExtras();
         console = console + "Tarjeta descubierta ->";
@@ -211,10 +216,11 @@ public class MainActivity extends AppCompatActivity
             if (key.equals("android.nfc.extra.ID")) {
                 byte [] val = bundle.getByteArray(key);
                 console = console + String.format(" ID-NFC: %s",TdmCard.bytesToHexString(val));
+                uid = val;
             }
         }
 
-        console = console + resolveIntent(intent);
+        console = console + resolveIntent(intent,uid);
 
         navigationView.getMenu().getItem(0).setChecked(true);
 
@@ -226,9 +232,10 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
     }
 
-    private String resolveIntent(Intent intent) {
+    private String resolveIntent(Intent intent, byte [] uid) {
         String console = "";
         tdmCard.eraseInfo();
+
         // 1) Parse the intent and get the action that triggered this intent
         String action = intent.getAction();
         // 2) Check if it was triggered by a tag discovered interruption.
@@ -252,15 +259,15 @@ public class MainActivity extends AppCompatActivity
                     key_SAM = KEYS_A_B[0];
                     auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
                     //TODO: Cuando se tenga implementado: getKeysFromSAM()
+                    if (!auth) {
+                        key_SAM = this.getKeysFromSAM(uid);
 
-                    //if (!auth) {
-                    //    //IMPLEMENTAR: key_SAM = getKeysFromSAM();
-                    //    if (key_SAM.length==6) {
-                    //        auth = mfc.authenticateSectorWithKeyA(j, key_SAM);
-                    //    }else{
-                    //        auth=false;
-                    //    }
-                    //}
+                        if (key_SAM.length==6) {
+                            auth = mfc.authenticateSectorWithKeyA(j, key_SAM);
+                        }else{
+                            auth=false;
+                        }
+                    }
                     if (auth) {
                         // 6.2) In each sector - get the block count
                         bCount = mfc.getBlockCountInSector(j);
@@ -275,23 +282,24 @@ public class MainActivity extends AppCompatActivity
                         }
                     } else {
                         console = console +"\nError de Autentificación";
-                        return console;
+                        //return console;
+                        return ("\n"+this.console+console);
                     }
                 }
             } catch (IOException e) {
                 console = console +"\n"+e.getLocalizedMessage();
-                Log.v(LOG_TAG, e.getLocalizedMessage());
+                //Log.v(LOG_TAG, e.getLocalizedMessage());
                 console = console +"\nError en la lectura de los datos. Volver a realizar la lectura.";
                 return console;
             } catch (NullPointerException e) {
                 console = console +"\n"+e.toString();
-                Log.v(LOG_TAG,e.toString());
+                //Log.v(LOG_TAG,e.toString());
                 return console;
             }
             console = console +"\nDatos de la tarjeta leidos.";
 
             //Descomentar si se quieren ver los Bytes por Sector.
-            console = console + "\nDatos en hexadecimal:\n"+tdmCard.getInfoHexByte();
+            //console = console + "\nDatos en hexadecimal:\n"+tdmCard.getInfoHexByte();
 
         }else {
             console = console +"\nDatos de la NO tarjeta leidos.";
@@ -341,7 +349,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //TODO: Metodo utilizado en la comunicación con la SAM
-    private byte[] getKeysFromSAM(){
+    private byte[] getKeysFromSAM(byte [] uid){
 
         int i;
 
@@ -370,38 +378,69 @@ public class MainActivity extends AppCompatActivity
                 (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
 
-        console=console+"\nPaso 1: Initialize Update";
+        apduRequest = new byte[]{
+                (byte) 0x00,
+                (byte) 0xA4,
+                (byte) 0x04,
+                (byte) 0x00,
+                (byte) 0x08,
+                (byte) 0xF0,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x41,
+                (byte) 0x59,
+                (byte) 0x4D,
+                (byte) 0x0D
+        };
+
+        //console = console + "\nPaso 0: ";
+        //console = console + "\n1 - (SAM_SelectSAMApp)";
+        //console = console +"\n\t->"+TdmCard.bytesToHexString(apduRequest);
+        apduResponse = mSmartcardReader.sendApdu(apduRequest);
+        //console = console + "\n\t<-" + TdmCard.bytesToHexString(apduResponse);
+
+
+        apduRequest = new byte[]{
+                (byte) 0x90,
+                (byte) 0x10,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x14
+        };
+
+        //console=console+"\n1.1 - (Opt)(SAM_GetSAMProps)\n\t->" + TdmCard.bytesToHexString(apduRequest);
+        apduResponse = mSmartcardReader.sendApdu(apduRequest);
+        //console=console+"\n\t<-" + TdmCard.bytesToHexString(apduResponse);
+
+        //console = console + "\n2 - (SAM_Autenticate)";
+
+
+        //console=console+"\nPaso 1: Initialize Update";
         btRh = new byte[]{
                 (byte) 0xA0, (byte) 0x74, (byte) 0x4A, (byte) 0x3C,
                 (byte) 0xB5, (byte) 0xF1, (byte) 0x5E, (byte) 0xDE
         };
-        console=console+"\n\tRh  = "+TdmCard.bytesToHexString(btRh);
+
+        //console = console + "\n\t1º Gen. random para Rh";
+        SecureRandom csprng = new SecureRandom();
+        csprng.nextBytes(btRh);
+        //console=console+"\n\tRh  = "+TdmCard.bytesToHexString(btRh);
 
 
         apduRequest = new byte[]{
-                (byte) 0xBD, (byte) 0x00,
+                //(byte) 0xBD, (byte) 0x00,
                 (byte) 0x80, (byte) 0x50, (byte) 0x00, (byte) 0x00, (byte) 0x08,
-                (byte) 0xA0, (byte) 0x74, (byte) 0x4A, (byte) 0x3C, (byte) 0xB5, (byte) 0xF1, (byte) 0x5E, (byte) 0xDE, (byte) 0x10
+                btRh[0], btRh[1], btRh[2], btRh[3],
+                btRh[4], btRh[5], btRh[6], btRh[7]
+                //,(byte) 0x10
         };
-        console=console+"\n\t->"+TdmCard.bytesToHexString(apduRequest);
-        apduResponse = new byte[]{
-                (byte) 0x61, (byte) 0x10
-        };
-        console=console+"\n\t<-"+TdmCard.bytesToHexString(apduResponse);
 
-        apduRequest = new byte[]{
-                (byte) 0xBD, (byte) 0x01,
-                (byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x10
-        };
-        console=console+"\n\t->"+TdmCard.bytesToHexString(apduRequest);
-        apduResponse = new byte[]{
-                (byte) 0xB1, (byte) 0x53, (byte) 0x30, (byte) 0xF6,
-                (byte) 0xF9, (byte) 0xEF, (byte) 0x3B, (byte) 0x54,
-                (byte) 0x9D, (byte) 0xBC, (byte) 0xDA, (byte) 0x19,
-                (byte) 0xE4, (byte) 0xFE, (byte) 0x5E, (byte) 0x59,
-                (byte) 0x90, (byte) 0x00
-        };
-        console=console+"\n\t<-"+TdmCard.bytesToHexString(apduResponse);
+        //console = console + "\n\t-> " + TdmCard.bytesToHexString(apduRequest);
+
+        apduResponse = mSmartcardReader.sendApdu(apduRequest);
+        //console = console + "\n\t<- " + TdmCard.bytesToHexString(apduResponse);
 
         btRc = new byte[]{
                 apduResponse[0],
@@ -413,7 +452,7 @@ public class MainActivity extends AppCompatActivity
                 apduResponse[6],
                 apduResponse[7]
         };
-        console=console+"\n\tRc  = "+TdmCard.bytesToHexString(btRc);
+        //console=console+"\n\tRc  = "+TdmCard.bytesToHexString(btRc);
 
         btCc = new byte[]{
                 apduResponse[8],
@@ -425,7 +464,7 @@ public class MainActivity extends AppCompatActivity
                 apduResponse[14],
                 apduResponse[15]
         };
-        console=console+"\n\tCc  = "+TdmCard.bytesToHexString(btCc);
+        //console=console+"\n\tCc  = "+TdmCard.bytesToHexString(btCc);
 
         btVar1 = new byte[]{
                 btRc[4],
@@ -446,7 +485,7 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
         }
-        console=console+"\n\tKs1 = "+TdmCard.bytesToHexString(btVar1)+" TDES Ka = "+TdmCard.bytesToHexString(btKs1);
+        //console=console+"\n\tKs1 = "+TdmCard.bytesToHexString(btVar1)+" TDES Ka = "+TdmCard.bytesToHexString(btKs1);
 
         btVar1 = new byte[]{
                 btRc[0],
@@ -467,15 +506,15 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
         }
-        console=console+"\n\tKs2 = "+TdmCard.bytesToHexString(btVar1)+" TDES Ka = "+TdmCard.bytesToHexString(btKs2);
+        //console=console+"\n\tKs2 = "+TdmCard.bytesToHexString(btVar1)+" TDES Ka = "+TdmCard.bytesToHexString(btKs2);
         btKs  = new byte[]{
                 btKs1[0],btKs1[1],btKs1[2],btKs1[3],btKs1[4],btKs1[5],btKs1[6],btKs1[7],
                 btKs2[0],btKs2[1],btKs2[2],btKs2[3],btKs2[4],btKs2[5],btKs2[6],btKs2[7]
         };
 
-        console=console+"\n\tKs = "+TdmCard.bytesToHexString(btKs);
+        //console=console+"\n\tKs = "+TdmCard.bytesToHexString(btKs);
 
-        console=console+"\n\tCálculo de Cc.";
+        //console=console+"\n\tCálculo de Cc.";
 
         try {
             btVar1 = tdes(btRh, btKs);
@@ -486,12 +525,12 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
         }
-        console=console+"\n\tCc'    = "+TdmCard.bytesToHexString(btRh)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+        //console=console+"\n\tCc'    = "+TdmCard.bytesToHexString(btRh)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
 
         for (i = 0; i < 8; i++)
             btVar2[i] = (byte) (btVar1[i] ^ btRc[i]);
 
-        console=console+"\n\tCc''   = "+TdmCard.bytesToHexString(btVar1)+" XOR Rc  = "+TdmCard.bytesToHexString(btVar2);
+        //console=console+"\n\tCc''   = "+TdmCard.bytesToHexString(btVar1)+" XOR Rc  = "+TdmCard.bytesToHexString(btVar2);
 
         try {
             btVar1 = tdes(btVar2, btKs);
@@ -502,12 +541,12 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
         }
-        console=console+"\n\tCc'''  = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+        //console=console+"\n\tCc'''  = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
 
         for (i = 0; i < 8; i++)
             btVar2[i] = (byte) (btVar1[i] ^ bt80[i]);
 
-        console=console+"\n\tCc'''' = "+TdmCard.bytesToHexString(btVar1)+" XOR 80... = "+TdmCard.bytesToHexString(btVar2);
+        //console=console+"\n\tCc'''' = "+TdmCard.bytesToHexString(btVar1)+" XOR 80... = "+TdmCard.bytesToHexString(btVar2);
 
         try {
             btVar1 = tdes(btVar2, btKs);
@@ -518,11 +557,11 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
         }
-        console=console+"\n\tCc = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
-        console=console+"\n\tCc -> "+TdmCard.bytesToHexString(btVar1)+"  == "+TdmCard.bytesToHexString(btCc);
+        //console=console+"\n\tCc = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+        //console=console+"\n\tCc -> "+TdmCard.bytesToHexString(btVar1)+"  == "+TdmCard.bytesToHexString(btCc);
 
 
-        console=console+"\n\tCálculo de Ch.";
+        //console=console+"\n\tCálculo de Ch.";
 
         try {
             btVar1 = tdes(btRc, btKs);
@@ -533,12 +572,12 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
         }
-        console=console+"\n\tCh'    = "+TdmCard.bytesToHexString(btRh)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+        //console=console+"\n\tCh'    = "+TdmCard.bytesToHexString(btRh)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
 
         for (i = 0; i < 8; i++)
             btVar2[i] = (byte) (btVar1[i] ^ btRh[i]);
 
-        console=console+"\n\tCh''   = "+TdmCard.bytesToHexString(btVar1)+" XOR Kh  = "+TdmCard.bytesToHexString(btVar2);
+        //console=console+"\n\tCh''   = "+TdmCard.bytesToHexString(btVar1)+" XOR Kh  = "+TdmCard.bytesToHexString(btVar2);
 
         try {
             btVar1 = tdes(btVar2, btKs);
@@ -549,12 +588,12 @@ public class MainActivity extends AppCompatActivity
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
             };
         }
-        console=console+"\n\tCh'''  = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
+        //console=console+"\n\tCh'''  = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btVar1);
 
         for (i = 0; i < 8; i++)
             btVar2[i] = (byte) (btVar1[i] ^ bt80[i]);
 
-        console=console+"\n\tCh'''' = "+TdmCard.bytesToHexString(btVar1)+" XOR 80... = "+TdmCard.bytesToHexString(btVar2);
+        //console=console+"\n\tCh'''' = "+TdmCard.bytesToHexString(btVar1)+" XOR 80... = "+TdmCard.bytesToHexString(btVar2);
 
         try {
             btVar1 = tdes(btVar2, btKs);
@@ -566,23 +605,40 @@ public class MainActivity extends AppCompatActivity
             };
         }
         btCh = btVar1;
-        console=console+"\n\tCh = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btCh);
+        //console=console+"\n\tCh = "+TdmCard.bytesToHexString(btVar2)+" TDES Ks = "+TdmCard.bytesToHexString(btCh);
 
 
-        console=console+"\nPaso 2: External Authenticate";
+        //console=console+"\nPaso 2: External Authenticate";
 
         apduRequest = new byte[]{
-                (byte) 0xBD, (byte) 0x00,
+                //(byte) 0xBD, (byte) 0x00,
                 (byte) 0x80, (byte) 0x82,(byte) 0x00, (byte) 0x00,(byte) 0x08,
-                btVar1[0],btVar1[1],btVar1[2],btVar1[3],btVar1[4],btVar1[5],btVar1[6],btVar1[7],
+                btVar1[0],btVar1[1],btVar1[2],btVar1[3],
+                btVar1[4],btVar1[5],btVar1[6],btVar1[7]
         };
-        console=console+"\n\t->"+TdmCard.bytesToHexString(apduRequest);
+        //console=console+"\n\t-> "+TdmCard.bytesToHexString(apduRequest);
 
-        apduResponse = new byte[]{
-                (byte) 0x90, (byte) 0x00
+
+        apduResponse = mSmartcardReader.sendApdu(apduRequest);
+        //console=console+"\n\t<- "+TdmCard.bytesToHexString(apduResponse);
+
+        console=console+"\nPaso 3: GET_MIF1K_KEYS";
+
+        byte [] btVers = new byte[]{
+                (byte) 0x01
         };
-        console=console+"\n\t<-"+TdmCard.bytesToHexString(apduResponse);
 
+        apduRequest = new byte[]{
+                (byte) 0x90, (byte) 0x30,
+                btVers[0],
+                (byte) 0x00,(byte) 0x04,
+                uid[0],uid[1],uid[2],uid[3],
+                (byte) 0x0A
+        };
+        console=console+"\n\t-> "+TdmCard.bytesToHexString(apduRequest);
+
+        //apduResponse = mSmartcardReader.sendApdu(apduRequest);
+        console=console+"\n\t<- "+TdmCard.bytesToHexString(apduResponse);
 
         return key;
     }

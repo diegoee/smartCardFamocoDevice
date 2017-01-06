@@ -89,7 +89,7 @@ public class TdmCard {
                 auxInt=4;
             }
 
-            result= "****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+auxInt ;
+            result= "\n****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+auxInt ;
 
             auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
             result = result + "\nFecha de Caducidad (Datos de Tarjeta):\n\t" + decoData(auxBytes,TdmCard.CARD_DATE)+"\n";
