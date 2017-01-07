@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -216,7 +217,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        console = console + resolveIntent(intent,uid);
+        console = console +"\n"+resolveIntent(intent,uid);
 
         navigationView.getMenu().getItem(0).setChecked(true);
 
@@ -229,7 +230,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private String resolveIntent(Intent intent, byte [] uid) {
-        String console = "";
+        String cons = "";
         tdmCard.eraseInfo();
 
         // 1) Parse the intent and get the action that triggered this intent
@@ -237,28 +238,42 @@ public class MainActivity extends AppCompatActivity
 
         // 2) Check if it was triggered by a tag discovered interruption.
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) { //ACTION_TECH_DISCOVERED
-            //  3) Get an instance of the TAG from the NfcAdapter
-            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            byte[] data;
             try {
+                //  3) Get an instance of the TAG from the NfcAdapter
+                Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                byte[] data;
                 // 4) Get an instance of the Mifare classic card from this TAG intent
                 MifareClassic mfc = MifareClassic.get(tagFromIntent);
+
                 // 5.1) Connect to card
                 mfc.connect();
                 boolean auth = false;
+
                 // 5.2) and get the number of sectors this card has..and loop thru these sectors
                 int secCount = mfc.getSectorCount();
                 int bCount = 0;
                 int bIndex = 0;
 
+                key_SAM = this.getKeysFromSAM(uid);
+                auth = mfc.authenticateSectorWithKeyA(0,key_SAM);
+
                 for (int j = 0; j < secCount; j++) {// 16 Sectors
                     // 6.1) authenticate the sector
+                    auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
+                    cons = cons +"\nSECTOR_"+j+" Auth="+auth+" KEY_A_USED="+tdmCard.bytesToHexString(key_SAM);
 
-                    //key_SAM = KEYS_A_B[0];
-                    //auth = mfc.authenticateSectorWithKeyA(j,key_SAM);
-                    key_SAM = this.getKeysFromSAM(uid);
+                    bCount = mfc.getBlockCountInSector(j);
+                    bIndex = 0;
+                    for (int i = 0; i < bCount; i++) {// 4 Blocks
+                        bIndex = mfc.sectorToBlock(j);
+                        // 6.3) Read the block
+                        data = mfc.readBlock(bIndex+i);
+                        // 7) Convert the data into a string from Hex format.
+                        //tdmCard.append(data);
+                        cons = cons +"\n"+ tdmCard.bytesToHexString(data);
+                    }
 
-
+                    /*
                     if (!auth) {
                         key_SAM = this.getKeysFromSAM(uid);
                         if (key_SAM.length==6) {
@@ -267,6 +282,7 @@ public class MainActivity extends AppCompatActivity
                             auth=false;
                         }
                     }
+
                     if (auth) {
                         // 6.2) In each sector - get the block count
                         bCount = mfc.getBlockCountInSector(j);
@@ -277,29 +293,31 @@ public class MainActivity extends AppCompatActivity
                             data = mfc.readBlock(bIndex+i);
                             // 7) Convert the data into a string from Hex format.
                             tdmCard.append(data);
-                            //console = console +"\n"+ tdmCard.bytesToHexString(data);
+                            //cons = cons +"\n"+ tdmCard.bytesToHexString(data);
                         }
                     } else {
-                        console = console +"\nError de Autentificación";
-                        return console;
+                        cons = cons +"\nError de Autentificación";
+                        return cons;
                     }
+                    */
                 }
             } catch (IOException e) {
-                console = console +"\nIOException Error:";
-                console = console +"\n"+e.getLocalizedMessage();
-                return console;
+                cons = cons +"\nIOException Error:";
+                cons = cons +"\n"+e.getLocalizedMessage();
+                return cons;
             } catch (NullPointerException e) {
-                console = console +"\nNullPointerException Error:";
-                console = console +"\n"+e.toString();
-                return console;
+                cons = cons +"\nNullPointerException Error:";
+                cons = cons +"\n"+e.toString();
+                return cons;
             }
-            console = console +"\nDatos de la tarjeta leidos.";
+            //cons = cons +"\nDatos de la tarjeta leidos.";
             //Descomentar si se quieren ver los Bytes por Sector.
-            console = console + "\nDatos en hexadecimal:\n"+tdmCard.getInfoHexByte();
+            //cons = cons + "\nDatos en hexadecimal:\n"+tdmCard.getInfoHexByte();
         }else {
-            console = console +"\nDatos de la NO tarjeta leidos.";
+            cons = cons +"\nDatos de la NO tarjeta leidos.";
         }
-        return console;
+        Log.v(LOG_TAG,cons);
+        return cons;
     }
 
     @Override
@@ -338,17 +356,29 @@ public class MainActivity extends AppCompatActivity
         byte[] apduRequest,apduResponse;
 
         apduRequest = new byte[]{
-                (byte) 0x90, (byte) 0x30,
+                (byte) 0x90,
+                (byte) 0x48,
                 btVers[0],
-                (byte) 0x00,(byte) 0x04,
-                uid[0],uid[1],uid[2],uid[3],
-                (byte) 0x0A
+                (byte) 0x00,
+                (byte) 0x04,
+                uid[0],uid[1],uid[2],uid[3]
         };
-        console=console+"\n\t-> "+TdmCard.bytesToHexString(apduRequest);
 
+        String c="-> "+TdmCard.bytesToHexString(apduRequest);
         apduResponse = mSmartcardReader.sendApdu(apduRequest);
-        console=console+"\n\t<- "+TdmCard.bytesToHexString(apduResponse);
-
+        c=c+"\n<- "+TdmCard.bytesToHexString(apduResponse);
+        /*
+        key = new byte[]{
+                apduResponse[6],
+                apduResponse[7],
+                apduResponse[8],
+                apduResponse[9],
+                apduResponse[10],
+                apduResponse[11]
+        };
+        */
+        //c=c+"\nkey = "+TdmCard.bytesToHexString(key);
+        Log.v(LOG_TAG,c);
         return key;
     }
 
