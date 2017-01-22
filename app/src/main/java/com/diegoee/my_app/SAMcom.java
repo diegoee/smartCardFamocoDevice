@@ -25,18 +25,10 @@ public class SAMcom {
     public final static byte[] KEYS_A_Color =
             new byte[]{(byte) 0x0A, (byte) 0x41, (byte) 0x59, (byte) 0x4D ,(byte) 0x55, (byte) 0x52};
 
-    // key_A = false and key_B = true
-    public boolean[] ab = {
-            true,true,true,true,true,
-            true,true,true,true,true,
-            true,true,true,true,true
-    };
+    // key_A = true and key_B = false
+    public boolean[] ab;
 
-    public byte[][] keys = {
-            KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],
-            KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],
-            KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0],KEYS_A_B[0]
-    };
+    public byte[][] keys;
 
     //FAMOCO
     private SmartcardReader mSmartcardReader;
@@ -46,6 +38,20 @@ public class SAMcom {
     public SAMcom(){
         this.isDeviceAbleToRunSmartcardReader=false;
         this.mSmartcardReader=null;
+        keys = new byte[15][6];
+        ab = new boolean[15];
+        this.initVar();
+    }
+
+    public void initVar(){
+        for (int j = 0; j < 15; j++) {// 15 Sectors
+            for (int i = 0; i < 6; i++) {
+                this.keys[j][i] =  KEYS_A_B[0][i];
+            }
+        }
+        for (int j = 0; j < 15; j++) {// 15 Sectors
+            this.ab[j] =  true;
+        }
     }
 
     public String init(){
@@ -63,7 +69,7 @@ public class SAMcom {
                 //console=console+"\nSAM ->ATR: " + TdmCard.bytesToHexString(atr);
                 //init SAM
                 mSmartcardReader.powerOn();
-                this.startSAM();
+                console = console + this.startSAM();
 
             } else {
                 console = console + "\nDispositivo sin Módulo SAM";
@@ -86,23 +92,19 @@ public class SAMcom {
 
     public void setKeysFromSAM(boolean colorCard, byte[] uid, byte[] btVers){
         //GET_MIF1K_KEYS --- APDU;
-        for (int j = 0; j < keys[0].length-1; j++) {// 16 Sectors
-            for (int i = 0; i < 6; i++) {
-                keys[j][i] =  KEYS_A_B[0][i];
-            }
-        }
-
-        for (int j = 0; j < ab.length-1; j++) {// 16 Sectors
-            ab[j] =  true;
-        }
+        this.initVar();
 
         if (colorCard) {
+
             byte[] apduRequest, apduResponse;
-            byte bv = (byte) 0x00;
-            if (((byte) 0x10)==btVers[0]){
+            byte[] aux;
+            int[] pos;
+            byte bv = (byte) 0x02;
+
+            if ((Character.toString(TdmCard.bytesToHexString(btVers).charAt(1))).equals("1")){
                 bv = (byte) 0x01;
             }
-            if (((byte) 0x20)==btVers[0]){
+            if ((Character.toString(TdmCard.bytesToHexString(btVers).charAt(1))).equals("2")){
                 bv = (byte) 0x02;
             }
 
@@ -119,34 +121,86 @@ public class SAMcom {
             apduResponse = mSmartcardReader.sendApdu(apduRequest);
             c = c + "\n<- " + TdmCard.bytesToHexString(apduResponse);
 
+            //Log.v(LOG_TAG,c);
+
+            /*
+
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[0]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[1]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[2],apduResponse[3],apduResponse[4],
+                apduResponse[5],apduResponse[6],apduResponse[7]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[15]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[16],apduResponse[17],apduResponse[18],
+                apduResponse[19],apduResponse[20],apduResponse[21]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[85]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[86],apduResponse[87],apduResponse[88],
+                apduResponse[89],apduResponse[90],apduResponse[91]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[92]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[93],apduResponse[94],apduResponse[95],
+                apduResponse[96],apduResponse[97],apduResponse[98]
+            }));
+            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
+                apduResponse[99],apduResponse[100]
+            }));
+            */
+
+
             if (apduResponse[0]==((byte) 0x0E)) {
-                int[] pos = {
+                pos = new int[]{
                      2,  9, 16, 23, 30,
                     37, 44, 51, 58, 65,
-                    72, 79, 86, 93, 100
+                    72, 79, 86, 93
                 };
 
                 for (int i = 0; i < 6; i++) {
                     keys[0][i] =  KEYS_A_Color[i];
+                    ab[0] = true;
                 }
 
-
-                //VER POR AQUI
-
-                for (int j = 1; j < pos.length-1; j++) {// 16 Sectors
+                //Log.v(LOG_TAG,"Start");
+                for (int j = 1; j <= pos.length; j++) {
                     for (int i = 0; i < 6; i++) {
-                        keys[j][i] =  apduResponse[pos[j] + i];
+                        keys[j][i] =  apduResponse[pos[j-1] + i];
                     }
 
-                    byte[] aux = new byte[]{
-                            apduResponse[pos[j]-1]
+                    aux = new byte[]{
+                        apduResponse[pos[j-1]-1]
                     };
-                    //Log.v(LOG_TAG,TdmCard.bytesToHexString(aux));
-                    //Log.v(LOG_TAG,TdmCard.bytesToHexString(keys[j]));
+
+                    //Log.v(LOG_TAG,Integer.toString(j)+" - "+TdmCard.bytesToHexString(aux));
+                    //Log.v(LOG_TAG,Character.toString(TdmCard.bytesToHexString(aux).charAt(0)));
+                    //Log.v(LOG_TAG,""+TdmCard.bytesToHexString(aux).charAt(0));
+
+                    if ((Character.toString(TdmCard.bytesToHexString(aux).charAt(0))).equals("0")){
+                        //0 - KEY_B
+                        this.ab[j] =  true;
+                    }else{
+                        //4 - KEY_B
+                        this.ab[j] =  false;
+                    }
+
                 }
             }
 
             /*
+            // - EJEMPLO -
             -> 9048000004BDAAA4E6
             <- 0E01CB08DBC12E5902F7CB2B69587443AF9A48C3ACF444B750F8E9E83F45F29597C353FE462CC23B78656D472A10761D6D08489FC443A9781A499C759288CB164A69C68D7768C60B5BE071E8BFB90CD5EF905368390D8D68C2B599000E1BDA3566595F9000
             Esta es correcta y la interpretación es la siguiente (Viene en el documento de comandos del SAM de GMV)
@@ -181,20 +235,6 @@ public class SAMcom {
             1BDA3566595F  - La clave indicada en el byte anterior
             9000 - Respuesta correcta del SAM
             */
-
-
-        /*
-        key = new byte[]{
-                apduResponse[6],
-                apduResponse[7],
-                apduResponse[8],
-                apduResponse[9],
-                apduResponse[10],
-                apduResponse[11]
-        };
-        */
-            //c=c+"\nkey = "+TdmCard.bytesToHexString(key);
-            //Log.v(LOG_TAG,c);
         }
     }
 
@@ -264,6 +304,11 @@ public class SAMcom {
         //console = console +"\n\t->"+TdmCard.bytesToHexString(apduRequest);
         apduResponse = mSmartcardReader.sendApdu(apduRequest);
         //console = console + "\n\t<-" + TdmCard.bytesToHexString(apduResponse);
+
+        if (("6999").equals(TdmCard.bytesToHexString(apduResponse))){
+            console=console+"\nSAM Bloqueada";
+            return console;
+        }
 
 
         apduRequest = new byte[]{

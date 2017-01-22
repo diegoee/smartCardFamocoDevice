@@ -19,9 +19,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import java.io.IOException;
-
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -196,6 +194,7 @@ public class MainActivity extends AppCompatActivity
         tdmCard.eraseInfo();
 
         boolean colorCard = false;
+        boolean auth = false;
 
         byte[] uId = new byte[]{
                 (byte) 0x00,
@@ -221,7 +220,6 @@ public class MainActivity extends AppCompatActivity
 
                 // 5.1) Connect to card
                 mfc.connect();
-                boolean auth = false;
 
                 // 5.2) and get the number of sectors this card has..and loop thru these sectors
                 int secCount = mfc.getSectorCount();
@@ -232,40 +230,43 @@ public class MainActivity extends AppCompatActivity
                 if (!auth){
                     auth = mfc.authenticateSectorWithKeyA(0,samCom.KEYS_A_Color);
                     colorCard = true;
-                    //getting uid and Version
-                    bCount = mfc.getBlockCountInSector(0);
-
-                    data = mfc.readBlock(mfc.sectorToBlock(0)+0);
-                    uId[0]=data[0];
-                    uId[1]=data[1];
-                    uId[2]=data[2];
-                    uId[3]=data[3];
-                    data = mfc.readBlock(mfc.sectorToBlock(0)+1);
-                    bVers[0]=data[0];
-
-                    Log.v(LOG_TAG,tdmCard.bytesToHexString(uId));
-                    Log.v(LOG_TAG,tdmCard.bytesToHexString(bVers));
                 }
+
+                //getting uid and Version
+                data = mfc.readBlock(mfc.sectorToBlock(0)+0);
+                uId[0]=data[0];
+                uId[1]=data[1];
+                uId[2]=data[2];
+                uId[3]=data[3];
+                data = mfc.readBlock(mfc.sectorToBlock(0)+1);
+                bVers[0]=data[0];
+
+                //Log.v(LOG_TAG,tdmCard.bytesToHexString(uId));
+                //Log.v(LOG_TAG,tdmCard.bytesToHexString(bVers));
 
                 samCom.setKeysFromSAM(colorCard,uId,bVers);
 
                 if (auth) {
                     for (int j = 0; j < secCount-1; j++) {// 16 Sectors
-                        Log.v(LOG_TAG, Integer.toString(j) + " - " + tdmCard.bytesToHexString(samCom.keys[j]));
+                        //Log.v(LOG_TAG, Integer.toString(j) + " - " + tdmCard.bytesToHexString(samCom.keys[j]) + " - " + Boolean.toString(samCom.ab[j]));
+                        auth = false;
 
                         // 6.1) authenticate the sector
                         if (samCom.ab[j]){
                             auth = mfc.authenticateSectorWithKeyA(j, samCom.keys[j]);
-                            cons = cons + "\nSECTOR_" + j + " KEY_A_USED=" + tdmCard.bytesToHexString(samCom.keys[j]);
+                            cons = cons + "\nS_" + j +
+                                    " \tA=" + tdmCard.bytesToHexString(samCom.keys[j])+
+                                    "  \tauth="+Boolean.toString(auth);
                         }else{
                             auth = mfc.authenticateSectorWithKeyB(j, samCom.keys[j]);
-                            cons = cons + "\nSECTOR_" + j + " KEY_B_USED=" + tdmCard.bytesToHexString(samCom.keys[j]);
+                            cons = cons + "\nS_" + j +
+                                    " \tB=" + tdmCard.bytesToHexString(samCom.keys[j])+
+                                    "  \tauth="+Boolean.toString(auth);
                         }
+                        /**/
 
                         bCount = mfc.getBlockCountInSector(j);
                         bIndex = 0;
-
-                        Log.v(LOG_TAG, Boolean.toString(auth));
 
                         if (auth) {
                             for (int i = 0; i < bCount; i++) {// 4 Blocks
@@ -293,13 +294,9 @@ public class MainActivity extends AppCompatActivity
                 cons = cons +"\n"+e.toString();
                 return cons;
             }
-            //cons = cons +"\nDatos de la tarjeta leidos.";
-            //Descomentar si se quieren ver los Bytes por Sector.
-            //cons = cons + "\nDatos en hexadecimal:\n"+tdmCard.getInfoHexByte();
         }else {
-            cons = cons +"\nDatos de la NO tarjeta leidos.";
+            cons = cons +"\nDatos de la tarjeta NO leidos.";
         }
-        //Log.v(LOG_TAG,cons);
 
         return cons;
     }
