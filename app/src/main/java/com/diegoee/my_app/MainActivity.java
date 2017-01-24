@@ -206,6 +206,8 @@ public class MainActivity extends AppCompatActivity
                 (byte) 0x00
         };
 
+        byte[] data;
+
         // 1) Parse the intent and get the action that triggered this intent
         String action = intent.getAction();
 
@@ -214,7 +216,7 @@ public class MainActivity extends AppCompatActivity
             try {
                 //  3) Get an instance of the TAG from the NfcAdapter
                 Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                byte[] data;
+
                 // 4) Get an instance of the Mifare classic card from this TAG intent
                 MifareClassic mfc = MifareClassic.get(tagFromIntent);
 
@@ -241,13 +243,13 @@ public class MainActivity extends AppCompatActivity
                 data = mfc.readBlock(mfc.sectorToBlock(0)+1);
                 bVers[0]=data[0];
 
-                //Log.v(LOG_TAG,tdmCard.bytesToHexString(uId));
-                //Log.v(LOG_TAG,tdmCard.bytesToHexString(bVers));
+                Log.v(LOG_TAG,tdmCard.bytesToHexString(uId) + " - " + tdmCard.bytesToHexString(bVers) + " - COLOR:" + Boolean.toString(colorCard));
 
                 samCom.setKeysFromSAM(colorCard,uId,bVers);
 
                 if (auth) {
-                    for (int j = 0; j < secCount-1; j++) {// 16 Sectors
+                    //for (int j = 1; j < secCount-1; j++) {
+                    int j = 2;
                         //Log.v(LOG_TAG, Integer.toString(j) + " - " + tdmCard.bytesToHexString(samCom.keys[j]) + " - " + Boolean.toString(samCom.ab[j]));
                         auth = false;
 
@@ -263,7 +265,8 @@ public class MainActivity extends AppCompatActivity
                                     " \tB=" + tdmCard.bytesToHexString(samCom.keys[j])+
                                     "  \tauth="+Boolean.toString(auth);
                         }
-                        /**/
+
+                        Log.v(LOG_TAG, cons);
 
                         bCount = mfc.getBlockCountInSector(j);
                         bIndex = 0;
@@ -278,7 +281,7 @@ public class MainActivity extends AppCompatActivity
                                 cons = cons + "\n" + tdmCard.bytesToHexString(data);
                             }
                         }
-                    }
+                    //}
 
                 } else {
                     cons = cons +"\nError de Autentificación";

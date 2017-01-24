@@ -99,7 +99,7 @@ public class SAMcom {
             byte[] apduRequest, apduResponse;
             byte[] aux;
             int[] pos;
-            byte bv = (byte) 0x02;
+            byte bv = (byte) 0x00;
 
             if ((Character.toString(TdmCard.bytesToHexString(btVers).charAt(1))).equals("1")){
                 bv = (byte) 0x01;
@@ -114,6 +114,7 @@ public class SAMcom {
                     bv,
                     (byte) 0x00,
                     (byte) 0x04,
+                    //(byte) 0xBD,(byte) 0xAA,(byte) 0xA4,(byte) 0xE6,
                     uid[0], uid[1], uid[2], uid[3]
             };
 
@@ -121,7 +122,12 @@ public class SAMcom {
             apduResponse = mSmartcardReader.sendApdu(apduRequest);
             c = c + "\n<- " + TdmCard.bytesToHexString(apduResponse);
 
-            //Log.v(LOG_TAG,c);
+            Log.v(LOG_TAG,c);
+
+            /*
+            -> 9048000004BDAAA4E6
+            <- 0E01CB08DBC12E5902F7CB2B69587443AF9A48C3ACF444B750F8E9E83F45F29597C353FE462CC23B78656D472A10761D6D08489FC443A9781A499C759288CB164A69C68D7768C60B5BE071E8BFB90CD5EF905368390D8D68C2B599000E1BDA3566595F9000
+            */
 
             /*
 
