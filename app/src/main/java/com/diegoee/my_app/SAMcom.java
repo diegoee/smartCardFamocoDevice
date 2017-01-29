@@ -117,10 +117,11 @@ public class SAMcom {
                     (byte) 0x00,
                     (byte) 0x04,
                     //(byte) 0xBD,(byte) 0xAA,(byte) 0xA4,(byte) 0xE6,
-                    uid[0], uid[1], uid[2], uid[3]
+                    uid[0], uid[1], uid[2], uid[3],
+                    (byte) 0x00
             };
 
-            c = c +"\n\nAPDU GET_MIF1K_KEYS cmd:";
+            c = c +"\n\nAPDU cmd GET_MIF1K_KEYS:";
             c = c + "\n-> " + TdmCard.bytesToHexString(apduRequest);
             apduResponse = mSmartcardReader.sendApdu(apduRequest);
             c = c + "\n<- " + TdmCard.bytesToHexString(apduResponse)+ "\n";

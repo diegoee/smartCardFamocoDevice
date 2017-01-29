@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity
                 data = mfc.readBlock(mfc.sectorToBlock(0)+1);
                 bVers[0]=data[0];
 
-                cons = cons + "uId: "+  tdmCard.bytesToHexString(uId) + "\nVer: " + tdmCard.bytesToHexString(bVers) + " \nTarjeta color: " + Boolean.toString(colorCard);
+                cons = cons + "uId (Hex): "+  tdmCard.bytesToHexString(uId) + "\nVer (Hex): " + tdmCard.bytesToHexString(bVers) + " \nTarjeta color: " + Boolean.toString(colorCard);
                 cons = cons + samCom.setKeysFromSAM(colorCard,uId,bVers);
 
                 if (auth) {
@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity
                                     "  \tauth="+Boolean.toString(auth);
                         }
 
-                        Log.v(LOG_TAG, cons);
+                        //Log.v(LOG_TAG, cons);
 
                         bCount = mfc.getBlockCountInSector(j);
                         bIndex = 0;
