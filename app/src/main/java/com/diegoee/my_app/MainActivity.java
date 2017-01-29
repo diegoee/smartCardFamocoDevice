@@ -243,13 +243,11 @@ public class MainActivity extends AppCompatActivity
                 data = mfc.readBlock(mfc.sectorToBlock(0)+1);
                 bVers[0]=data[0];
 
-                Log.v(LOG_TAG,tdmCard.bytesToHexString(uId) + " - " + tdmCard.bytesToHexString(bVers) + " - COLOR:" + Boolean.toString(colorCard));
-
-                samCom.setKeysFromSAM(colorCard,uId,bVers);
+                cons = cons + "uId: "+  tdmCard.bytesToHexString(uId) + "\nVer: " + tdmCard.bytesToHexString(bVers) + " \nTarjeta color: " + Boolean.toString(colorCard);
+                cons = cons + samCom.setKeysFromSAM(colorCard,uId,bVers);
 
                 if (auth) {
-                    //for (int j = 1; j < secCount-1; j++) {
-                    int j = 2;
+                    for (int j = 0; j < secCount-1; j++) {
                         //Log.v(LOG_TAG, Integer.toString(j) + " - " + tdmCard.bytesToHexString(samCom.keys[j]) + " - " + Boolean.toString(samCom.ab[j]));
                         auth = false;
 
@@ -281,7 +279,7 @@ public class MainActivity extends AppCompatActivity
                                 cons = cons + "\n" + tdmCard.bytesToHexString(data);
                             }
                         }
-                    //}
+                    }
 
                 } else {
                     cons = cons +"\nError de Autentificación";

@@ -90,7 +90,9 @@ public class SAMcom {
         }
     }
 
-    public void setKeysFromSAM(boolean colorCard, byte[] uid, byte[] btVers){
+    public String setKeysFromSAM(boolean colorCard, byte[] uid, byte[] btVers){
+        String c = "";
+
         //GET_MIF1K_KEYS --- APDU;
         this.initVar();
 
@@ -118,55 +120,10 @@ public class SAMcom {
                     uid[0], uid[1], uid[2], uid[3]
             };
 
-            String c = "-> " + TdmCard.bytesToHexString(apduRequest);
+            c = c +"\n\nAPDU GET_MIF1K_KEYS cmd:";
+            c = c + "\n-> " + TdmCard.bytesToHexString(apduRequest);
             apduResponse = mSmartcardReader.sendApdu(apduRequest);
-            c = c + "\n<- " + TdmCard.bytesToHexString(apduResponse);
-
-            Log.v(LOG_TAG,c);
-
-            /*
-            -> 9048000004BDAAA4E6
-            <- 0E01CB08DBC12E5902F7CB2B69587443AF9A48C3ACF444B750F8E9E83F45F29597C353FE462CC23B78656D472A10761D6D08489FC443A9781A499C759288CB164A69C68D7768C60B5BE071E8BFB90CD5EF905368390D8D68C2B599000E1BDA3566595F9000
-            */
-
-            /*
-
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[0]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[1]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[2],apduResponse[3],apduResponse[4],
-                apduResponse[5],apduResponse[6],apduResponse[7]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[15]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[16],apduResponse[17],apduResponse[18],
-                apduResponse[19],apduResponse[20],apduResponse[21]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[85]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[86],apduResponse[87],apduResponse[88],
-                apduResponse[89],apduResponse[90],apduResponse[91]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[92]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[93],apduResponse[94],apduResponse[95],
-                apduResponse[96],apduResponse[97],apduResponse[98]
-            }));
-            Log.v(LOG_TAG,TdmCard.bytesToHexString(new byte[]{
-                apduResponse[99],apduResponse[100]
-            }));
-            */
-
+            c = c + "\n<- " + TdmCard.bytesToHexString(apduResponse)+ "\n";
 
             if (apduResponse[0]==((byte) 0x0E)) {
                 pos = new int[]{
@@ -180,7 +137,6 @@ public class SAMcom {
                     ab[0] = true;
                 }
 
-                //Log.v(LOG_TAG,"Start");
                 for (int j = 1; j <= pos.length; j++) {
                     for (int i = 0; i < 6; i++) {
                         keys[j][i] =  apduResponse[pos[j-1] + i];
@@ -189,10 +145,6 @@ public class SAMcom {
                     aux = new byte[]{
                         apduResponse[pos[j-1]-1]
                     };
-
-                    //Log.v(LOG_TAG,Integer.toString(j)+" - "+TdmCard.bytesToHexString(aux));
-                    //Log.v(LOG_TAG,Character.toString(TdmCard.bytesToHexString(aux).charAt(0)));
-                    //Log.v(LOG_TAG,""+TdmCard.bytesToHexString(aux).charAt(0));
 
                     if ((Character.toString(TdmCard.bytesToHexString(aux).charAt(0))).equals("0")){
                         //0 - KEY_B
@@ -205,43 +157,8 @@ public class SAMcom {
                 }
             }
 
-            /*
-            // - EJEMPLO -
-            -> 9048000004BDAAA4E6
-            <- 0E01CB08DBC12E5902F7CB2B69587443AF9A48C3ACF444B750F8E9E83F45F29597C353FE462CC23B78656D472A10761D6D08489FC443A9781A499C759288CB164A69C68D7768C60B5BE071E8BFB90CD5EF905368390D8D68C2B599000E1BDA3566595F9000
-            Esta es correcta y la interpretación es la siguiente (Viene en el documento de comandos del SAM de GMV)
-            0E - 15 Claves devueltas
-            01 - Clave A del sector 1
-            CB08DBC12E59 - La clave indicada en el byte anterior
-            02 - Clave A del sector 2
-            F7CB2B695874  - La clave indicada en el byte anterior
-            43 - Clave B del sector 3
-            AF9A48C3ACF4 - La clave indicada en el byte anterior
-            44 - Clave B del sector 4
-            B750F8E9E83F   - La clave indicada en el byte anterior
-            45 - Clave B del sector 5
-            F29597C353FE   - La clave indicada en el byte anterior
-            46 - Clave B del sector 6
-            2CC23B78656D  - La clave indicada en el byte anterior
-            47 - Clave B del sector 7
-            2A10761D6D08 - La clave indicada en el byte anterior
-            48 - Clave B del sector 8
-            9FC443A9781A  - La clave indicada en el byte anterior
-            49 - Clave B del sector 9
-            9C759288CB16  - La clave indicada en el byte anterior
-            4A - Clave B del sector 10
-            69C68D7768C6  - La clave indicada en el byte anterior
-            0B - Clave A del sector 11
-            5BE071E8BFB9  - La clave indicada en el byte anterior
-            0C - Clave A del sector 12
-            D5EF90536839   - La clave indicada en el byte anterior
-            0D - Clave A del sector 13
-            8D68C2B59900  - La clave indicada en el byte anterior
-            0E - Clave A del sector 14
-            1BDA3566595F  - La clave indicada en el byte anterior
-            9000 - Respuesta correcta del SAM
-            */
         }
+        return c;
     }
 
     private byte[] tdes(byte[] info, byte[] keyAtr) throws Exception{
