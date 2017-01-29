@@ -6,6 +6,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -54,29 +56,48 @@ public class MainFragment extends Fragment {
         String tittle="";
         String result="";
 
-        TextView textView1 = (TextView) myView.findViewById(R.id.tittle);
-        TextView textView2 = (TextView) myView.findViewById(R.id.result);
+        TextView   textView1    = (TextView)   myView.findViewById(R.id.tittle);
+        TextView   textView2    = (TextView)   myView.findViewById(R.id.result);
+        ScrollView scrollView   = (ScrollView) myView.findViewById(R.id.scrollView);
+        WebView    webView      = (WebView)    myView.findViewById(R.id.webView);
 
         if (load==MainFragment.MAIN){
+            scrollView.setVisibility(View.VISIBLE);
+            webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_main).toString();
             result= console+"\n"+tdmcard.getMainData();
             textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         }
         if (load==MainFragment.DETAIL_MOV){
+            scrollView.setVisibility(View.VISIBLE);
+            webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_mov).toString();
             result= tdmcard.getMovData();
         }
         if (load==MainFragment.DETAIL_CARD){
+            scrollView.setVisibility(View.VISIBLE);
+            webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_card).toString();
             result= tdmcard.getCardData();
         }
         if (load==MainFragment.DETAIL_CTRL){
+            scrollView.setVisibility(View.VISIBLE);
+            webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_ctrl).toString();
             result= tdmcard.getCtrlData();
         }
         if (load==MainFragment.CONTACT){
+            scrollView.setVisibility(View.GONE);
+            webView.setVisibility(View.VISIBLE);
             tittle=getText(R.string.menu_cont).toString();
-            result = getText(R.string.contact).toString();
+
+            webView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+
+            // Enable JavaScript
+            WebSettings webSettings = webView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+
+            webView.loadUrl("file:///android_asset/index.html");
         }
 
         textView1.setText(tittle);
