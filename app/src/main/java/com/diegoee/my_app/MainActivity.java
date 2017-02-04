@@ -15,7 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -202,11 +201,30 @@ public class MainActivity extends AppCompatActivity
                 (byte) 0x00,
                 (byte) 0x00
         };
+        byte[] uIdInv = new byte[]{
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00,
+                (byte) 0x00
+        };
         byte[] bVers = new byte[]{
                 (byte) 0x00
         };
 
-        byte[] data;
+        byte[] data,aux;
+
+        data = new byte[]{
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xAA
+        };
+        aux = new byte[]{
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xAA
+        };
 
         // 1) Parse the intent and get the action that triggered this intent
         String action = intent.getAction();
@@ -240,31 +258,30 @@ public class MainActivity extends AppCompatActivity
                 uId[1]=data[1];
                 uId[2]=data[2];
                 uId[3]=data[3];
+                uIdInv[0]=data[3];
+                uIdInv[1]=data[2];
+                uIdInv[2]=data[1];
+                uIdInv[3]=data[0];
                 data = mfc.readBlock(mfc.sectorToBlock(0)+1);
                 bVers[0]=data[0];
 
-                cons = cons + "uId (Hex): "+  tdmCard.bytesToHexString(uId) + "\nVer (Hex): " + tdmCard.bytesToHexString(bVers) + " \nTarjeta color: " + Boolean.toString(colorCard);
+
+                cons = cons + "uId (invertido) (Hex): "+  tdmCard.bytesToHexString(uIdInv) + "\nVer: " + Character.toString(TdmCard.bytesToHexString(bVers).charAt(1)) + " \nTarjeta color: " + Boolean.toString(colorCard);
                 cons = cons + samCom.setKeysFromSAM(colorCard,uId,bVers);
 
                 if (auth) {
-                    for (int j = 0; j < secCount-1; j++) {
+                    for (int j = 0; j < secCount; j++) {
                         //Log.v(LOG_TAG, Integer.toString(j) + " - " + tdmCard.bytesToHexString(samCom.keys[j]) + " - " + Boolean.toString(samCom.ab[j]));
                         auth = false;
 
                         // 6.1) authenticate the sector
                         if (samCom.ab[j]){
                             auth = mfc.authenticateSectorWithKeyA(j, samCom.keys[j]);
-                            cons = cons + "\nS_" + j +
-                                    " \tA=" + tdmCard.bytesToHexString(samCom.keys[j])+
-                                    "  \tauth="+Boolean.toString(auth);
+                            //cons = cons + "\nS_" + j + " \tA=" + tdmCard.bytesToHexString(samCom.keys[j])+ "  \tauth="+Boolean.toString(auth);
                         }else{
                             auth = mfc.authenticateSectorWithKeyB(j, samCom.keys[j]);
-                            cons = cons + "\nS_" + j +
-                                    " \tB=" + tdmCard.bytesToHexString(samCom.keys[j])+
-                                    "  \tauth="+Boolean.toString(auth);
+                            //cons = cons + "\nS_" + j + " \tB=" + tdmCard.bytesToHexString(samCom.keys[j])+ "  \tauth="+Boolean.toString(auth);
                         }
-
-                        //Log.v(LOG_TAG, cons);
 
                         bCount = mfc.getBlockCountInSector(j);
                         bIndex = 0;
@@ -275,8 +292,25 @@ public class MainActivity extends AppCompatActivity
                                 // 6.3) Read the block
                                 data = mfc.readBlock(bIndex + i);
                                 // 7) Convert the data into a string from Hex format.
-                                //tdmCard.append(data);
-                                cons = cons + "\n" + tdmCard.bytesToHexString(data);
+                                tdmCard.append(data);
+                                //Log.v(LOG_TAG,tdmCard.bytesToHexString(data));
+                                //cons = cons + "\n" + tdmCard.bytesToHexString(data);
+                            }
+                            aux = data;
+                        } else if((auth==false)&&(j==secCount-1)){
+                            for (int i = 0; i < 4; i++) {// 4 Blocks
+
+                                if (i==3) {
+                                    data = aux;
+                                }else{
+                                    data = new byte[]{
+                                            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                                            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                                            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                                            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xAA
+                                    };
+                                }
+                                tdmCard.append(data);
                             }
                         }
                     }
@@ -298,6 +332,8 @@ public class MainActivity extends AppCompatActivity
         }else {
             cons = cons +"\nDatos de la tarjeta NO leidos.";
         }
+
+        //Log.v(LOG_TAG, tdmCard.getInfoHexByte());
 
         return cons;
     }

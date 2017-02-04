@@ -2,6 +2,7 @@ package com.diegoee.my_app;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,6 +68,7 @@ public class MainFragment extends Fragment {
             tittle=getText(R.string.menu_main).toString();
             result= console+"\n"+tdmcard.getMainData();
             textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
         }
         if (load==MainFragment.DETAIL_MOV){
             scrollView.setVisibility(View.VISIBLE);

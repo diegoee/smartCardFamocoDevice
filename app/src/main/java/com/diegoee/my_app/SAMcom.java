@@ -38,18 +38,18 @@ public class SAMcom {
     public SAMcom(){
         this.isDeviceAbleToRunSmartcardReader=false;
         this.mSmartcardReader=null;
-        keys = new byte[15][6];
-        ab = new boolean[15];
+        keys = new byte[16][6];
+        ab = new boolean[16];
         this.initVar();
     }
 
     public void initVar(){
-        for (int j = 0; j < 15; j++) {// 15 Sectors
+        for (int j = 0; j < 16; j++) {// 15 Sectors
             for (int i = 0; i < 6; i++) {
                 this.keys[j][i] =  KEYS_A_B[0][i];
             }
         }
-        for (int j = 0; j < 15; j++) {// 15 Sectors
+        for (int j = 0; j < 16; j++) {// 15 Sectors
             this.ab[j] =  true;
         }
     }
@@ -97,6 +97,7 @@ public class SAMcom {
         this.initVar();
 
         if (colorCard) {
+            c = c +"\nSAM Request";
 
             byte[] apduRequest, apduResponse;
             byte[] aux;
@@ -117,14 +118,14 @@ public class SAMcom {
                     (byte) 0x00,
                     (byte) 0x04,
                     //(byte) 0xBD,(byte) 0xAA,(byte) 0xA4,(byte) 0xE6,
-                    uid[0], uid[1], uid[2], uid[3],
+                    uid[3], uid[2], uid[1], uid[0], // INVERTIDO!!!! IMPORTANTE!!
                     (byte) 0x00
             };
 
-            c = c +"\n\nAPDU cmd GET_MIF1K_KEYS:";
-            c = c + "\n-> " + TdmCard.bytesToHexString(apduRequest);
+            //c = c +"\n\nAPDU cmd GET_MIF1K_KEYS:";
+            //c = c + "\n-> " + TdmCard.bytesToHexString(apduRequest);
             apduResponse = mSmartcardReader.sendApdu(apduRequest);
-            c = c + "\n<- " + TdmCard.bytesToHexString(apduResponse)+ "\n";
+            //c = c + "\n<- " + TdmCard.bytesToHexString(apduResponse)+ "\n";
 
             if (apduResponse[0]==((byte) 0x0E)) {
                 pos = new int[]{

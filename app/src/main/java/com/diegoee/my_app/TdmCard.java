@@ -27,6 +27,7 @@ public class TdmCard {
 
     public String getInfoHexByte(){
         String result = "";
+
         if (infoByte.size()==64) {
             int i = 0;
             int j = 0;
@@ -96,6 +97,7 @@ public class TdmCard {
 
             int val1,val2;
             for (int ii=0;ii<4;ii++){
+
                 if (ii==0) { startTittle = 12; }
                 if (ii==1) { startTittle = 20; }
                 if (ii==2) { startTittle = 28; }
@@ -109,7 +111,7 @@ public class TdmCard {
                 auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
                 val2 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
 
-                if (val1>val2){
+                if (val1<val2){
                     i=0;
                 }else{
                     i=1;
@@ -155,16 +157,14 @@ public class TdmCard {
                 result = result + "\n\tSaldo: ";
                 auxBytes = new byte[]{
                         infoByte.get(startTittle + i)[0],
-                        infoByte.get(startTittle + i)[1],
-                        infoByte.get(startTittle + i)[2],
-                        infoByte.get(startTittle + i)[3]
                 };
+
                 result = result + "\n\t\tViajes o Monedero:\n" +
                         "\t\t" + decoData(auxBytes, TdmCard.MAIN_CAST);
 
-
                 result = result + "\n";
             }
+
         }
         return result;
     }
@@ -429,8 +429,11 @@ public class TdmCard {
         }
 
         if ((type==TdmCard.MAIN_CAST)){
+            //TODO
+            val = bytesToHexString(bArray);
             val = hex2Binary(bytesToHexString(bArray));
-            val = String.format("%d", Integer.parseInt(val, 2));
+            //val = String.format("%d", Integer.parseInt(val, 2));
+            val = String.format("%.2f", ((double) hex2decimal(bytesToHexString(bArray)))/100)+" €";
         }
 
         // ----------------------------HISTORICO DE TARJETA
@@ -536,7 +539,7 @@ public class TdmCard {
         }
 
         if (type==TdmCard.MOV_CAST){
-            val=String.format("%d",hex2decimal(bytesToHexString(bArray)))+" €";
+            val = String.format("%.2f", ((double) hex2decimal(bytesToHexString(bArray)))/100)+" €";
         }
 
 
@@ -674,7 +677,8 @@ public class TdmCard {
     public static String hex2Binary(String s) {
         String val="";
         String result="";
-        int num;
+
+        //Log.v(MainActivity.LOG_TAG,s);
 
         for (int i=0;i<s.length();i++){
             val=String.format("%s",s.charAt(i));
@@ -697,9 +701,7 @@ public class TdmCard {
             result = result+val;
         }
 
-        num=Integer.parseInt(result,2);
         //Log.v(MainActivity.LOG_TAG,result);
-        //Log.v(MainActivity.LOG_TAG,String.format("%d",num));
 
         return result;
 
