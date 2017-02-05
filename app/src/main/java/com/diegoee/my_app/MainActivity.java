@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -293,7 +294,10 @@ public class MainActivity extends AppCompatActivity
                                 data = mfc.readBlock(bIndex + i);
                                 // 7) Convert the data into a string from Hex format.
                                 tdmCard.append(data);
-                                //Log.v(LOG_TAG,tdmCard.bytesToHexString(data));
+                                //TESTING
+                                if (j==3) {
+                                    Log.v(LOG_TAG, tdmCard.bytesToHexString(data));
+                                }
                                 //cons = cons + "\n" + tdmCard.bytesToHexString(data);
                             }
                             aux = data;
