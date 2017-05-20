@@ -99,7 +99,7 @@ public class MainFragment extends Fragment {
             WebSettings webSettings = webView.getSettings();
             webSettings.setJavaScriptEnabled(true);
 
-            webView.loadUrl("file:///android_asset/index.html");
+            webView.loadUrl("file:///android_asset/webContact/index.html");
         }
 
         textView1.setText(tittle);

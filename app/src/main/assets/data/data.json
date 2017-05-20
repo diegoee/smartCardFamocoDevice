@@ -1,0 +1,24 @@
+{
+	"logins": [
+		{
+			"user": "a",
+			"pass": "a"
+		},
+		{
+			"user": "user1",
+			"pass": "pass1"
+		},
+		{
+			"user": "user2",
+			"pass": "pass2"
+		},
+		{
+			"user": "user3",
+			"pass": "pass3"
+		},
+		{
+			"user": "user4",
+			"pass": "pass4"
+		}
+  	]
+}
