@@ -85,6 +85,14 @@
             android:layout_weight="20"
             android:gravity="center"
             android:background="#FEFEFE" />
+
+        <TextView
+            android:id="@+id/progressBarGone"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="20"
+            android:gravity="center"
+            android:background="#FEFEFE" />
     </LinearLayout>
 
 

@@ -56,19 +56,22 @@ public class SplashScreen extends Activity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
+        findViewById(R.id.progressBarGone).setVisibility(View.VISIBLE);
+
         textView1 = (TextView) findViewById(R.id.textResultLogin);
         editPass = (EditText) findViewById(R.id.editPass);
         editUser = (EditText) findViewById(R.id.editUser);
 
         readDataPass("data/data.json");
 
-        login ="a";
-        loginOk();
-
         Button btn = (Button) findViewById(R.id.btnLogin);
         View.OnClickListener listener = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+
+                login ="testUser";
+                loginOk();
+
                 for(int i=0;i<user.size();i++) {
                     if(editUser.getText().toString().equals(user.get(i))){
                         if(editPass.getText().toString().equals(pass.get(i))){
@@ -119,6 +122,7 @@ public class SplashScreen extends Activity {
     }
 
     public void loginOk() {
+        findViewById(R.id.progressBarGone).setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
         new Thread(new Runnable() {

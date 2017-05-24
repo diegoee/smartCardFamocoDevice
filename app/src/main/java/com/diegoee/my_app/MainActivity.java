@@ -18,11 +18,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String LOG_TAG = "log_app";
 
@@ -34,9 +36,12 @@ public class MainActivity extends AppCompatActivity
 
     private int exit;
     private String console;
+    private String login;
 
     private TdmCard tdmCard;
     private SAMcom samCom;
+
+    private List<ActionUser> actionUser;
 
 
     @Override
@@ -87,6 +92,8 @@ public class MainActivity extends AppCompatActivity
         //init variable
         console = "Dispositivo Listo para lectura.";
         exit=1;
+        login ="none";
+        actionUser= new ArrayList<ActionUser>();
 
         // adding methods
         if (mNfcAdapter == null) {
@@ -96,7 +103,9 @@ public class MainActivity extends AppCompatActivity
         //init SAM
         console = console + samCom.init();
 
-        //Log.v(LOG_TAG,"onCreate()");
+        login = (String)getIntent().getExtras().getSerializable("login");
+        TextView textView1 = (TextView)navigationView.getHeaderView(0).findViewById(R.id.textMenu);
+        textView1.setText("Usuario: "+login);
     }
 
     @Override
@@ -152,6 +161,19 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_contact) {
             fragment.setLoad(MainFragment.CONTACT);
             fragmentTransaction = true;
+        } else if (id == R.id.nav_action_user) {
+            fragment.setLoad(MainFragment.ACTION_USER);
+            fragmentTransaction = true;
+            String s ="";
+            for (ActionUser l : actionUser) {
+                if (l.isValidationOK()){
+                    s = s+"\nId:"+l.getId()+" Validado(SI/NO): SI";
+                }else{
+                    s = s+"\nId:"+l.getId()+" Validado(SI/NO): NO";
+                }
+            }
+            fragment.setConsole(s);
+
         }
 
         if(fragmentTransaction) {
@@ -166,7 +188,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onNewIntent(Intent intent) {
         console = "";
-        byte [] uid;
+        byte [] uid = null;
 
         Bundle bundle = intent.getExtras();
         console = console + "Tarjeta descubierta ->";
@@ -178,6 +200,13 @@ public class MainActivity extends AppCompatActivity
         }
 
         console = console +"\n"+this.resolveIntent(intent);
+        ActionUser actUserTemp =new ActionUser();
+        actUserTemp.setId(String.format("%s",TdmCard.bytesToHexString(uid)));
+        actUserTemp.setValidationOK(false);
+
+        actionUser.add(actUserTemp);
+
+        Log.v(LOG_TAG,actUserTemp.getId());
 
         navigationView.getMenu().getItem(0).setChecked(true);
 
@@ -295,9 +324,9 @@ public class MainActivity extends AppCompatActivity
                                 // 7) Convert the data into a string from Hex format.
                                 tdmCard.append(data);
                                 //TESTING
-                                if (j==3) {
-                                    Log.v(LOG_TAG, tdmCard.bytesToHexString(data));
-                                }
+                                //if (j==3) {
+                                    //Log.v(LOG_TAG, tdmCard.bytesToHexString(data));
+                                //}
                                 //cons = cons + "\n" + tdmCard.bytesToHexString(data);
                             }
                             aux = data;

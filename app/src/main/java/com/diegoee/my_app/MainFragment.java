@@ -23,6 +23,7 @@ public class MainFragment extends Fragment {
     public static int DETAIL_CARD=3;
     public static int DETAIL_CTRL=4;
     public static int CONTACT=5;
+    public static int ACTION_USER=6;
 
     private View myView;
     private String console;
@@ -100,6 +101,12 @@ public class MainFragment extends Fragment {
             webSettings.setJavaScriptEnabled(true);
 
             webView.loadUrl("file:///android_asset/webContact/index.html");
+        }
+        if (load==MainFragment.ACTION_USER){
+            scrollView.setVisibility(View.VISIBLE);
+            webView.setVisibility(View.GONE);
+            tittle=getText(R.string.menu_user).toString();
+            result = console;
         }
 
         textView1.setText(tittle);
