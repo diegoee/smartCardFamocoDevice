@@ -25,26 +25,18 @@ public class MainFragment extends Fragment {
     public static int CONTACT=5;
     public static int ACTION_USER=6;
 
-    private View myView;
-    private String console;
-    private TdmCard tdmcard;
+    private String text;
     private int load;
 
-    public void setConsole(String console){
-        this.console=console;
+
+    public String getText() {
+        return text;
     }
-    public void setTdmCard(TdmCard tdmcard){
-        this.tdmcard=tdmcard;
+    public void setText(String text) {
+        this.text = text;
     }
     public void setLoad(int load){
         this.load=load;
-    }
-
-    public String getConsole(){
-        return console;
-    }
-    public TdmCard getTdmCard(){
-        return tdmcard;
     }
     public int getLoad(){
         return load;
@@ -53,10 +45,9 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        myView=inflater.inflate(R.layout.main_fragment, container, false);
+        View myView=inflater.inflate(R.layout.main_fragment, container, false);
 
         String tittle="";
-        String result="";
 
         TextView   textView1    = (TextView)   myView.findViewById(R.id.tittle);
         TextView   textView2    = (TextView)   myView.findViewById(R.id.result);
@@ -67,27 +58,22 @@ public class MainFragment extends Fragment {
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_main).toString();
-            result= console+"\n"+tdmcard.getMainData();
             textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-
         }
         if (load==MainFragment.DETAIL_MOV){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_mov).toString();
-            result= tdmcard.getMovData();
         }
         if (load==MainFragment.DETAIL_CARD){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_card).toString();
-            result= tdmcard.getCardData();
         }
         if (load==MainFragment.DETAIL_CTRL){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_ctrl).toString();
-            result= tdmcard.getCtrlData();
         }
         if (load==MainFragment.CONTACT){
             scrollView.setVisibility(View.GONE);
@@ -96,7 +82,6 @@ public class MainFragment extends Fragment {
 
             webView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
 
-            // Enable JavaScript
             WebSettings webSettings = webView.getSettings();
             webSettings.setJavaScriptEnabled(true);
 
@@ -106,11 +91,10 @@ public class MainFragment extends Fragment {
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
             tittle=getText(R.string.menu_user).toString();
-            result = console;
         }
 
         textView1.setText(tittle);
-        textView2.setText(result);
+        textView2.setText(text);
 
         return myView;
     }

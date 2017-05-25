@@ -22,12 +22,11 @@ import java.util.List;
 
 
 
-public class SplashScreen extends Activity {
+public class LoginActivity extends Activity {
 
-    // Set the duration of the splash screen
+    // Set the duration of the activity_login screen
     private static final long SPLASH_SCREEN_DELAY = 50;
 
-    private ProgressBar progressBar;
     private int progressStatus ;
 
     private List<String> user;
@@ -35,32 +34,20 @@ public class SplashScreen extends Activity {
 
     private String login;
 
-    private EditText editUser;
-    private EditText editPass;
-    private TextView textView1;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Log.v(LOG_TAG, "ONCREATE");
         super.onCreate(savedInstanceState);
-        // Set portrait orientation
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        // Hide title bar
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.splash);
+        setContentView(R.layout.activity_login);
 
         progressStatus = 0;
         login ="none";
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.GONE);
-
+        findViewById(R.id.progressBar).setVisibility(View.GONE);
         findViewById(R.id.progressBarGone).setVisibility(View.VISIBLE);
-
-        textView1 = (TextView) findViewById(R.id.textResultLogin);
-        editPass = (EditText) findViewById(R.id.editPass);
-        editUser = (EditText) findViewById(R.id.editUser);
 
         readDataPass("data/data.json");
 
@@ -71,6 +58,10 @@ public class SplashScreen extends Activity {
 
                 login ="testUser";
                 loginOk();
+
+                EditText editUser = (EditText) findViewById(R.id.editUser);
+                EditText editPass = (EditText) findViewById(R.id.editPass);
+                TextView textView1 = (TextView) findViewById(R.id.textResultLogin);
 
                 for(int i=0;i<user.size();i++) {
                     if(editUser.getText().toString().equals(user.get(i))){
@@ -86,11 +77,12 @@ public class SplashScreen extends Activity {
             }
         };
         btn.setOnClickListener(listener);
-
     }
 
     public void readDataPass(String inFile) {
         String jsonString = "";
+
+        TextView textView1 = (TextView) findViewById(R.id.textResultLogin);
 
         this.user = new ArrayList<String>();
         this.pass = new ArrayList<String>();
@@ -118,18 +110,17 @@ public class SplashScreen extends Activity {
         } catch (IOException e) {
             textView1.setText("Error al leer el archivo de contraseñas almacenadas.\nERROR:\n" + e.getMessage());
         }
-
     }
 
     public void loginOk() {
+        findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
         findViewById(R.id.progressBarGone).setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
 
         new Thread(new Runnable() {
             public void run() {
                 while (progressStatus < 100) {
                     progressStatus = progressStatus + (int) (Math.random()*5+1);
-                    progressBar.setProgress(progressStatus);
+                    ((ProgressBar) findViewById(R.id.progressBar)).setProgress(progressStatus);
                     try {
                         Thread.sleep(SPLASH_SCREEN_DELAY);
                     } catch (InterruptedException e) {
@@ -137,7 +128,7 @@ public class SplashScreen extends Activity {
                     }
                     //Log.v(LOG_TAG,"Progress =" + String.format("%d",progressStatus));
                 }
-                Intent mainIntent = new Intent().setClass(SplashScreen.this, MainActivity.class);
+                Intent mainIntent = new Intent().setClass(LoginActivity.this, MainActivity.class);
                 mainIntent.putExtra("login", login);
                 startActivity(mainIntent);
 

@@ -113,12 +113,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
         navigationView.getMenu().getItem(0).setChecked(true);
         MainFragment fragment = new MainFragment();
-        fragment.setConsole(console);
-        fragment.setTdmCard(tdmCard);
+        fragment.setText(console);
         fragment.setLoad(MainFragment.MAIN);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,fragment).commit();
-
-        //Log.v(LOG_TAG,"onStart()");
     }
 
     @Override
@@ -139,32 +136,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        String s ="";
 
-        int id = item.getItemId();
-        boolean fragmentTransaction = false;
         MainFragment fragment = new MainFragment();
-        fragment.setConsole(console);
-        fragment.setTdmCard(tdmCard);
+        fragment.setLoad(MainFragment.MAIN);
 
-        if (id == R.id.nav_main) {
+        if (item.getItemId() == R.id.nav_main) {
             fragment.setLoad(MainFragment.MAIN);
-            fragmentTransaction = true;
-        } else if (id == R.id.nav_detail_mov) {
+            s = console+"\n"+tdmCard.getMainData();
+        } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
-            fragmentTransaction = true;
-        } else if (id == R.id.nav_detail_card) {
+            s = tdmCard.getMovData();
+        } else if (item.getItemId() == R.id.nav_detail_card) {
             fragment.setLoad(MainFragment.DETAIL_CARD);
-            fragmentTransaction = true;
-        } else if (id == R.id.nav_detail_ctrl) {
+            s = tdmCard.getCardData();
+        } else if (item.getItemId() == R.id.nav_detail_ctrl) {
             fragment.setLoad(MainFragment.DETAIL_CTRL);
-            fragmentTransaction = true;
-        } else if (id == R.id.nav_contact) {
+            s = tdmCard.getCtrlData();
+        } else if (item.getItemId() == R.id.nav_contact) {
             fragment.setLoad(MainFragment.CONTACT);
-            fragmentTransaction = true;
-        } else if (id == R.id.nav_action_user) {
+        } else if (item.getItemId() == R.id.nav_action_user) {
             fragment.setLoad(MainFragment.ACTION_USER);
-            fragmentTransaction = true;
-            String s ="";
             for (ActionUser l : actionUser) {
                 if (l.isValidationOK()){
                     s = s+"\nId:"+l.getId()+" Validado(SI/NO): SI";
@@ -172,13 +164,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     s = s+"\nId:"+l.getId()+" Validado(SI/NO): NO";
                 }
             }
-            fragment.setConsole(s);
-
         }
 
-        if(fragmentTransaction) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
-        }
+        fragment.setText(s);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -211,8 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().getItem(0).setChecked(true);
 
         MainFragment fragment = new MainFragment();
-        fragment.setConsole(console);
-        fragment.setTdmCard(tdmCard);
+        fragment.setText(console+"\n"+tdmCard.getMainData());
         fragment.setLoad(MainFragment.MAIN);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
@@ -377,21 +366,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, intentFiltersArray, null);
         }
-        //Log.v(LOG_TAG,"onResume()");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mNfcAdapter.disableForegroundDispatch(this);
-        //Log.v(LOG_TAG,"onPause()");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         samCom.closeSAM();
-        //Log.v(LOG_TAG,"onDestroy()");
     }
 
 }
