@@ -57,27 +57,37 @@ public class MainFragment extends Fragment {
         if (load==MainFragment.MAIN){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
+            myView.findViewById(R.id.linealButtons).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.textGone).setVisibility(View.GONE);
             tittle=getText(R.string.menu_main).toString();
             textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         }
         if (load==MainFragment.DETAIL_MOV){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
+            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
+            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
             tittle=getText(R.string.menu_mov).toString();
         }
         if (load==MainFragment.DETAIL_CARD){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
+            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
+            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
             tittle=getText(R.string.menu_card).toString();
         }
         if (load==MainFragment.DETAIL_CTRL){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
+            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
+            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
             tittle=getText(R.string.menu_ctrl).toString();
         }
         if (load==MainFragment.CONTACT){
             scrollView.setVisibility(View.GONE);
             webView.setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
+            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
             tittle=getText(R.string.menu_cont).toString();
 
             webView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
@@ -90,6 +100,8 @@ public class MainFragment extends Fragment {
         if (load==MainFragment.ACTION_USER){
             scrollView.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
+            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
+            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
             tittle=getText(R.string.menu_user).toString();
         }
 

@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         actionUser.add(actUserTemp);
 
-        Log.v(LOG_TAG,actUserTemp.getId());
+        //Log.v(LOG_TAG,actUserTemp.getId());
 
         navigationView.getMenu().getItem(0).setChecked(true);
 

@@ -22,6 +22,41 @@
             android:textColor="@color/colorPrimaryDark"
             android:gravity="center_vertical|center_horizontal" />
 
+        <TextView
+            android:layout_weight="8"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text=""
+            android:id="@+id/textGone"
+            android:textColor="@color/colorAccent"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/linealButtons"
+            android:layout_weight="8"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+            <Button
+                android:id="@+id/buttonOK"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="Confirmar Validación" />
+            <Button
+                android:id="@+id/buttonNOOK"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="Rechazar validación" />
+        </LinearLayout>
+
         <ScrollView
             android:id="@+id/scrollView"
             android:layout_width="fill_parent"
@@ -30,7 +65,7 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:visibility="visible">
             <TextView
                 android:layout_width="fill_parent"
