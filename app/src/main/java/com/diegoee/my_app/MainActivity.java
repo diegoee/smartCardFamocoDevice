@@ -147,23 +147,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
             s = tdmCard.getMovData();
-        } else if (item.getItemId() == R.id.nav_detail_card) {
+        } else if (item.getItemId() == R.id.nav_detail_data) {
             fragment.setLoad(MainFragment.DETAIL_CARD);
-            s = tdmCard.getCardData();
-        } else if (item.getItemId() == R.id.nav_detail_ctrl) {
-            fragment.setLoad(MainFragment.DETAIL_CTRL);
-            s = tdmCard.getCtrlData();
-        } else if (item.getItemId() == R.id.nav_contact) {
-            fragment.setLoad(MainFragment.CONTACT);
+            s = console+"\n"+tdmCard.getAllData();
         } else if (item.getItemId() == R.id.nav_action_user) {
             fragment.setLoad(MainFragment.ACTION_USER);
+            s="{data:[";
             for (ActionUser l : actionUser) {
                 if (l.isValidationOK()){
-                    s = s+"\nId:"+l.getId()+" Validado(SI/NO): SI";
+                    s = s+"{id:"+l.getId()+", validation: y},";
                 }else{
-                    s = s+"\nId:"+l.getId()+" Validado(SI/NO): NO";
+                    s = s+"{id:"+l.getId()+", validation: n},";
                 }
             }
+            s = s+"]}";
         }
 
         fragment.setText(s);

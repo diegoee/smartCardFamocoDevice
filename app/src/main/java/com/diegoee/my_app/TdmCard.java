@@ -50,6 +50,21 @@ public class TdmCard {
         infoByte = new ArrayList<byte[]>();
     }
 
+    public String getAllData(){
+        String result = START_STR;
+        result = getMainData() + "\n";
+        result = result + "----------------------------------------------\n";
+        result = result + getCtrlData() + "\n\n";
+        result = result + "----------------------------------------------\n";
+        result = result + getCardData() + "\n\n";
+        result = result + "----------------------------------------------\n";
+        result = result + getMovData() + "\n\n";
+        result = result + "------------ DATOS EN HEXADECIMAL ------------\n";
+        result = result + getInfoHexByte() + "\n\n";
+
+        return result;
+    }
+
     public String getMainData(){
 
         byte[] auxBytes;

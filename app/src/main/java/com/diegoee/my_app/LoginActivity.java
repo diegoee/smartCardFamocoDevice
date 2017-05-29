@@ -51,13 +51,13 @@ public class LoginActivity extends Activity {
 
         readDataPass("data/data.json");
 
+        login ="testUser";
+        loginOk();
+
         Button btn = (Button) findViewById(R.id.btnLogin);
         View.OnClickListener listener = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
-                login ="testUser";
-                loginOk();
 
                 EditText editUser = (EditText) findViewById(R.id.editUser);
                 EditText editPass = (EditText) findViewById(R.id.editPass);

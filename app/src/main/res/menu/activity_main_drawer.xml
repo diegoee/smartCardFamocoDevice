@@ -6,30 +6,26 @@
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_main"
             android:title="@string/menu_main" />
-        <item
-            android:id="@+id/nav_detail_card"
-            android:icon="@drawable/ic_card"
-            android:title="@string/menu_card" />
-        <item
-            android:id="@+id/nav_detail_ctrl"
-            android:icon="@drawable/ic_control"
-            android:title="@string/menu_ctrl" />
+
         <item
             android:id="@+id/nav_detail_mov"
             android:icon="@drawable/ic_train"
             android:title="@string/menu_mov" />
+
         <item
-            android:id="@+id/nav_action_user"
-            android:icon="@drawable/ic_subject_black"
-            android:title="@string/menu_user" />
+            android:id="@+id/nav_detail_data"
+            android:icon="@drawable/ic_card"
+            android:title="@string/menu_card" />
+
+
     </group>
 
-    <item android:title="Ayuda">
+    <item android:title="Acciones de Usuario">
         <menu>
             <item
-                android:id="@+id/nav_contact"
-                android:icon="@drawable/ic_info"
-                android:title="Contacto" />
+                android:id="@+id/nav_action_user"
+                android:icon="@drawable/ic_subject_black"
+                android:title="@string/menu_user" />
         </menu>
     </item>
 

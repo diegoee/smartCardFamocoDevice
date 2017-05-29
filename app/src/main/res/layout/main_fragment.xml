@@ -11,6 +11,7 @@
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
+
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -22,73 +23,77 @@
             android:textColor="@color/colorPrimaryDark"
             android:gravity="center_vertical|center_horizontal" />
 
-        <TextView
-            android:layout_weight="8"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:text=""
-            android:id="@+id/textGone"
-            android:textColor="@color/colorAccent"
-            android:visibility="gone" />
-
         <LinearLayout
-            android:id="@+id/linealButtons"
-            android:layout_weight="8"
-            android:orientation="horizontal"
+            android:orientation="vertical"
+            android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true">
-            <Button
-                android:id="@+id/buttonOK"
-                android:layout_weight="1"
+
+            <LinearLayout
+                android:id="@+id/buttonsView"
+                android:layout_weight="7"
+                android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:text="Confirmar Validación" />
-            <Button
-                android:id="@+id/buttonNOOK"
-                android:layout_weight="1"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
+
+                <Button
+                    android:id="@+id/buttonOK"
+                    android:layout_weight="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="Confirmar Validación" />
+
+                <Button
+                    android:id="@+id/buttonNOOK"
+                    android:layout_weight="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="Rechazar validación" />
+
+            </LinearLayout>
+
+            <ScrollView
+                android:id="@+id/textView"
+                android:layout_weight="2"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:text="Rechazar validación" />
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin">
+
+                <TextView
+                    android:id="@+id/result"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="Resultado"
+                    android:textSize="15dp"
+                    android:textColor="@color/colorAccent" />
+
+            </ScrollView>
+
+            <WebView
+                android:id="@+id/webView"
+                android:layout_weight="2"
+                android:background="@color/colorPrimaryDark"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:visibility="gone" />
+
         </LinearLayout>
 
-        <ScrollView
-            android:id="@+id/scrollView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:layout_weight="2"
-            android:visibility="visible">
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:text="Resultado"
-                android:textSize="15dp"
-                android:id="@+id/result"
-                android:textColor="@color/colorAccent" />
-        </ScrollView>
-
-        <WebView
-            android:id="@+id/webView"
-            android:background="@color/colorPrimaryDark"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:layout_weight="1"
-            android:visibility="gone" />
-
     </LinearLayout>
-
 
 </RelativeLayout>

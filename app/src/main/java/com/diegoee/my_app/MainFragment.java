@@ -28,7 +28,6 @@ public class MainFragment extends Fragment {
     private String text;
     private int load;
 
-
     public String getText() {
         return text;
     }
@@ -38,75 +37,56 @@ public class MainFragment extends Fragment {
     public void setLoad(int load){
         this.load=load;
     }
-    public int getLoad(){
-        return load;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View myView=inflater.inflate(R.layout.main_fragment, container, false);
+        View myView = inflater.inflate(R.layout.main_fragment, container, false);
 
         String tittle="";
 
-        TextView   textView1    = (TextView)   myView.findViewById(R.id.tittle);
-        TextView   textView2    = (TextView)   myView.findViewById(R.id.result);
-        ScrollView scrollView   = (ScrollView) myView.findViewById(R.id.scrollView);
-        WebView    webView      = (WebView)    myView.findViewById(R.id.webView);
+        WebView webView = (WebView) myView.findViewById(R.id.webView);
+        webView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
 
         if (load==MainFragment.MAIN){
-            scrollView.setVisibility(View.VISIBLE);
-            webView.setVisibility(View.GONE);
-            myView.findViewById(R.id.linealButtons).setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.textGone).setVisibility(View.GONE);
+            myView.findViewById(R.id.webView).setVisibility(View.GONE);
+            myView.findViewById(R.id.buttonsView).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+
             tittle=getText(R.string.menu_main).toString();
-            textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         }
         if (load==MainFragment.DETAIL_MOV){
-            scrollView.setVisibility(View.VISIBLE);
-            webView.setVisibility(View.GONE);
-            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
-            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.webView).setVisibility(View.GONE);
+            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
+            myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+
             tittle=getText(R.string.menu_mov).toString();
         }
         if (load==MainFragment.DETAIL_CARD){
-            scrollView.setVisibility(View.VISIBLE);
-            webView.setVisibility(View.GONE);
-            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
-            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.webView).setVisibility(View.GONE);
+            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
+            myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+
             tittle=getText(R.string.menu_card).toString();
         }
-        if (load==MainFragment.DETAIL_CTRL){
-            scrollView.setVisibility(View.VISIBLE);
-            webView.setVisibility(View.GONE);
-            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
-            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
-            tittle=getText(R.string.menu_ctrl).toString();
-        }
-        if (load==MainFragment.CONTACT){
-            scrollView.setVisibility(View.GONE);
-            webView.setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
-            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
-            tittle=getText(R.string.menu_cont).toString();
-
-            webView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-
-            WebSettings webSettings = webView.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-
-            webView.loadUrl("file:///android_asset/webContact/index.html");
-        }
         if (load==MainFragment.ACTION_USER){
-            scrollView.setVisibility(View.VISIBLE);
-            webView.setVisibility(View.GONE);
-            myView.findViewById(R.id.linealButtons).setVisibility(View.GONE);
-            myView.findViewById(R.id.textGone).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
+            myView.findViewById(R.id.textView).setVisibility(View.GONE);
+
             tittle=getText(R.string.menu_user).toString();
+
+            webView.loadUrl("file:///android_asset/webUser/index.html?var="+text);
+            //{data:[{id:BDAAA4E6, validation: n},{id:BDAAA4E6, validation: n},]}
+            Log.v(MainActivity.LOG_TAG,text);
         }
 
-        textView1.setText(tittle);
-        textView2.setText(text);
+        ((TextView) myView.findViewById(R.id.tittle)).setText(tittle);
+        ((TextView) myView.findViewById(R.id.result)).setText(text);
 
         return myView;
     }
