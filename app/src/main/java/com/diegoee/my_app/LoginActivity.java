@@ -118,7 +118,7 @@ public class LoginActivity extends Activity {
 
         new Thread(new Runnable() {
             public void run() {
-                while (progressStatus < 100) {
+                while (progressStatus < 20) {
                     progressStatus = progressStatus + (int) (Math.random()*5+1);
                     ((ProgressBar) findViewById(R.id.progressBar)).setProgress(progressStatus);
                     try {

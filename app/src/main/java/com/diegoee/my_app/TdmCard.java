@@ -12,17 +12,30 @@ public class TdmCard {
 
     public static final String START_STR = "...";
 
-    private String info;
+
+
+    private boolean isInfo;
     ArrayList<byte[]> infoByte;
 
     public TdmCard() {
         super();
-        this.info = null;
+        this.isInfo = false;
         infoByte = new ArrayList<byte[]>();
     }
 
+    public boolean isInfo() {
+        return isInfo;
+    }
+
+    public void setInfo(boolean info) {
+        isInfo = info;
+    }
+
+
     public void append(byte[] data){
         this.infoByte.add(data);
+
+        this.isInfo = true;
     }
 
     public String getInfoHexByte(){
@@ -46,7 +59,7 @@ public class TdmCard {
     }
 
     public void eraseInfo(){
-        this.info = null;
+        this.isInfo = false;
         infoByte = new ArrayList<byte[]>();
     }
 

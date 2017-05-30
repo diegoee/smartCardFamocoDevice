@@ -1,5 +1,6 @@
 package com.diegoee.my_app;
 
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -18,11 +21,10 @@ import android.widget.TextView;
  */
 public class MainFragment extends Fragment {
 
-    public static int MAIN=1;
-    public static int DETAIL_MOV=2;
-    public static int DETAIL_CARD=3;
-    public static int DETAIL_CTRL=4;
-    public static int CONTACT=5;
+    public static int MAIN_TEXT=1;
+    public static int MAIN_BTN=2;
+    public static int DETAIL_MOV=4;
+    public static int DETAIL_CARD=5;
     public static int ACTION_USER=6;
 
     private String text;
@@ -51,8 +53,28 @@ public class MainFragment extends Fragment {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
+        myView.findViewById(R.id.buttonOK).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view,"Confirmada Validación", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+        myView.findViewById(R.id.buttonNOOK).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view,"NO Confirmada Validación", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
-        if (load==MainFragment.MAIN){
+
+        if (load==MainFragment.MAIN_TEXT){
+            myView.findViewById(R.id.webView).setVisibility(View.GONE);
+            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
+            myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+
+            tittle=getText(R.string.menu_main).toString();
+        }
+        if (load==MainFragment.MAIN_BTN){
             myView.findViewById(R.id.webView).setVisibility(View.GONE);
             myView.findViewById(R.id.buttonsView).setVisibility(View.VISIBLE);
             myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);

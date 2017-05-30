@@ -11,8 +11,7 @@
     <string name="menu_mov" >Historico de Tarjeta</string>
     <string name="menu_user">Registro de Acciones</string>
 
-    <string name="float_button_snackbar">Pulsado botón de Reset</string>
-
-    <string name="Toast_exit">Pulsar otra vez para salir</string>
+    <string name="Toast_exit">Reset data </string>
+    <string name="Toast_exit_ok">Salir</string>
 
 </resources>

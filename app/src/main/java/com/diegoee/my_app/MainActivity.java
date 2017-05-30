@@ -18,11 +18,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private IntentFilter[] intentFiltersArray;
     private NavigationView navigationView;
 
-    private int exit;
     private String console;
     private String login;
 
@@ -42,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SAMcom samCom;
 
     private List<ActionUser> actionUser;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,23 +77,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
         };
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, getText(R.string.float_button_snackbar).toString(), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                tdmCard.eraseInfo();
-                console = "";
-                onStop();
-                onStart();
-            }
-        });
-
         //init variable
         console = "Dispositivo Listo para lectura.";
-        exit=1;
-        login ="none";
+        login = "none";
         actionUser= new ArrayList<ActionUser>();
 
         // adding methods
@@ -112,9 +99,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         navigationView.getMenu().getItem(0).setChecked(true);
+
         MainFragment fragment = new MainFragment();
         fragment.setText(console);
-        fragment.setLoad(MainFragment.MAIN);
+        fragment.setLoad(MainFragment.MAIN_TEXT);
+
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,fragment).commit();
     }
 
@@ -123,14 +112,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-            exit=1;
         } else {
-            if (exit==0) {
-                super.onBackPressed();
-            }else{
-                exit--;
-                Toast.makeText(this,getText(R.string.Toast_exit).toString(),Toast.LENGTH_SHORT).show();
-            }
+            Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),getText(R.string.Toast_exit).toString(), Snackbar.LENGTH_SHORT);
+            mySnackbar.setAction(R.string.Toast_exit_ok, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                    System.exit(0);
+                }
+            });
+            mySnackbar.show();
+
+            tdmCard.eraseInfo();
+            console = "";
+            onStop();
+            onStart();
         }
     }
 
@@ -139,10 +135,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String s ="";
 
         MainFragment fragment = new MainFragment();
-        fragment.setLoad(MainFragment.MAIN);
+        fragment.setLoad(MainFragment.MAIN_TEXT);
 
         if (item.getItemId() == R.id.nav_main) {
-            fragment.setLoad(MainFragment.MAIN);
+            if(tdmCard.isInfo()) {
+                fragment.setLoad(MainFragment.MAIN_BTN);
+            }else{
+                fragment.setLoad(MainFragment.MAIN_TEXT);
+            }
             s = console+"\n"+tdmCard.getMainData();
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         MainFragment fragment = new MainFragment();
         fragment.setText(console+"\n"+tdmCard.getMainData());
-        fragment.setLoad(MainFragment.MAIN);
+        fragment.setLoad(MainFragment.MAIN_BTN);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
     }
