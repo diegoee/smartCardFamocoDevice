@@ -1,24 +1,25 @@
 package com.diegoee.my_app;
 
-import android.support.design.widget.Snackbar;
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import static com.diegoee.my_app.MainActivity.LOG_TAG;
 
 
 /**
  * Created by Diego on 2/7/16.
  */
+
+
+
 public class MainFragment extends Fragment {
 
     public static int MAIN_TEXT=1;
@@ -40,6 +41,22 @@ public class MainFragment extends Fragment {
         this.load=load;
     }
 
+    private InterfaceFragmentActivity listener;
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // Nos aseguramos de que la actividad contenedora haya implementado la
+        // interfaz de retrollamada. Si no, lanzamos una excepción
+        try {
+            listener = (InterfaceFragmentActivity) activity;
+
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()+ " debe implementar InterfaceFragmentActivity");
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -56,16 +73,19 @@ public class MainFragment extends Fragment {
         myView.findViewById(R.id.buttonOK).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view,"Confirmada Validación", Snackbar.LENGTH_SHORT).show();
+                if (listener!=null) {
+                    listener.writeActionUser(true);
+                }
             }
         });
         myView.findViewById(R.id.buttonNOOK).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view,"NO Confirmada Validación", Snackbar.LENGTH_SHORT).show();
+                if (listener!=null) {
+                    listener.writeActionUser(false);
+                }
             }
         });
-
 
         if (load==MainFragment.MAIN_TEXT){
             myView.findViewById(R.id.webView).setVisibility(View.GONE);
@@ -102,9 +122,9 @@ public class MainFragment extends Fragment {
 
             tittle=getText(R.string.menu_user).toString();
 
-            webView.loadUrl("file:///android_asset/webUser/index.html?var="+text);
-            //{data:[{id:BDAAA4E6, validation: n},{id:BDAAA4E6, validation: n},]}
-            Log.v(MainActivity.LOG_TAG,text);
+            //Log.v(LOG_TAG,"file:///android_asset/webUser/index.html?obj="+text);
+
+            webView.loadUrl("file:///android_asset/webUser/index.html?obj="+text);
         }
 
         ((TextView) myView.findViewById(R.id.tittle)).setText(tittle);

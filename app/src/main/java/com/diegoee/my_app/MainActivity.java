@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,16 +17,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.security.AccessController.getContext;
-
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener ,InterfaceFragmentActivity{
 
     public static final String LOG_TAG = "log_app";
 
@@ -43,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TdmCard tdmCard;
     private SAMcom samCom;
 
-    private List<ActionUser> actionUser;
+    private List<ActionUser> actionUserList;
+    private ActionUser actionUserNow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +76,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //init variable
         console = "Dispositivo Listo para lectura.";
         login = "none";
-        actionUser= new ArrayList<ActionUser>();
+        actionUserList = new ArrayList<ActionUser>();
+        actionUserNow = new ActionUser();
 
         // adding methods
         if (mNfcAdapter == null) {
@@ -105,6 +102,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragment.setLoad(MainFragment.MAIN_TEXT);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,fragment).commit();
+
+        actionUserNow = new ActionUser();
+        actionUserNow.setUser(login);
+
     }
 
     @Override
@@ -130,6 +131,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public String listActionUserJSON(List<ActionUser> actionUserList){
+        String s="{\"data\":[";
+        for (ActionUser l : actionUserList) {
+            String ss = actionUserList.indexOf(l)<actionUserList.size()-1? ",":"";
+            s = s+"{\"uid\": \""+l.getId()+"\", \"val\": \""+Boolean.toString(l.isValOK())+"\", \"user\": \""+l.getUser()+"\", \"fecha\": \""+l.getFechaFiscalizada()+"\"}"+ss;
+        }
+        s = s+"]}";
+        return s;
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         String s ="";
@@ -152,15 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             s = console+"\n"+tdmCard.getAllData();
         } else if (item.getItemId() == R.id.nav_action_user) {
             fragment.setLoad(MainFragment.ACTION_USER);
-            s="{data:[";
-            for (ActionUser l : actionUser) {
-                if (l.isValidationOK()){
-                    s = s+"{id:"+l.getId()+", validation: y},";
-                }else{
-                    s = s+"{id:"+l.getId()+", validation: n},";
-                }
-            }
-            s = s+"]}";
+            s = listActionUserJSON(actionUserList);
         }
 
         fragment.setText(s);
@@ -172,8 +175,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    public void writeActionUser(boolean val) {
+
+        actionUserNow.setValOK(val);
+        actionUserList.add(actionUserNow);
+
+        String res= "";
+        res = (val) ? "OK" : "NO OK";
+
+        Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Tarjeta fiscalizada: "+res, Snackbar.LENGTH_SHORT).show();
+
+        tdmCard.eraseInfo();
+        console = "";
+
+        onStop();
+        onStart();
+    }
+
     @Override
     public void onNewIntent(Intent intent) {
+
+        Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Tarjeta detectada", Snackbar.LENGTH_SHORT).show();
+
         console = "";
         byte [] uid = null;
 
@@ -187,13 +210,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         console = console +"\n"+this.resolveIntent(intent);
-        ActionUser actUserTemp =new ActionUser();
-        actUserTemp.setId(String.format("%s",TdmCard.bytesToHexString(uid)));
-        actUserTemp.setValidationOK(false);
 
-        actionUser.add(actUserTemp);
-
-        //Log.v(LOG_TAG,actUserTemp.getId());
+        actionUserNow.setId(String.format("%s",TdmCard.bytesToHexString(uid)));
 
         navigationView.getMenu().getItem(0).setChecked(true);
 

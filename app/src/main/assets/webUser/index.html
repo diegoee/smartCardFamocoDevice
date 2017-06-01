@@ -1,33 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-      @charset "UTF-8";
-      body{
-        margin: 0 auto;
-        background-color: #4F4F4F;
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="jquery.dynatable.css">
+  <title>List</title>
+  <style>
+      #container {
+        background: white;
         color: black;
+        border-radius: 0.25em;
       }
-      div{
-        text-align: center;
-        padding: 10px;
-        color: #FEFEFE;
+      table {
+        width: 100%;
+        font-size: 0.75em;
       }
-      #writer{
-        padding: 1em;
-        background-color: white;
-        border-radius: 1em;
+      th, td {
+        border: solid 1px green;
       }
     </style>
-  </head>
-  <body>
-    <div id="container">
-      <div id="writer">
-      </div>
-    </div>
-    <script src="app.js" language="Javascript"></script>
-    <noscript>JAVASCRIPT NOT WORKING!</noscript>
-  </body>
+</head>
+<body>
+<div id="container">
+  <table id="table">
+    <thead>
+    <th>user</th>
+    <th>uid</th>
+    <th>val</th>
+    <th>fecha</th>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="jquery.dynatable.js"></script>
+<script type="text/javascript" src="main.js"></script>
+</body>
 </html>
