@@ -1,5 +1,7 @@
 package com.diegoee.my_app;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,11 +10,11 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static com.diegoee.my_app.MainActivity.LOG_TAG;
+
 public class TdmCard {
 
     public static final String START_STR = "...";
-
-
 
     private boolean isInfo;
     ArrayList<byte[]> infoByte;
@@ -27,14 +29,80 @@ public class TdmCard {
         return isInfo;
     }
 
-    public void setInfo(boolean info) {
-        isInfo = info;
-    }
+    public String getMainScreenWebVar(String login,String fecha){
+        String s="";
 
+        byte[] auxBytes;
+        int startTittle = 0;
+        String result = START_STR;
+        String aux = "";
+
+        s = s+"uid="+bytesToHexString(new byte[]{infoByte.get(0)[0], infoByte.get(0)[1], infoByte.get(0)[2], infoByte.get(0)[3]});
+        s = s+"&fecha="+fecha;
+        s = s+"&login="+login;
+
+        if (infoByte.size()==64) {
+
+            if (Arrays.equals(infoByte.get(8), infoByte.get(9))) {
+                startTittle = 8;
+            }
+            if (Arrays.equals(infoByte.get(9), infoByte.get(10))) {
+                startTittle = 9;
+            }
+            if (Arrays.equals(infoByte.get(8), infoByte.get(10))) {
+                startTittle = 8;
+            }
+
+            auxBytes = new byte[]{infoByte.get(startTittle)[3]};
+            aux = decoData(auxBytes, TdmCard.CTRL_TITTLE_CURRENT);
+
+            if (aux.equals("0")) {
+                startTittle = 12;
+            }
+            if (aux.equals("1")) {
+                startTittle = 20;
+            }
+            if (aux.equals("2")) {
+                startTittle = 28;
+            }
+            if (aux.equals("3")) {
+                startTittle = 36;
+            }
+
+            int val1,val2;
+            int i = 0;
+            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
+            val1 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
+            i=1;
+            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
+            val2 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
+
+            if (val1<val2){
+                i=0;
+            }else{
+                i=1;
+            }
+            // FIJOS
+            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
+            s = s+"&fechaVal="+(decoData(auxBytes, TdmCard.MAIN_DATE_TRAVEL)).replace("-","/").replace(" ","-");
+
+            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[4], infoByte.get(startTittle + i + 5)[5]};
+            s = s+"&paradaVal="+decoData(auxBytes, TdmCard.MAIN_LASTLINE);
+
+            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[10], infoByte.get(startTittle + i + 5)[11]};
+            s = s+"&nViajeros="+decoData(auxBytes, TdmCard.MAIN_TRAVELLER);
+
+            s = s+"&saldo="+infoByte.get(startTittle + i)[0];
+        }
+
+        s = s+"&tranvia="+"NoIdea";
+        s = s+"&operador="+"NoIdea";
+
+        return s;
+    }
 
     public void append(byte[] data){
         this.infoByte.add(data);
-
         this.isInfo = true;
     }
 

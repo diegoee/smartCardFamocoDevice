@@ -55,9 +55,3 @@
 
 
 })();
-/*
-
-http://127.0.0.1:61293/index.html?obj={"data":[{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2010/01/13 23:52:49"},{"uid": "BDAAA4E6", "val": "false", "user": "testUser", "fecha": "2010/01/13 23:53:01"}]}
-
-
-*/

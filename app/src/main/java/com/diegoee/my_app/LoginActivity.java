@@ -49,7 +49,7 @@ public class LoginActivity extends Activity {
         findViewById(R.id.progressBar).setVisibility(View.GONE);
         findViewById(R.id.progressBarGone).setVisibility(View.VISIBLE);
 
-        readDataPass("data/data.json");
+        readDataPass("data/dataLogin.json");
 
         login ="testUser";
         loginOk();
@@ -118,7 +118,7 @@ public class LoginActivity extends Activity {
 
         new Thread(new Runnable() {
             public void run() {
-                while (progressStatus < 20) {
+                while (progressStatus < 100) {
                     progressStatus = progressStatus + (int) (Math.random()*5+1);
                     ((ProgressBar) findViewById(R.id.progressBar)).setProgress(progressStatus);
                     try {

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Android App</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #4F4F4F;
+        color: #FEFEFE;
+      }
+      div{
+        transition: 1s;
+      }
+      #container {
+        border-radius: 0.25em;
+        margin: 2px;
+        padding: 0;
+      }
+      .level1 {
+        border: solid 1px #B7CA3D;
+      }
+      .level2 {
+        border: solid 1px #B7CA3D;
+        float: left;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div class="level1"><div class="level2">1</div><div class="level2">2</div><div class="level2">3</div></div></div>
+    <script type="text/javascript">
+      (function myApp(){
+        document.getElementById('container').innerHtml = 'HOLA';
+      })();
+    </script>
+  </body>
+</html>

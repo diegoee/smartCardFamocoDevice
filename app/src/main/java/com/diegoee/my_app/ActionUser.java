@@ -23,7 +23,7 @@ public class ActionUser {
         this.uid = "";
         this.user = "";
         this.valOK = false;
-        fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+        fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(new Date());
         //Log.v(LOG_TAG,fechaFiscalizada);
     }
 

@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
+
         navigationView.getMenu().getItem(0).setChecked(true);
 
         MainFragment fragment = new MainFragment();
@@ -151,10 +152,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (item.getItemId() == R.id.nav_main) {
             if(tdmCard.isInfo()) {
                 fragment.setLoad(MainFragment.MAIN_BTN);
+                s = tdmCard.getMainScreenWebVar(login,actionUserNow.getFechaFiscalizada());
             }else{
                 fragment.setLoad(MainFragment.MAIN_TEXT);
+                s = console+"\n"+tdmCard.getMainData();
             }
-            s = console+"\n"+tdmCard.getMainData();
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
             s = tdmCard.getMovData();
@@ -216,10 +218,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().getItem(0).setChecked(true);
 
         MainFragment fragment = new MainFragment();
-        fragment.setText(console+"\n"+tdmCard.getMainData());
         fragment.setLoad(MainFragment.MAIN_BTN);
-
+        fragment.setText(tdmCard.getMainScreenWebVar(login,actionUserNow.getFechaFiscalizada()));
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
     }
 
     private String resolveIntent(Intent intent) {

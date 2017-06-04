@@ -17,9 +17,6 @@ import static com.diegoee.my_app.MainActivity.LOG_TAG;
 /**
  * Created by Diego on 2/7/16.
  */
-
-
-
 public class MainFragment extends Fragment {
 
     public static int MAIN_TEXT=1;
@@ -43,7 +40,6 @@ public class MainFragment extends Fragment {
 
     private InterfaceFragmentActivity listener;
 
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -62,13 +58,14 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.main_fragment, container, false);
 
-        String tittle="";
 
         WebView webView = (WebView) myView.findViewById(R.id.webView);
         webView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+
+        String tittle="";
 
         myView.findViewById(R.id.buttonOK).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,11 +92,12 @@ public class MainFragment extends Fragment {
             tittle=getText(R.string.menu_main).toString();
         }
         if (load==MainFragment.MAIN_BTN){
-            myView.findViewById(R.id.webView).setVisibility(View.GONE);
+            myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
             myView.findViewById(R.id.buttonsView).setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.textView).setVisibility(View.GONE);
 
             tittle=getText(R.string.menu_main).toString();
+            webView.loadUrl("file:///android_asset/webMainScreen/index.html?"+text);
         }
         if (load==MainFragment.DETAIL_MOV){
             myView.findViewById(R.id.webView).setVisibility(View.GONE);
@@ -116,23 +114,22 @@ public class MainFragment extends Fragment {
             tittle=getText(R.string.menu_card).toString();
         }
         if (load==MainFragment.ACTION_USER){
+
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
             myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.GONE);
 
             tittle=getText(R.string.menu_user).toString();
 
-            //Log.v(LOG_TAG,"file:///android_asset/webUser/index.html?obj="+text);
-
             webView.loadUrl("file:///android_asset/webUser/index.html?obj="+text);
         }
+
+        Log.v(LOG_TAG,text);
 
         ((TextView) myView.findViewById(R.id.tittle)).setText(tittle);
         ((TextView) myView.findViewById(R.id.result)).setText(text);
 
         return myView;
     }
-
-
 
 }
