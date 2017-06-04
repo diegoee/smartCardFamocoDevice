@@ -34,7 +34,6 @@ public class TdmCard {
 
         byte[] auxBytes;
         int startTittle = 0;
-        String result = START_STR;
         String aux = "";
 
         s = s+"uid="+bytesToHexString(new byte[]{infoByte.get(0)[0], infoByte.get(0)[1], infoByte.get(0)[2], infoByte.get(0)[3]});
@@ -110,6 +109,7 @@ public class TdmCard {
         String result = "";
 
         if (infoByte.size()==64) {
+            result= "\n****** Datos Brutos en Hexadecimal ****** \n";
             int i = 0;
             int j = 0;
             for (byte[] data : infoByte) {
@@ -134,14 +134,10 @@ public class TdmCard {
     public String getAllData(){
         String result = START_STR;
         result = getMainData() + "\n";
-        result = result + "----------------------------------------------\n";
-        result = result + getCtrlData() + "\n\n";
-        result = result + "----------------------------------------------\n";
-        result = result + getCardData() + "\n\n";
-        result = result + "----------------------------------------------\n";
-        result = result + getMovData() + "\n\n";
-        result = result + "------------ DATOS EN HEXADECIMAL ------------\n";
-        result = result + getInfoHexByte() + "\n\n";
+        result = result + getCtrlData() + "\n";
+        result = result + getCardData() + "\n";
+        result = result + getMovData() + "\n";
+        result = result + getInfoHexByte();
 
         return result;
     }
@@ -281,8 +277,10 @@ public class TdmCard {
                 selSector=8;
             }
 
+            result= "\n****** Datos de Control ****** \n";
+
             auxBytes = new byte[]{infoByte.get(selSector)[0], infoByte.get(selSector)[1]};
-            result = "Número de Transacción:\n\t"+ decoData(auxBytes,TdmCard.CTRL_NUMBER);
+            result = result + "Número de Transacción:\n\t"+ decoData(auxBytes,TdmCard.CTRL_NUMBER);
 
             auxBytes = new byte[]{infoByte.get(selSector)[2]};
             result = result + "\nMovimiento Actual:\n\t"+ decoData(auxBytes,TdmCard.CTRL_MOV);
@@ -324,9 +322,11 @@ public class TdmCard {
         String result = START_STR;
 
         if (infoByte.size()==64) {
+
+            result= "\n****** Datos de Tarjeta ****** \n";
             // Nº de tarjeta Sector1 bloque 0 byte 0,1,2 y 3
             auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
-            result = "Número de Tarjeta:\n\t(Hex.)" + bytesToHexString(auxBytes)+"  -  "+ decoData(auxBytes,TdmCard.CARD_NUMBER);
+            result = result + "Número de Tarjeta:\n\t(Hex.)" + bytesToHexString(auxBytes)+"  -  "+ decoData(auxBytes,TdmCard.CARD_NUMBER);
 
             //tipo de tarjeta sector 1 bloque 0 byte 4
             auxBytes = new byte[]{infoByte.get(4)[4]};
@@ -343,6 +343,8 @@ public class TdmCard {
             //FEcha de Caducidad sector 1 bloque 0 byte 8y9
             auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
             result = result + "\nFecha de Caducidad:\n\t" + decoData(auxBytes,TdmCard.CARD_DATE);
+
+            result = result + "\n";
         }
 
         return result;
@@ -371,10 +373,10 @@ public class TdmCard {
         int auxInt;
 
         if (infoByte.size()==64) {
-            result="";
             int[] pos =new int[]{44,45,46,48,49,50,52,53,54,56,57};
+
             for (int i=0;i<pos.length;i++){
-                result = (i+1)+"º  ******Movimiento******:";
+                result = (i+1)+"º  ++++Movimiento++++:";
 
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
                 result = result + "\n\t- Títulos: " + decoData(auxBytes,TdmCard.MOV_TITTLE);
@@ -408,7 +410,7 @@ public class TdmCard {
 
             Collections.sort(movList, Collections.reverseOrder());
 
-            result="Movimientos Ordenados por fecha:\n";
+            result="\n"+"****** Historico de Movimientos ****** \nMovimientos Ordenados por fecha:\n";
             for (Mov s : movList){
                 result =result+s.str+"\n";
             }

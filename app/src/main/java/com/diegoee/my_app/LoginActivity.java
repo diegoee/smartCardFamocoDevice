@@ -51,8 +51,10 @@ public class LoginActivity extends Activity {
 
         readDataPass("data/dataLogin.json");
 
+
         login ="testUser";
         loginOk();
+
 
         Button btn = (Button) findViewById(R.id.btnLogin);
         View.OnClickListener listener = new View.OnClickListener(){

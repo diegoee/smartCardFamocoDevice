@@ -101,8 +101,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MainFragment fragment = new MainFragment();
         fragment.setText(console);
         fragment.setLoad(MainFragment.MAIN_TEXT);
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
 
         actionUserNow = new ActionUser();
         actionUserNow.setUser(login);
@@ -169,11 +170,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         fragment.setText(s);
-
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 

@@ -5,8 +5,8 @@
 			"pass": "tranvia"
 		},
 		{
-			"user": "usertest",
-			"pass": "passtest"
+			"user": "testUser",
+			"pass": "testUser"
 		}
   	]
 }

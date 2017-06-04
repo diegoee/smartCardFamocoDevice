@@ -58,12 +58,10 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.main_fragment, container, false);
 
-
         WebView webView = (WebView) myView.findViewById(R.id.webView);
         webView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
 
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        webView.getSettings().setJavaScriptEnabled(true);
 
         String tittle="";
 
@@ -124,7 +122,7 @@ public class MainFragment extends Fragment {
             webView.loadUrl("file:///android_asset/webUser/index.html?obj="+text);
         }
 
-        Log.v(LOG_TAG,text);
+        //Log.v(LOG_TAG,text);
 
         ((TextView) myView.findViewById(R.id.tittle)).setText(tittle);
         ((TextView) myView.findViewById(R.id.result)).setText(text);

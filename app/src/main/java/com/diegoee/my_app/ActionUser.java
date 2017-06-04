@@ -7,10 +7,6 @@ import java.util.Date;
 
 import static com.diegoee.my_app.MainActivity.LOG_TAG;
 
-/**
- * Created by Diego on 24/5/17.
- */
-
 public class ActionUser {
 
     private String uid;
@@ -24,7 +20,8 @@ public class ActionUser {
         this.user = "";
         this.valOK = false;
         fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(new Date());
-        //Log.v(LOG_TAG,fechaFiscalizada);
+
+        Log.v(LOG_TAG,fechaFiscalizada);
     }
 
     public String getId() {
