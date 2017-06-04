@@ -3,6 +3,7 @@ package com.diegoee.my_app;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import static com.diegoee.my_app.MainActivity.LOG_TAG;
@@ -19,9 +20,14 @@ public class ActionUser {
         this.uid = "";
         this.user = "";
         this.valOK = false;
-        fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(new Date());
 
-        Log.v(LOG_TAG,fechaFiscalizada);
+        Calendar date = Calendar.getInstance();
+        date.add(Calendar.YEAR, 7);
+        date.add(Calendar.MONTH, 5);
+        date.add(Calendar.DATE, -12);
+        date.add(Calendar.HOUR, -3);
+        date.add(Calendar.MINUTE, -23);
+        fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(date.getTime());
     }
 
     public String getId() {
