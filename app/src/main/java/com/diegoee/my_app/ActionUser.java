@@ -1,12 +1,7 @@
 package com.diegoee.my_app;
 
-import android.util.Log;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-
-import static com.diegoee.my_app.MainActivity.LOG_TAG;
 
 public class ActionUser {
 
@@ -22,12 +17,7 @@ public class ActionUser {
         this.valOK = false;
 
         Calendar date = Calendar.getInstance();
-        date.add(Calendar.YEAR, 7);
-        date.add(Calendar.MONTH, 5);
-        date.add(Calendar.DATE, -12);
-        date.add(Calendar.HOUR, -3);
-        date.add(Calendar.MINUTE, -23);
-        fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(date.getTime());
+        fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm")).format(date.getTime());
     }
 
     public String getId() {

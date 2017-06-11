@@ -14,7 +14,7 @@ import static com.diegoee.my_app.MainActivity.LOG_TAG;
 
 public class TdmCard {
 
-    public static final String START_STR = "...";
+    public static final String START_STR = "";
 
     private boolean isInfo;
     ArrayList<byte[]> infoByte;
@@ -91,12 +91,21 @@ public class TdmCard {
             auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[10], infoByte.get(startTittle + i + 5)[11]};
             s = s+"&nViajeros="+decoData(auxBytes, TdmCard.MAIN_TRAVELLER);
 
-            s = s+"&saldo="+infoByte.get(startTittle + i)[0];
+            s = s+"&saldo="+decoData(new byte[]{infoByte.get(startTittle + i)[0]}, TdmCard.MAIN_CAST).replaceFirst("€","").replaceFirst(" ","");
+
+
         }
 
-        s = s+"&tranvia="+"NoIdea";
-        s = s+"&operador="+"NoIdea";
+        //tipo de tarjeta sector 1 bloque 0 byte 4
+        auxBytes = new byte[]{infoByte.get(4)[4]};
+        s = s+"&tipoTarjeta=" + decoData(auxBytes,TdmCard.CARD_TYPE);
 
+
+        //Propietario sector 1 bloque 0 byte 5
+        auxBytes = new byte[]{infoByte.get(4)[5]};
+        s = s+"&operador=" + decoData(auxBytes,TdmCard.CARD_OWNER);
+
+        //Log.v(LOG_TAG,s);
         return s;
     }
 
@@ -109,7 +118,7 @@ public class TdmCard {
         String result = "";
 
         if (infoByte.size()==64) {
-            result= "\n****** Datos Brutos en Hexadecimal ****** \n";
+            result= "****** Datos Brutos en Hex. ****** \n";
             int i = 0;
             int j = 0;
             for (byte[] data : infoByte) {
@@ -136,7 +145,7 @@ public class TdmCard {
         result = getMainData() + "\n";
         result = result + getCtrlData() + "\n";
         result = result + getCardData() + "\n";
-        result = result + getMovData() + "\n";
+        //result = result + getMovData() + "\n";
         result = result + getInfoHexByte();
 
         return result;
@@ -182,7 +191,7 @@ public class TdmCard {
                 auxInt=4;
             }
 
-            result= "\n****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+auxInt ;
+            result= "****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+auxInt ;
 
             auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
             result = result + "\nFecha de Caducidad (Datos de Tarjeta):\n\t" + decoData(auxBytes,TdmCard.CARD_DATE)+"\n";
@@ -277,7 +286,7 @@ public class TdmCard {
                 selSector=8;
             }
 
-            result= "\n****** Datos de Control ****** \n";
+            result= "****** Datos de Control ****** \n";
 
             auxBytes = new byte[]{infoByte.get(selSector)[0], infoByte.get(selSector)[1]};
             result = result + "Número de Transacción:\n\t"+ decoData(auxBytes,TdmCard.CTRL_NUMBER);
@@ -312,7 +321,7 @@ public class TdmCard {
             auxBytes = new byte[]{infoByte.get(selSector)[10],infoByte.get(selSector)[11]};
             result = result + "\nFecha Anulación/Recuperación:\n\t" + decoData(auxBytes,TdmCard.CTRL_DATE);
         }
-
+        result = result + "\n";
         return result;
     }
 
@@ -323,7 +332,7 @@ public class TdmCard {
 
         if (infoByte.size()==64) {
 
-            result= "\n****** Datos de Tarjeta ****** \n";
+            result= "****** Datos de Tarjeta ****** \n";
             // Nº de tarjeta Sector1 bloque 0 byte 0,1,2 y 3
             auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
             result = result + "Número de Tarjeta:\n\t(Hex.)" + bytesToHexString(auxBytes)+"  -  "+ decoData(auxBytes,TdmCard.CARD_NUMBER);
@@ -410,12 +419,13 @@ public class TdmCard {
 
             Collections.sort(movList, Collections.reverseOrder());
 
-            result="\n"+"****** Historico de Movimientos ****** \nMovimientos Ordenados por fecha:\n";
+            result="****** Historico de Movimientos ****** \nMovimientos Ordenados por fecha:\n";
             for (Mov s : movList){
                 result =result+s.str+"\n";
             }
 
         }
+
         return result;
     }
 
@@ -585,10 +595,10 @@ public class TdmCard {
             SimpleDateFormat format1;
             if ((type==TdmCard.CARD_DATE)||(type==TdmCard.CTRL_DATE)){
                 c1.add(Calendar.DAY_OF_YEAR, hex2decimal(bytesToHexString(bArray)));
-                format1 = new SimpleDateFormat("dd-MM-yyyy");
+                format1 = new SimpleDateFormat("yyyy-MM-dd");
             }else{
                 c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(bArray)));
-                format1 = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             }
 
             val=format1.format(c1.getTime());

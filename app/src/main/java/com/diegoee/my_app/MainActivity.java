@@ -126,11 +126,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             mySnackbar.show();
 
-            tdmCard.eraseInfo();
-            console = "";
+            resetVar();
             onStop();
             onStart();
         }
+    }
+
+    public void resetVar(){
+        tdmCard.eraseInfo();
+        console = "";
     }
 
     public String listActionUserJSON(List<ActionUser> actionUserList){
@@ -156,14 +160,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 s = tdmCard.getMainScreenWebVar(login,actionUserNow.getFechaFiscalizada());
             }else{
                 fragment.setLoad(MainFragment.MAIN_TEXT);
-                s = console+"\n"+tdmCard.getMainData();
+                s = console+"\n\n"+tdmCard.getMainData();
             }
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
             s = tdmCard.getMovData();
         } else if (item.getItemId() == R.id.nav_detail_data) {
             fragment.setLoad(MainFragment.DETAIL_CARD);
-            s = console+"\n"+tdmCard.getAllData();
+            s = console+"\n\n"+tdmCard.getAllData();
         } else if (item.getItemId() == R.id.nav_action_user) {
             fragment.setLoad(MainFragment.ACTION_USER);
             s = listActionUserJSON(actionUserList);
@@ -187,9 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Tarjeta fiscalizada: "+res, Snackbar.LENGTH_SHORT).show();
 
-        tdmCard.eraseInfo();
-        console = "";
-
+        resetVar();
         onStop();
         onStart();
     }

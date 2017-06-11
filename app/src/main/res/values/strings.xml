@@ -7,7 +7,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_main">Principal</string>
-    <string name="menu_card">Datos de Brutos de Tarjeta</string>
+    <string name="menu_card">Datos Brutos de Tarjeta</string>
     <string name="menu_mov" >Historico de Tarjeta</string>
     <string name="menu_user">Registro de Acciones</string>
 

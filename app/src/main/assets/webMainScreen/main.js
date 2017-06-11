@@ -11,7 +11,16 @@
     function getUrlVars()
     {
         var query = window.location.search.substring(1);
-        query = query.replace(/%20/g,' ').replace(/%22/g,'"').replace(/%2C/g,',').replace(/%7B/g,'{').replace(/%2C/g,'[').replace(/%7D/g,'}').replace(/%5D/g,']').replace(/%2F/g,'/').replace(/%3A/g,':').replace(/\+/g,' ');
+        query = query.replace(/%20/g,' ')
+            .replace(/%22/g,'"')
+            .replace(/%2C/g,',')
+            .replace(/%7B/g,'{')
+            .replace(/%2C/g,'[')
+            .replace(/%7D/g,'}')
+            .replace(/%5D/g,']')
+            .replace(/%2F/g,'/')
+            .replace(/%3A/g,':')
+            .replace(/\+/g,' ');
         var q = query.split("&");
         var vars=[];
         for(var i=0;i<q.length;i++){
@@ -35,33 +44,47 @@
         return div;
     };
 
-    div1 = createDiv('level1',true,'Usuario: '+getUrlVars().login);
-    document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',false);
     div2 = createDiv('level2',true,'Tarjeta: '+getUrlVars().uid);
     div1.appendChild(div2);
-    div2 = createDiv('level2',true,'Fecha: '+getUrlVars().fecha);
+    div2 = createDiv('level2',true,'Usuario: '+getUrlVars().login);
     div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Fecha de Validación : '+getUrlVars().fechaVal);
+    div1 = createDiv('level1',true, 'Fecha Actual:');
+    div1.style.paddingLeft='5px';
+    document.getElementById('container').appendChild(div1);
+
+    div1 = createDiv('level1',true,getUrlVars().fecha);
+    div1.style.paddingLeft='5px';
+    document.getElementById('container').appendChild(div1);
+
+    div1 = createDiv('level1',true, 'Fecha de Validación : ');
+    div1.style.paddingLeft='5px';
+    document.getElementById('container').appendChild(div1);
+
+    div1 = createDiv('level1',true, getUrlVars().fechaVal);
+    div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',true,'Parada: '+getUrlVars().paradaVal);
+    div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',false);
-    div2 = createDiv('level2',true,'Tranvia: '+getUrlVars().tranvia);
+    div2 = createDiv('level2',true,'Tipo de Tarjeta: '+getUrlVars().tipoTarjeta);
     div1.appendChild(div2);
     div2 = createDiv('level2',true,'Operador: '+getUrlVars().operador);
     div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',true,'Nº Viajeros: '+getUrlVars().nViajeros);
+    div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Saldo: '+getUrlVars().saldo);
+    div1 = createDiv('level1',true,'Saldo: '+getUrlVars().saldo+' €');
+    div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 
 
