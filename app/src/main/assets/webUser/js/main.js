@@ -1,6 +1,12 @@
 /*global document, window, $*/
 (function myApp(){
 
+  /*
+  if (window.location.search===''){
+    window.location.href = window.location.href+'?obj='+'{"data":[{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"}]}';
+  }
+  */
+
   function getUrlVars()
   {
       var query=window.location.search.substring(1);

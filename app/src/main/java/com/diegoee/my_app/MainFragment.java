@@ -119,7 +119,7 @@ public class MainFragment extends Fragment {
 
             tittle=getText(R.string.menu_user).toString();
 
-            webView.loadUrl("file:///android_asset/webUser/index.html?obj="+text);
+            webView.loadUrl("file:///android_asset/webUser/index.html?"+text);
         }
 
         //Log.v(LOG_TAG,text);

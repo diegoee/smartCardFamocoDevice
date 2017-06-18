@@ -138,12 +138,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public String listActionUserJSON(List<ActionUser> actionUserList){
-        String s="{\"data\":[";
+        String s="obj={\"data\":[";
         for (ActionUser l : actionUserList) {
             String ss = actionUserList.indexOf(l)<actionUserList.size()-1? ",":"";
             s = s+"{\"uid\": \""+l.getId()+"\", \"val\": \""+Boolean.toString(l.isValOK())+"\", \"user\": \""+l.getUser()+"\", \"fecha\": \""+l.getFechaFiscalizada()+"\"}"+ss;
         }
         s = s+"]}";
+        //Log.v(LOG_TAG,s);
         return s;
     }
 

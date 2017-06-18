@@ -52,19 +52,11 @@
     div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true, 'Fecha Actual:');
+    div1 = createDiv('level1',true,'Fecha Act.: '+getUrlVars().fecha);
     div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,getUrlVars().fecha);
-    div1.style.paddingLeft='5px';
-    document.getElementById('container').appendChild(div1);
-
-    div1 = createDiv('level1',true, 'Fecha de Validación : ');
-    div1.style.paddingLeft='5px';
-    document.getElementById('container').appendChild(div1);
-
-    div1 = createDiv('level1',true, getUrlVars().fechaVal);
+    div1 = createDiv('level1',true,'Fecha Val.: '+getUrlVars().fechaVal);
     div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 

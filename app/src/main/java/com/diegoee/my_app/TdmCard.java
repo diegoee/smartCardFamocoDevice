@@ -130,7 +130,7 @@ public class TdmCard {
                 i++;
             }
         }else{
-            result = "No Data";
+            result = "";
         }
         return result;
     }

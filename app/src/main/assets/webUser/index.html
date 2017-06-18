@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="jquery.dynatable.css">
-  <title>Web Android App<</title>
-  <style>
-      #container {
-        background: white;
-        color: black;
-        border-radius: 0.25em;
-      }
-      table {
-        width: 100%;
-        font-size: 0.75em;
-      }
-      th, td {
-        border: solid 1px green;
-      }
-    </style>
-</head>
-<body>
-<div id="container">
-  <table id="table">
-    <thead>
-    <th>user</th>
-    <th>uid</th>
-    <th>val</th>
-    <th>fecha</th>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-</div>
-<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="jquery.dynatable.js"></script>
-<script type="text/javascript" src="main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="libs/jquery.dynatable.css">
+    <title>Web Android App</title>
+    <style>
+        #container {
+          background: #4F4F4F;
+          color: #FEFEFE;
+          border-radius: 0.25em;
+        }
+        table {
+          width: 100%;
+          font-size: 0.75em;
+        }
+        th, td {
+          border: solid 1px #B7CA3D;
+        }
+        th{
+          background: #B7CA3D;
+        }
+        /*
+        <color name="colorPrimary">#B7CA3D</color>
+        <color name="colorPrimaryDark">#4F4F4F</color>
+        <color name="colorAccent">#FEFEFE</color>
+        */
+      </style>
+  </head>
+  <body>
+    <div id="container">
+      <table id="table">
+        <thead>
+        <th>user</th>
+        <th>uid</th>
+        <th>val</th>
+        <th>fecha</th>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <script type="text/javascript" src="libs/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="libs/jquery.dynatable.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+  </body>
 </html>
