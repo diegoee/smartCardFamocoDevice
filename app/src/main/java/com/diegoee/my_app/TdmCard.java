@@ -29,7 +29,7 @@ public class TdmCard {
         return isInfo;
     }
 
-    public String getMainScreenWebVar(String login,String fecha){
+    public String getMainScreenJSON(String login,String fecha){
         String s="";
 
         byte[] auxBytes;
@@ -69,14 +69,16 @@ public class TdmCard {
             }
 
             int val1,val2;
+
             int i = 0;
             auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
             val1 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
+
             i=1;
             auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
             val2 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
 
-            if (val1<val2){
+            if (val1>val2){
                 i=0;
             }else{
                 i=1;
@@ -92,14 +94,10 @@ public class TdmCard {
             s = s+"&nViajeros="+decoData(auxBytes, TdmCard.MAIN_TRAVELLER);
 
             s = s+"&saldo="+decoData(new byte[]{infoByte.get(startTittle + i)[0]}, TdmCard.MAIN_CAST).replaceFirst("€","").replaceFirst(" ","");
-
-
         }
-
         //tipo de tarjeta sector 1 bloque 0 byte 4
         auxBytes = new byte[]{infoByte.get(4)[4]};
         s = s+"&tipoTarjeta=" + decoData(auxBytes,TdmCard.CARD_TYPE);
-
 
         //Propietario sector 1 bloque 0 byte 5
         auxBytes = new byte[]{infoByte.get(4)[5]};
@@ -212,7 +210,7 @@ public class TdmCard {
                 auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
                 val2 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
 
-                if (val1<val2){
+                if (val1>val2){
                     i=0;
                 }else{
                     i=1;

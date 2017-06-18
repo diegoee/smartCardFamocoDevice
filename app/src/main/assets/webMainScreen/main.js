@@ -60,7 +60,7 @@
     div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Parada: '+getUrlVars().paradaVal);
+    div1 = createDiv('level1',true,'Última Linea: '+getUrlVars().paradaVal);
     div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 

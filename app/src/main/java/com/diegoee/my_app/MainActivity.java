@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         console = "";
     }
 
-    public String listActionUserJSON(List<ActionUser> actionUserList){
+    public String getActionUserJSON(List<ActionUser> actionUserList){
         String s="obj={\"data\":[";
         for (ActionUser l : actionUserList) {
             String ss = actionUserList.indexOf(l)<actionUserList.size()-1? ",":"";
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (item.getItemId() == R.id.nav_main) {
             if(tdmCard.isInfo()) {
                 fragment.setLoad(MainFragment.MAIN_BTN);
-                s = tdmCard.getMainScreenWebVar(login,actionUserNow.getFechaFiscalizada());
+                s = tdmCard.getMainScreenJSON(login,actionUserNow.getFechaFiscalizada());
             }else{
                 fragment.setLoad(MainFragment.MAIN_TEXT);
                 s = console+"\n\n"+tdmCard.getMainData();
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             s = console+"\n\n"+tdmCard.getAllData();
         } else if (item.getItemId() == R.id.nav_action_user) {
             fragment.setLoad(MainFragment.ACTION_USER);
-            s = listActionUserJSON(actionUserList);
+            s = getActionUserJSON(actionUserList);
         }
 
         fragment.setText(s);
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         MainFragment fragment = new MainFragment();
         fragment.setLoad(MainFragment.MAIN_BTN);
-        fragment.setText(tdmCard.getMainScreenWebVar(login,actionUserNow.getFechaFiscalizada()));
+        fragment.setText(tdmCard.getMainScreenJSON(login,actionUserNow.getFechaFiscalizada()));
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
