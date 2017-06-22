@@ -21,6 +21,20 @@
         th{
           background: #B7CA3D;
         }
+        #counterOK {
+          padding-right: 1em;
+          padding-bottom: 0.25em;
+          float: left;
+        }
+        #counterNOOK {
+          padding-right: 1em;
+          padding-bottom: 0.25em;
+          float: left;
+        }
+        #counterTotal {
+          padding-bottom: 0.25em;
+          float: right;
+        }
         /*
         <color name="colorPrimary">#B7CA3D</color>
         <color name="colorPrimaryDark">#4F4F4F</color>
@@ -30,7 +44,11 @@
   </head>
   <body>
     <div id="container">
-      <div id="counter"></div>
+      <div>
+        <div id="counterOK" ></div>
+        <div id="counterNOOK"></div>
+        <div id="counterTotal"></div>
+      </div>
       <table id="table">
         <thead>
         <th>user</th>

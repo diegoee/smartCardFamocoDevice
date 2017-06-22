@@ -2,9 +2,9 @@
 (function myApp(){
 
   /*
-  if (window.location.search===''){
-    window.location.href = window.location.href+'?obj='+'{"data":[{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"}]}';
-  }
+  $('body').before($('<input type="button" value="EXE" style="width: 100%;"/>').on('click',function(){
+      window.location.search ='?obj='+'{"data":[{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "false", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "false", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"}]}';
+    }));
   */
 
   function getUrlVars()
@@ -35,18 +35,20 @@
     .replace(/%3A/g,':')
     .replace(/\+/g,' '));
 
-    var cOK = 0;
-    var cNoOk = 0;
+    var c = [];  c[0]=0;  c[1]=0;  c[2]=0;
     for (var i=0; i<obj.data.length; i++){
-        if (obj.data[i].val==='OK'){
-          cOK++;
+        c[0]++;
+        console.log(obj.data[i].val);
+        if (obj.data[i].val.trim()==='OK'){
+          c[1]++;
         }
-        if (obj.data[i].val==='NO OK'){
-          cNoOk++;
+        if (obj.data[i].val.trim()==='NO OK'){
+          c[2]++;
         }
     }
-
-    $('#counter').append('OK: '+cOK+' <> NO OK: '+cNoOk+'');
+    $('#counterTotal').append('Total: '+c[0]+'');
+    $('#counterOK').append('OK: '+c[1]+'');
+    $('#counterNOOK').append('NO OK: '+c[2]+'');
 
 
   //document.getElementById('container').innerHTML = obj.data[0].uid + " - - -  " + obj.data[1].uid;

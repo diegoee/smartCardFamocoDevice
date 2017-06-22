@@ -1,9 +1,10 @@
 /*global document, window, $*/
 (function myApp(){
     /*
-    if (window.location.search===''){
-    window.location = window.location+'?uid=BDAAA4E6&fecha=2010/01/16-18:45:36&login=testUser&fechaVal=08/02/2012-01:29&paradaVal=6399&nViajeros=1&saldo=0&tranvia=NoIdea&operador=NoIdea';
-    }
+    document.getElementsByTagName('body')[0].innerHTML = '<input id="btnEXE" type="button" value="EXE" style="width: 100%;"/>'+document.getElementsByTagName('body')[0].innerHTML;
+    document.getElementById('btnEXE').addEventListener('click', function(){
+    window.location.search ='?uid=BDAAA4E6&fecha=2010/01/16-18:45:36&login=testUser&fechaVal=2010/01/16-18:45:36&paradaVal=6399&nViajeros=1&saldo=0&tranvia=NoIdea&operador=NoIdea';
+    });
     */
 
     document.getElementById('container').innerHTML ='';
@@ -52,16 +53,34 @@
     div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Fecha Act.: '+getUrlVars().fecha);
-    div1.style.paddingLeft='5px';
+    div1 = createDiv('level1',false);
+    div2 = createDiv('level2',true,'Fecha Act.: ');
+    div1.appendChild(div2);
+    div2 = createDiv('level2',true,getUrlVars().fecha);
+    div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Fecha Val.: '+getUrlVars().fechaVal);
-    div1.style.paddingLeft='5px';
+    div1 = createDiv('level1',false);
+    div2 = createDiv('level2',true,'Fecha Val.: ');
+    div1.appendChild(div2);
+    div2 = createDiv('level2',true,getUrlVars().fechaVal);
+    div2.style.fontSize='1.75em';
+    div2.style.backgroundColor='#B7CA3D';
+    div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Última Linea: '+getUrlVars().paradaVal);
+    div1 = createDiv('level1',false);
+    div2 = createDiv('level2',true,'Parada: '+getUrlVars().paradaVal);
+    div2.style.fontSize='1.75em';
+    div1.appendChild(div2);
+    div2 = createDiv('level2',true,'Tranvia: '+getUrlVars().tranvia);
+    div2.style.fontSize='1.75em';
+    div1.appendChild(div2);
+    document.getElementById('container').appendChild(div1);
+
+    div1 = createDiv('level1',true,'Nº Viajeros: '+getUrlVars().nViajeros);
     div1.style.paddingLeft='5px';
+    div1.style.fontSize='1.75em';
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',false);
@@ -71,11 +90,7 @@
     div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Nº Viajeros: '+getUrlVars().nViajeros);
-    div1.style.paddingLeft='5px';
-    document.getElementById('container').appendChild(div1);
-
-    div1 = createDiv('level1',true,'Saldo: '+getUrlVars().saldo+' €');
+    div1 = createDiv('level1',true,'Saldo/Viajes: '+getUrlVars().saldo);
     div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 
