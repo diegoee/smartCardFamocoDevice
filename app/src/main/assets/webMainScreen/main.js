@@ -64,14 +64,14 @@
     div2 = createDiv('level2',true,'Fecha Val.: ');
     div1.appendChild(div2);
     div2 = createDiv('level2',true,getUrlVars().fechaVal);
-    div2.style.fontSize='1.75em';
+    div2.style.fontSize='1.5em';
     div2.style.backgroundColor='#B7CA3D';
     div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',false);
     div2 = createDiv('level2',true,'Parada: '+getUrlVars().paradaVal);
-    div2.style.fontSize='1.75em';
+    div2.style.fontSize='1.5em';
     div1.appendChild(div2);
     div2 = createDiv('level2',true,'Tranvia: '+getUrlVars().tranvia);
     div2.style.fontSize='1.75em';
@@ -80,7 +80,7 @@
 
     div1 = createDiv('level1',true,'Nº Viajeros: '+getUrlVars().nViajeros);
     div1.style.paddingLeft='5px';
-    div1.style.fontSize='1.75em';
+    div1.style.fontSize='1.5em';
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',false);
