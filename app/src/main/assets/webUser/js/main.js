@@ -35,6 +35,20 @@
     .replace(/%3A/g,':')
     .replace(/\+/g,' '));
 
+    var cOK = 0;
+    var cNoOk = 0;
+    for (var i=0; i<obj.data.length; i++){
+        if (obj.data[i].val==='OK'){
+          cOK++;
+        }
+        if (obj.data[i].val==='NO OK'){
+          cNoOk++;
+        }
+    }
+
+    $('#counter').append('OK: '+cOK+' <> NO OK: '+cNoOk+'');
+
+
   //document.getElementById('container').innerHTML = obj.data[0].uid + " - - -  " + obj.data[1].uid;
 
   $.dynatableSetup({
