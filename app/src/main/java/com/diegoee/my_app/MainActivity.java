@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         //init classes
-        tdmCard = new TdmCard();
+        tdmCard = new TdmCard(getApplicationContext());
         samCom = new SAMcom();
 
         //adding component
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String s="obj={\"data\":[";
         for (ActionUser l : actionUserList) {
             String ss = actionUserList.indexOf(l)<actionUserList.size()-1? ",":"";
-            s = s+"{\"uid\": \""+l.getId()+"\", \"val\": \""+Boolean.toString(l.isValOK())+"\", \"user\": \""+l.getUser()+"\", \"fecha\": \""+l.getFechaFiscalizada()+"\"}"+ss;
+            s = s+"{\"uid\": \""+l.getId()+"\", \"val\": \""+Boolean.toString(l.isValOK())+"\", \"user\": \""+l.getUser()+"\", \"fecha\": \""+l.getFechaFiscalizadaSeg()+"\"}"+ss;
         }
         s = s+"]}";
         //Log.v(LOG_TAG,s);
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 s = tdmCard.getMainScreenJSON(login,actionUserNow.getFechaFiscalizada());
             }else{
                 fragment.setLoad(MainFragment.MAIN_TEXT);
-                s = console+"\n\n"+tdmCard.getMainData();
+                s = console;
             }
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
@@ -216,13 +216,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         console = console +"\n"+this.resolveIntent(intent);
 
-        actionUserNow.setId(String.format("%s",TdmCard.bytesToHexString(uid)));
+        actionUserNow.setId(tdmCard.ntarjeta);
 
         navigationView.getMenu().getItem(0).setChecked(true);
 
         MainFragment fragment = new MainFragment();
-        fragment.setLoad(MainFragment.MAIN_BTN);
+         fragment.setLoad(MainFragment.MAIN_BTN);
         fragment.setText(tdmCard.getMainScreenJSON(login,actionUserNow.getFechaFiscalizada()));
+        //fragment.setLoad(MainFragment.DETAIL_MOV);
+        //fragment.setText(tdmCard.getMovData());
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -376,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             cons = cons +"\nDatos de la tarjeta NO leidos.";
         }
 
-        //Log.v(LOG_TAG, tdmCard.getInfoHexByte());
+        tdmCard.calData();
 
         return cons;
     }

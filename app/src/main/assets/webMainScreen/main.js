@@ -21,6 +21,7 @@
             .replace(/%5D/g,']')
             .replace(/%2F/g,'/')
             .replace(/%3A/g,':')
+            .replace(/%E2/g,'€')
             .replace(/\+/g,' ');
         var q = query.split("&");
         var vars=[];
@@ -84,13 +85,13 @@
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',false);
-    div2 = createDiv('level2',true,'Tipo de Tarjeta: '+getUrlVars().tipoTarjeta);
+    div2 = createDiv('level2',true,'Tipo: '+getUrlVars().tipoTarjeta);
     div1.appendChild(div2);
     div2 = createDiv('level2',true,'Operador: '+getUrlVars().operador);
     div1.appendChild(div2);
     document.getElementById('container').appendChild(div1);
 
-    div1 = createDiv('level1',true,'Saldo/Viajes: '+getUrlVars().saldo);
+    div1 = createDiv('level1',true, getUrlVars().saldo);
     div1.style.paddingLeft='5px';
     document.getElementById('container').appendChild(div1);
 

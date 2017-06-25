@@ -1,0 +1,543 @@
+{
+	"station": [
+		{
+			"desc": "Estadio Nueva Condomina",
+			"line": 2,
+			"id": 153,
+			"code": "A12-2",
+			"dir": "Universidades"
+		},
+		{
+			"desc": "Estadio Nueva Condomina",
+			"line": 1,
+			"id": 114,
+			"code": "A12-1",
+			"dir": "Universidades"
+		},
+		{
+			"desc": "La Ladera",
+			"line": 1,
+			"id": 118,
+			"code": "A11-1",
+			"dir": "Universidades"
+		},
+		{
+			"desc": "Infantas",
+			"line": 1,
+			"id": 122,
+			"code": "A10-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Príncipe Felipe",
+			"line": 1,
+			"id": 123,
+			"code": "A9-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Churra",
+			"line": 1,
+			"id": 125,
+			"code": "A8-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Alameda",
+			"line": 1,
+			"id": 126,
+			"code": "A7-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Los Cubos",
+			"line": 1,
+			"id": 128,
+			"code": "A6-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Santiago y Zaraiche",
+			"line": 1,
+			"id": 129,
+			"code": "A5-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Príncipe de Asturias",
+			"line": 1,
+			"id": 130,
+			"code": "A4-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Abenarabi",
+			"line": 1,
+			"id": 131,
+			"code": "A3-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Marina Española",
+			"line": 1,
+			"id": 132,
+			"code": "A2-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Plaza Circular",
+			"line": 1,
+			"id": 134,
+			"code": "A1-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Juan Carlos I",
+			"line": 1,
+			"id": 155,
+			"code": "B1-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Biblioteca Regional",
+			"line": 1,
+			"id": 157,
+			"code": "B2-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Senda de Granada",
+			"line": 1,
+			"id": 158,
+			"code": "B3-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Parque Empresarial",
+			"line": 1,
+			"id": 159,
+			"code": "B4-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "El Puntal",
+			"line": 1,
+			"id": 161,
+			"code": "B5-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Espinardo",
+			"line": 1,
+			"id": 162,
+			"code": "B6-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Los Rectores - Terra Natura",
+			"line": 1,
+			"id": 164,
+			"code": "B7-1",
+			"dir": "Universidades UCAM-Los Jerónimos"
+		},
+		{
+			"desc": "Universidad de Murcia",
+			"line": 1,
+			"id": 187,
+			"code": "C1-1",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Servicios de Investigación",
+			"line": 1,
+			"id": 188,
+			"code": "C2-1",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Centro Social",
+			"line": 1,
+			"id": 189,
+			"code": "C3-1",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Biblioteca General",
+			"line": 1,
+			"id": 190,
+			"code": "C4-1",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Residencia Universitaria",
+			"line": 1,
+			"id": 191,
+			"code": "C5-1",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Los Rectores - Terra Natura",
+			"line": 2,
+			"id": 177,
+			"code": "B7-2",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Espinardo",
+			"line": 2,
+			"id": 179,
+			"code": "B6-2",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "El Puntal",
+			"line": 2,
+			"id": 180,
+			"code": "B5-2",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Parque Empresarial",
+			"line": 2,
+			"id": 182,
+			"code": "B4-2",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Senda de Granada",
+			"line": 2,
+			"id": 183,
+			"code": "B3-2",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Biblioteca Regional",
+			"line": 2,
+			"id": 184,
+			"code": "B2-2",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Juan Carlos I",
+			"line": 2,
+			"id": 186,
+			"code": "B1-2",
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Plaza Circular",
+			"line": 2,
+			"id": 135,
+			"code": 42675,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Marina Española",
+			"line": 2,
+			"id": 137,
+			"code": 42676,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Abenarabi",
+			"line": 2,
+			"id": 138,
+			"code": 42677,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Príncipe de Asturias",
+			"line": 2,
+			"id": 139,
+			"code": 42678,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Santiago y Zaraiche",
+			"line": 2,
+			"id": 140,
+			"code": 42679,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Los Cubos",
+			"line": 2,
+			"id": 141,
+			"code": 42680,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Alameda",
+			"line": 2,
+			"id": 143,
+			"code": 42681,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Churra",
+			"line": 2,
+			"id": 144,
+			"code": 42682,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Príncipe Felipe",
+			"line": 2,
+			"id": 146,
+			"code": 42683,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Infantas",
+			"line": 2,
+			"id": 147,
+			"code": 42684,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "La Ladera",
+			"line": 2,
+			"id": 149,
+			"code": 42685,
+			"dir": "Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Guadalupe",
+			"line": 1,
+			"id": 204,
+			"code": "B8-1",
+			"dir": "Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Reyes Católicos",
+			"line": 1,
+			"id": 169,
+			"code": "B9-1",
+			"dir": "Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina"
+		},
+		{
+			"desc": "El Portón",
+			"line": 1,
+			"id": 170,
+			"code": "B10-1",
+			"dir": "Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina"
+		},
+		{
+			"desc": "UCAM - Los Jerónimos",
+			"line": 1,
+			"id": 192,
+			"code": "B11-1",
+			"dir": "Los Rectores-Terra Natura Estadio Nueva Condomina"
+		},
+		{
+			"desc": "UCAM - Los Jerónimos",
+			"line": 2,
+			"id": 172,
+			"code": "B11-2",
+			"dir": "Los Rectores-Terra Natura Estadio Nueva Condomina"
+		},
+		{
+			"desc": "Talleres y Cocheras",
+			"line": "de 3 a 11",
+			"id": 65535,
+			"code": "Cocheras",
+			"dir": "Ninguno"
+		},
+		{
+			"desc": "Los Rectores - Terra Natura",
+			"line": 3,
+			"id": 195,
+			"code": "B7-3",
+			"dir": "Ninguno"
+		},
+		{
+			"desc": "Desconocido",
+			"line": "n/a",
+			"id": 1,
+			"code": "Desconocido",
+			"dir": "Ninguno"
+		}
+	],
+	"titulos": [
+		{
+			"desc": "Billete sencillo zona urbana",
+			"id": 100,
+			"type": "NA"
+		},
+		{
+			"desc": "Billete sencillo zona interurbana",
+			"id": 103,
+			"type": "NA"
+		},
+		{
+			"desc": "Sin billete",
+			"id": 104,
+			"type": "NA"
+		},
+		{
+			"desc": "Bono 10 CARTON",
+			"id": 989,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono 10 CARTON",
+			"id": 110,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono 10 PVC",
+			"id": 990,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono 10 PVC",
+			"id": 111,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono 100",
+			"id": 1003,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono 100",
+			"id": 116,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Unibono General",
+			"id": 991,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Unibono General",
+			"id": 117,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Estudiante Universitario",
+			"id": 992,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Estudiante Universitario",
+			"id": 120,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Bono Campus",
+			"id": 993,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono Campus",
+			"id": 121,
+			"type": "Viajes"
+		},
+		{
+			"desc": "FNE (familia numerosa especial)",
+			"id": 994,
+			"type": "Viajes"
+		},
+		{
+			"desc": "FNE (familia numerosa especial)",
+			"id": 122,
+			"type": "Viajes"
+		},
+		{
+			"desc": "FNG (familia numerosa general)",
+			"id": 995,
+			"type": "Viajes"
+		},
+		{
+			"desc": "FNG (familia numerosa general)",
+			"id": 123,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Sanción ¿?",
+			"id": 901,
+			"type": "NA"
+		},
+		{
+			"desc": "Sanción ¿?",
+			"id": 902,
+			"type": "NA"
+		},
+		{
+			"desc": "Empleado TDM",
+			"id": 1005,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Empleado TDM",
+			"id": 903,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Bono 2",
+			"id": 1007,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono 2",
+			"id": 904,
+			"type": "Viajes"
+		},
+		{
+			"desc": "Bono Evento",
+			"id": 1008,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Bono Evento",
+			"id": 905,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Devolución de viajes",
+			"id": 1009,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Devolución de viajes",
+			"id": 906,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Devolución de días",
+			"id": 1010,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Devolución de días",
+			"id": 907,
+			"type": "Temporal"
+		},
+		{
+			"desc": "Bono Urbano",
+			"id": 2501,
+			"type": "Monedero"
+		},
+		{
+			"desc": "B100 Ayuntamiento",
+			"id": 2511,
+			"type": "Monedero"
+		},
+		{
+			"desc": "FNE Ayuntamiento",
+			"id": 2521,
+			"type": "Monedero"
+		},
+		{
+			"desc": "FNG Ayuntamiento",
+			"id": 2531,
+			"type": "Monedero"
+		},
+		{
+			"desc": "Bono Murcia Estudiante",
+			"id": 2551,
+			"type": "Monedero"
+		}
+	]
+}

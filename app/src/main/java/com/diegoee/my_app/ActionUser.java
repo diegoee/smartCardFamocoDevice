@@ -8,6 +8,7 @@ public class ActionUser {
     private String uid;
     private boolean valOK;
     private String fechaFiscalizada;
+    private String fechaFiscalizadaSeg;
     private String user;
 
     public ActionUser() {
@@ -17,6 +18,7 @@ public class ActionUser {
         this.valOK = false;
         Calendar date = Calendar.getInstance();
         fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm")).format(date.getTime());
+        fechaFiscalizadaSeg = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(date.getTime());
     }
 
     public String getId() {
@@ -41,6 +43,10 @@ public class ActionUser {
 
     public void setValOK(boolean validationOK) {
         this.valOK = validationOK;
+    }
+
+    public String getFechaFiscalizadaSeg() {
+        return fechaFiscalizadaSeg;
     }
 
     public String getFechaFiscalizada() {

@@ -1,10 +1,16 @@
 package com.diegoee.my_app;
 
+import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -14,787 +20,86 @@ import static com.diegoee.my_app.MainActivity.LOG_TAG;
 
 public class TdmCard {
 
-    public static final String START_STR = "";
+    //Aux. class
+    class Mov implements Comparable<Mov> {
+        int pos;
+        String titulo;
+        String operacion;
+        String fechaHora;
+        int fechaHoraInt;
+        String tramos;
+        String viajeros;
+        String viajeTransbordo;
+        String ultimaLinea;
+        String ultimoSentido;
+        String parada;
+        String autobusTranvia;
+        String saldo;
+        String operador;
 
+        @Override
+        public int compareTo(Mov o) {
+            return fechaHoraInt < o.fechaHoraInt ? -1 : fechaHoraInt > o.fechaHoraInt ? 1 : 0;
+        }
+    }
+
+    //Atributes
     private boolean isInfo;
-    ArrayList<byte[]> infoByte;
+    private ArrayList<byte[]> infoByte;
 
-    public TdmCard() {
+    List<Mov> movList;
+
+    String uid;
+    String ntarjeta;
+    String tipoTarjeta;
+    String tipoTarjetaSaldo;
+    String propietario;
+    String fechaEmision;
+    String fechaCaducidad;
+
+    private List<String> stationsId;
+    private List<String> stationsCode;
+
+    private List<String> titulosId;
+    private List<String> titulosDesc;
+    private List<String> titulosTipo;
+
+
+    //Constructor;
+    public TdmCard(Context ctx) {
         super();
         this.isInfo = false;
         infoByte = new ArrayList<byte[]>();
+        movList = new ArrayList<Mov>();
+        stationsId = new ArrayList<String>();
+        stationsCode = new ArrayList<String>();
+        titulosId = new ArrayList<String>();
+        titulosDesc = new ArrayList<String>();
+        titulosTipo = new ArrayList<String>();
+        readDataJSON("data/dataTrain.json",ctx);
+    }
+
+    public void eraseInfo(){
+        this.isInfo = false;
+        infoByte = new ArrayList<byte[]>();
+        movList = new ArrayList<Mov>();
+        uid = "";
+        ntarjeta = "";
+        tipoTarjeta = "";
+        tipoTarjetaSaldo = "";
+        propietario = "";
+        fechaEmision = "";
+        fechaCaducidad = "";
+
     }
 
     public boolean isInfo() {
         return isInfo;
     }
 
-    public String getMainScreenJSON(String login,String fecha){
-        String s="";
-
-        byte[] auxBytes;
-        int startTittle = 0;
-        String aux = "";
-
-        s = s+"uid="+bytesToHexString(new byte[]{infoByte.get(0)[0], infoByte.get(0)[1], infoByte.get(0)[2], infoByte.get(0)[3]});
-        s = s+"&fecha="+fecha;
-        s = s+"&login="+login;
-
-        if (infoByte.size()==64) {
-
-            if (Arrays.equals(infoByte.get(8), infoByte.get(9))) {
-                startTittle = 8;
-            }
-            if (Arrays.equals(infoByte.get(9), infoByte.get(10))) {
-                startTittle = 9;
-            }
-            if (Arrays.equals(infoByte.get(8), infoByte.get(10))) {
-                startTittle = 8;
-            }
-
-            auxBytes = new byte[]{infoByte.get(startTittle)[3]};
-            aux = decoData(auxBytes, TdmCard.CTRL_TITTLE_CURRENT);
-
-            if (aux.equals("0")) {
-                startTittle = 12;
-            }
-            if (aux.equals("1")) {
-                startTittle = 20;
-            }
-            if (aux.equals("2")) {
-                startTittle = 28;
-            }
-            if (aux.equals("3")) {
-                startTittle = 36;
-            }
-
-            int val1, val2;
-
-            int i = 0;
-            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-            val1 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
-
-            i = 1;
-            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-            val2 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
-
-            if (val1 > val2) {
-                i = 0;
-            } else {
-                i = 1;
-            }
-            // FIJOS
-            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-            s = s + "&fechaVal=" + (decoData(auxBytes, TdmCard.MAIN_DATE_TRAVEL)).replace("-", "/").replace(" ", "-");
-
-            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[4], infoByte.get(startTittle + i + 5)[5]};
-            s = s + "&paradaVal=" + decoData(auxBytes, TdmCard.MAIN_LASTLINE);
-
-            auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[10], infoByte.get(startTittle + i + 5)[11]};
-            s = s + "&nViajeros=" + decoData(auxBytes, TdmCard.MAIN_TRAVELLER);
-
-            aux = decoData(new byte[]{infoByte.get(4)[4]}, TdmCard.CARD_TYPE);
-            if (aux.equals("Monedero") || aux.equals("General")) {
-                s = s + "&saldo=" + decoData(new byte[]{infoByte.get(startTittle + i)[0]}, TdmCard.MAIN_CAST_WALLET).replaceFirst("€", "").replaceFirst(" ", "");
-            }
-            if (aux.equals("Anónima-c") || aux.equals("Anónima-p") || aux.equals("b100")) {
-                s = s + "&saldo=" + decoData(new byte[]{infoByte.get(startTittle + i)[0]}, TdmCard.MAIN_CAST_TRAVEL);
-            }
-
-            if (aux.equals("empleado") || aux.equals("estudiante-col") || aux.equals("estudiante-uni") || aux.equals("Campus") || aux.equals("fne") || aux.equals("fngu")){
-                s = s + "&saldo=" + decoData(new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]},TdmCard.CARD_DATE);
-            }
-
-        }
-
-
-        //tipo de tarjeta sector 1 bloque 0 byte 4
-        auxBytes = new byte[]{infoByte.get(4)[4]};
-        s = s+"&tipoTarjeta=" + decoData(auxBytes,TdmCard.CARD_TYPE);
-
-        //Propietario sector 1 bloque 0 byte 5
-        auxBytes = new byte[]{infoByte.get(4)[5]};
-        s = s+"&operador=" + decoData(auxBytes,TdmCard.CARD_OWNER);
-
-        //Log.v(LOG_TAG,s);
-        return s;
-    }
-
     public void append(byte[] data){
         this.infoByte.add(data);
         this.isInfo = true;
-    }
-
-    public String getInfoHexByte(){
-        String result = "";
-
-        if (infoByte.size()==64) {
-            result= "****** Datos Brutos en Hex. ****** \n";
-            int i = 0;
-            int j = 0;
-            for (byte[] data : infoByte) {
-                if (i%4==0){
-                    result = result + "Sector_"+String.format("%d",j)+"\n";
-                    j++;
-                }
-                result = result + bytesToHexString(data)+ "\n";
-                i++;
-            }
-        }else{
-            result = "";
-        }
-        return result;
-    }
-
-    public void eraseInfo(){
-        this.isInfo = false;
-        infoByte = new ArrayList<byte[]>();
-    }
-
-    public String getAllData(){
-        String result = START_STR;
-        result = getMainData() + "\n";
-        result = result + getCtrlData() + "\n";
-        result = result + getCardData() + "\n";
-        //result = result + getMovData() + "\n";
-        result = result + getInfoHexByte();
-
-        return result;
-    }
-
-    public String getMainData(){
-
-        byte[] auxBytes;
-        int startTittle = 0;
-        String result = START_STR;
-        String aux = "";
-        int auxInt=0;
-
-        if (infoByte.size()==64) {
-
-            if (Arrays.equals(infoByte.get(8), infoByte.get(9))) {
-                startTittle = 8;
-            }
-            if (Arrays.equals(infoByte.get(9), infoByte.get(10))) {
-                startTittle = 9;
-            }
-            if (Arrays.equals(infoByte.get(8), infoByte.get(10))) {
-                startTittle = 8;
-            }
-
-            auxBytes = new byte[]{infoByte.get(startTittle)[3]};
-            aux = decoData(auxBytes, TdmCard.CTRL_TITTLE_CURRENT);
-
-            if (aux.equals("0")) {
-                startTittle = 12;
-                auxInt=1;
-            }
-            if (aux.equals("1")) {
-                startTittle = 20;
-                auxInt=2;
-            }
-            if (aux.equals("2")) {
-                startTittle = 28;
-                auxInt=3;
-            }
-            if (aux.equals("3")) {
-                startTittle = 36;
-                auxInt=4;
-            }
-
-            result= "****** Datos de Títulos ****** \nÚltimo Título en Uso: \n\t"+auxInt ;
-
-            auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
-            result = result + "\nFecha de Caducidad (Datos de Tarjeta):\n\t" + decoData(auxBytes,TdmCard.CARD_DATE)+"\n";
-
-            int val1,val2;
-            for (int ii=0;ii<4;ii++){
-
-                if (ii==0) { startTittle = 12; }
-                if (ii==1) { startTittle = 20; }
-                if (ii==2) { startTittle = 28; }
-                if (ii==3) { startTittle = 36; }
-                result = result + "\nTítulo n=" + (ii + 1);
-
-                int i=0;
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-                val1 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
-                i=1;
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-                val2 = Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)), 2);
-
-                if (val1>val2){
-                    i=0;
-                }else{
-                    i=1;
-                }
-                // FIJOS
-                result = result + "\n\tFijos: ";
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[0], infoByte.get(startTittle + i + 2)[1]};
-                result = result + "\n\t\tCódigo Título:\n\t\t\t" + decoData(auxBytes, TdmCard.MAIN_CODE_TITTLE);
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[2]};
-                result = result + "\n\t\tTipo:\n" +
-                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_TYPE_TITTLE);
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[5], infoByte.get(startTittle + i + 5)[6], infoByte.get(startTittle + i + 5)[7]};
-                result = result + "\n\t\tFecha inicio caducidad:\n" +
-                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_DATE_EXPIRED);
-
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[8],infoByte.get(startTittle + i + 2)[9]};
-                result = result + "\n\t\tNº periodo Caducidad:\n" +
-                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_N_EXPIRED);
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 2)[8],infoByte.get(startTittle + i + 2)[9]};
-                result = result + "\n\t\tTipo per. de cad.:\n" +
-                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_TYPE_EXPIRED);
-
-                result = result + "\n\tVariable: ";
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[0], infoByte.get(startTittle + i + 5)[1], infoByte.get(startTittle + i + 5)[2]};
-                result = result + "\n\t\tFecha/hora Inicio Viaje:\n" +
-                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_DATE_TRAVEL);
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[4], infoByte.get(startTittle + i + 5)[5]};
-                result = result + "\n\t\tÚltima Linea:\n" +
-                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_LASTLINE);
-
-                auxBytes = new byte[]{infoByte.get(startTittle + i + 5)[10], infoByte.get(startTittle + i + 5)[11]};
-                result = result + "\n\t\tViajeros:\n" +
-                        "\t\t\t" + decoData(auxBytes, TdmCard.MAIN_TRAVELLER);
-
-
-                result = result + "\n\tSaldo: ";
-                auxBytes = new byte[]{
-                        infoByte.get(startTittle + i)[0],
-                };
-
-                result = result + "\n\t\tViajes o Monedero:\n" +
-                        "\t\t" + decoData(auxBytes, TdmCard.MAIN_CAST_TRAVEL)+" ó " + decoData(auxBytes, TdmCard.MAIN_CAST_WALLET);
-
-                result = result + "\n";
-            }
-
-        }
-        return result;
-    }
-
-    public String getCtrlData(){
-
-        byte[] auxBytes;
-        int selSector = 0;
-        String result = START_STR;
-        if (infoByte.size()==64) {
-            if(Arrays.equals(infoByte.get(8),infoByte.get(9))){
-                selSector=8;
-            }
-            if(Arrays.equals(infoByte.get(9),infoByte.get(10))){
-                selSector=9;
-            }
-            if(Arrays.equals(infoByte.get(8),infoByte.get(10))){
-                selSector=8;
-            }
-
-            result= "****** Datos de Control ****** \n";
-
-            auxBytes = new byte[]{infoByte.get(selSector)[0], infoByte.get(selSector)[1]};
-            result = result + "Número de Transacción:\n\t"+ decoData(auxBytes,TdmCard.CTRL_NUMBER);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[2]};
-            result = result + "\nMovimiento Actual:\n\t"+ decoData(auxBytes,TdmCard.CTRL_MOV);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[3]};
-            result = result + "\nTitulo Activo:\n\t" + decoData(auxBytes,TdmCard.CTRL_TITTLE);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[3]};
-            result = result + "\nÚltimo Título en Uso:\n\t" + decoData(auxBytes,TdmCard.CTRL_TITTLE_CURRENT);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[3]};
-            result = result + "\nRegitro de fin de transacción:\n\t" + decoData(auxBytes,TdmCard.CTRL_FLAG_END);;
-
-            auxBytes = new byte[]{infoByte.get(selSector)[3]};
-            result = result + "\nCopia en historia:\n\t" + decoData(auxBytes,TdmCard.CTRL_FLAG_HIS);;
-
-            auxBytes = new byte[]{infoByte.get(selSector)[4]};
-            result = result + "\nPrioridades:\n\t(Hex.)" + bytesToHexString(auxBytes)+"  -  "+ decoData(auxBytes,TdmCard.CTRL_PRIO);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[5]};
-            result = result + "\nOrden de Uso:\n\t" + decoData(auxBytes,TdmCard.CTRL_ORDER);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[7]};
-            result = result + "\nTítulo Propio:\n\t" + decoData(auxBytes,TdmCard.CTRL_TITTLE_OWN);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[8],infoByte.get(selSector)[9]};
-            result = result + "\nIdentificador de última recarga:\n\t" + decoData(auxBytes,TdmCard.CTRL_ID_RECHARGE);
-
-            auxBytes = new byte[]{infoByte.get(selSector)[10],infoByte.get(selSector)[11]};
-            result = result + "\nFecha Anulación/Recuperación:\n\t" + decoData(auxBytes,TdmCard.CTRL_DATE);
-        }
-        result = result + "\n";
-        return result;
-    }
-
-    public String getCardData(){
-
-        byte[] auxBytes;
-        String result = START_STR;
-
-        if (infoByte.size()==64) {
-
-            result= "****** Datos de Tarjeta ****** \n";
-            // Nº de tarjeta Sector1 bloque 0 byte 0,1,2 y 3
-            auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
-            result = result + "Número de Tarjeta:\n\t(Hex.)" + bytesToHexString(auxBytes)+"  -  "+ decoData(auxBytes,TdmCard.CARD_NUMBER);
-
-            //tipo de tarjeta sector 1 bloque 0 byte 4
-            auxBytes = new byte[]{infoByte.get(4)[4]};
-            result = result + "\nTipo de tarjeta:\n\t" + decoData(auxBytes,TdmCard.CARD_TYPE);
-
-            //Propietario sector 1 bloque 0 byte 5
-            auxBytes = new byte[]{infoByte.get(4)[5]};
-            result = result + "\nPropietario:\n\t" + decoData(auxBytes,TdmCard.CARD_OWNER);
-
-            //FEcha de Emisión sector 1 bloque 0 byte 6y7
-            auxBytes = new byte[]{infoByte.get(4)[6], infoByte.get(4)[7]};
-            result = result + "\nFecha de Emisión:\n\t" + decoData(auxBytes,TdmCard.CARD_DATE);
-
-            //FEcha de Caducidad sector 1 bloque 0 byte 8y9
-            auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
-            result = result + "\nFecha de Caducidad:\n\t" + decoData(auxBytes,TdmCard.CARD_DATE);
-
-            result = result + "\n";
-        }
-
-        return result;
-    }
-
-    public String getMovData(){
-        byte[] auxBytes;
-        String result = START_STR;
-
-        class Mov implements Comparable<Mov> {
-            int date;
-            String str;
-
-            public Mov(int date, String str) {
-                this.date = date;
-                this.str = str;
-            }
-
-            @Override
-            public int compareTo(Mov o) {
-                return date < o.date ? -1 : date > o.date ? 1 : 0;
-            }
-        }
-
-        List<Mov> movList = new ArrayList<Mov>();
-        int auxInt;
-
-        if (infoByte.size()==64) {
-            int[] pos =new int[]{44,45,46,48,49,50,52,53,54,56,57};
-
-            for (int i=0;i<pos.length;i++){
-                result = (i+1)+"º  ++++Movimiento++++:";
-
-                auxBytes = new byte[]{infoByte.get(pos[i])[0]};
-                result = result + "\n\t- Títulos: " + decoData(auxBytes,TdmCard.MOV_TITTLE);
-
-                auxBytes = new byte[]{infoByte.get(pos[i])[0]};
-                result = result + "\n\t- Operación: "+ decoData(auxBytes,TdmCard.MOV_OPER);
-
-                auxBytes = new byte[]{infoByte.get(pos[i])[1], infoByte.get(pos[i])[2], infoByte.get(pos[i])[3]};
-                result = result + "\n\t- Fecha/hora: "+ decoData(auxBytes,TdmCard.MOV_DATE);
-
-                auxInt=hex2decimal(bytesToHexString(auxBytes));
-
-                auxBytes = new byte[]{infoByte.get(pos[i])[4], infoByte.get(pos[i])[5]};
-                result = result + "\n\t- Viajeros: "+ decoData(auxBytes,TdmCard.MOV_TRAVELER);
-
-                auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
-                result = result + "\n\t- Última Linea: "+decoData(auxBytes,TdmCard.MOV_LASTLINE);
-
-                auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
-                result = result + "\n\t- Sentido: "+decoData(auxBytes,TdmCard.MOV_WAY);
-
-                auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
-                result = result + "\n\t- Parada: "+decoData(auxBytes,TdmCard.MOV_STOP);
-
-                auxBytes = new byte[]{infoByte.get(i)[10], infoByte.get(pos[i])[1]};
-                result = result + "\n\t- Autobus: "+decoData(auxBytes,TdmCard.MOV_BUS);
-
-                auxBytes = new byte[]{infoByte.get(i)[14]};
-                result = result + "\n\t- Operador: "+decoData(auxBytes,TdmCard.MOV_OPERATOR);
-
-                auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
-                result = result + "\n\t- Saldo Final: "+ decoData(auxBytes,TdmCard.MOV_CAST);
-
-                movList.add(new Mov(auxInt,result));
-
-            }
-
-            Collections.sort(movList, Collections.reverseOrder());
-
-            result="****** Historico de Movimientos ****** \nMovimientos Ordenados por fecha:\n";
-            for (Mov s : movList){
-                result =result+s.str+"\n";
-            }
-
-        }
-
-        return result;
-    }
-
-    private static final int MOV_TITTLE=1;
-    private static final int MOV_OPER=2;
-    private static final int MOV_DATE=3;
-    private static final int MOV_TRAVELER=4;
-    private static final int MOV_LASTLINE=5;
-    private static final int MOV_WAY=6;
-    private static final int MOV_STOP=7;
-    private static final int MOV_CAST=8;
-    private static final int MOV_BUS=9;
-    private static final int MOV_OPERATOR=10;
-
-    private static final int CARD_NUMBER=60;
-    private static final int CARD_TYPE=61;
-    private static final int CARD_OWNER=62;
-    private static final int CARD_DATE=63;
-
-    private static final int CTRL_NUMBER=30;
-    private static final int CTRL_MOV=31;
-    private static final int CTRL_TITTLE=32;
-    private static final int CTRL_TITTLE_CURRENT=33;
-    private static final int CTRL_FLAG_END=34;
-    private static final int CTRL_FLAG_HIS=35;
-    private static final int CTRL_PRIO=36;
-    private static final int CTRL_ORDER=37;
-    private static final int CTRL_TITTLE_OWN =38;
-    private static final int CTRL_ID_RECHARGE=39;
-    private static final int CTRL_DATE=40;
-
-    private static final int MAIN_CODE_TITTLE=80;
-    private static final int MAIN_TYPE_TITTLE=81;
-    private static final int MAIN_DATE_EXPIRED=82;
-    private static final int MAIN_N_EXPIRED=83;
-    private static final int MAIN_TYPE_EXPIRED=84;
-    private static final int MAIN_DATE_TRAVEL=85;
-    private static final int MAIN_LASTLINE=86;
-    private static final int MAIN_TRAVELLER=87;
-    private static final int MAIN_CAST_WALLET=88;
-    private static final int MAIN_CAST_TRAVEL=89;
-
-    public static String decoData(byte[] bArray, int type) {
-        String val = "";
-        int auxInt;
-
-        // ----------------------------PRINCIPAL
-        if (type==TdmCard.MAIN_CODE_TITTLE)
-        {
-            val=String.format("%d",hex2decimal(bytesToHexString(bArray)));
-            if (val.equals("0")){ val="0"; }
-            if (val.equals("100")){ val="Billete sencillo zona urbana"; }
-            if (val.equals("103")){ val="Billete sencillo zona interurbana"; }
-            if (val.equals("104")){ val="Sin billete"; }
-            if (val.equals("110")){ val="Bono 10 CARTON"; }
-            if (val.equals("111")){ val="Bono 10 PVC"; }
-            if (val.equals("116")){ val="Bono 100"; }
-            if (val.equals("117")){ val="Unibono General"; }
-            if (val.equals("120")){ val="Estudiante Universitario"; }
-            if (val.equals("121")){ val="Bono Campus"; }
-            if (val.equals("122")){ val="FNE (familia numerosa especial)"; }
-            if (val.equals("123")){ val="FNG (familia numerosa general)"; }
-            if (val.equals("901")||val.equals("902")){ val="Sanción"; }
-            if (val.equals("903")){ val="Empleado TDM"; }
-            if (val.equals("904")){ val="Bono 2"; }
-            if (val.equals("905")){ val="Bono Evento"; }
-            if (val.equals("906")){ val="Devolución de viajes"; }
-            if (val.equals("907")){ val="Devolución de días"; }
-            if (val.equals("2501")){ val="Bono Urbano"; }
-            if (val.equals("2511")){ val="B100 Ayuntamiento"; }
-            if (val.equals("2521")){ val="FNE Ayuntamiento"; }
-            if (val.equals("2531")){ val="FNG Ayuntamiento"; }
-            if (val.equals("2551")){ val="Bono Murcia Estudiante"; }
-
-        }
-        if (type==TdmCard.MAIN_N_EXPIRED) {
-            val = hex2Binary(bytesToHexString(bArray)).substring(0, 6);
-            val = String.format("%d", Integer.parseInt(val, 2));
-        }
-
-        if (type==TdmCard.MAIN_TYPE_EXPIRED) {
-            val = hex2Binary(bytesToHexString(bArray)).substring(6, 12);
-            val = String.format("%d", Integer.parseInt(val, 2));
-            if (val.equals("2")){
-                val="Día(s)";
-            }
-            if (val.equals("0")){
-                val="Año(s)";
-            }
-        }
-
-        if ((type==TdmCard.MAIN_TRAVELLER)){
-            val = hex2Binary(bytesToHexString(bArray)).substring(4, 10);
-            //Log.v(MainActivity.LOG_TAG,bytesToHexString(bArray));
-            //Log.v(MainActivity.LOG_TAG,hex2Binary(bytesToHexString(bArray)));
-            //Log.v(MainActivity.LOG_TAG,hex2Binary(bytesToHexString(bArray)).substring(4, 10));
-            val = String.format("%d", Integer.parseInt(val, 2));
-        }
-
-
-        if (type==TdmCard.MAIN_TYPE_TITTLE) {
-            val = bytesToHexString(bArray).substring(0,1);
-            if (val.equals("1")||val.equals("0")) {
-                val = "Viajes";
-            }else if (val.equals("2")) {
-                val = "Tiempo";
-            }else if (val.equals("3")) {
-                val = "Monedero";
-            }else{
-                val = "(Hex.) "+val;
-            }
-        }
-
-        if ((type==TdmCard.MAIN_CAST_WALLET)){
-            //TODO
-            val = bytesToHexString(bArray);
-            val = hex2Binary(bytesToHexString(bArray));
-            //val = String.format("%d", Integer.parseInt(val, 2));
-            val = String.format("%.2f", ((double) hex2decimal(bytesToHexString(bArray)))/100)+" €";
-        }
-
-        if ((type==TdmCard.MAIN_CAST_TRAVEL)){
-            val = String.format("%d", ((int) hex2decimal(bytesToHexString(bArray))))+" Viajes";
-        }
-
-        // ----------------------------HISTORICO DE TARJETA
-        if ((type==TdmCard.MOV_TITTLE)||(type==TdmCard.CTRL_TITTLE)||(type==TdmCard.CTRL_MOV)){
-            val = bytesToHexString(bArray).substring(0,1);
-            if (val.equals("0")) { val = "Ninguno";  }
-            if (val.equals("1")) { val = "4";  }
-            if (val.equals("2")) { val = "3";  }
-            if (val.equals("3")) { val = "3 y 4";  }
-            if (val.equals("4")) { val = "2";  }
-            if (val.equals("5")) { val = "2 y 4";  }
-            if (val.equals("6")) { val = "2 y 3";  }
-            if (val.equals("7")) { val = "2,3 y 4";  }
-            if (val.equals("8")) { val = "1";  }
-            if (val.equals("9")) { val = "1 y 4";  }
-            if (val.equals("A")) { val = "1 y 3";  }
-            if (val.equals("B")) { val = "1,3 y 4";  }
-            if (val.equals("C")) { val = "1 y 2";  }
-            if (val.equals("D")) { val = "1,2 y 4";  }
-            if (val.equals("E")) { val = "1,2 y 3";  }
-            if (val.equals("F")) { val = "1,2,3 y 4";  }
-        }
-
-        if (type==TdmCard.MOV_OPER){
-            val=bytesToHexString(bArray).substring(1,2);
-            if (val.equals("1")) {
-                val = "Compra";
-            }
-            if (val.equals("2")) {
-                val = "Recarga";
-            }
-            if (val.equals("3")) {
-                val = "Validación";
-            }
-            if (val.equals("4")) {
-                val = "Anulación";
-            }
-            if (val.equals("5")) {
-                val = "Reactivación";
-            }
-            if (val.equals("6")) {
-                val = "Eliminar";
-            }
-        }
-
-        if ((type==TdmCard.CARD_DATE)||(type==TdmCard.MOV_DATE)
-                ||(type==TdmCard.CTRL_DATE)||(type==TdmCard.MAIN_DATE_EXPIRED)
-                ||(type==TdmCard.MAIN_DATE_TRAVEL)){
-            Calendar c1 = GregorianCalendar.getInstance();
-            c1.set(2000, Calendar.JANUARY, 1,0,0,0);
-            SimpleDateFormat format1;
-            if ((type==TdmCard.CARD_DATE)||(type==TdmCard.CTRL_DATE)){
-                c1.add(Calendar.DAY_OF_YEAR, hex2decimal(bytesToHexString(bArray)));
-                format1 = new SimpleDateFormat("yyyy-MM-dd");
-            }else{
-                c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(bArray)));
-                format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            }
-
-            val=format1.format(c1.getTime());
-        }
-
-        if (type==TdmCard.MOV_TRAVELER) {
-            val = hex2Binary(bytesToHexString(bArray)).substring(5,10);
-            val = String.format("%d",Integer.parseInt(val,2));
-        }
-
-        if ((type==TdmCard.MOV_LASTLINE)||(type==TdmCard.MAIN_LASTLINE)) {
-            val = hex2Binary(bytesToHexString(bArray)).substring(0,14);
-            val = String.format("%d",Integer.parseInt(val,2));
-        }
-
-        if (type==TdmCard.MOV_WAY) {
-            val = hex2Binary(bytesToHexString(bArray)).substring(14,16);
-
-            val = String.format("%d",Integer.parseInt(val,2));
-            if (val.equals("1")) {
-                val = "Ida";
-            }
-            if (val.equals("2")) {
-                val = "Vuelta";
-            }
-        }
-
-        if (type==TdmCard.MOV_STOP) {
-            //Log.v(MainActivity.LOG_TAG,"STATION0: " + bytesToHexString(bArray));
-            //Log.v(MainActivity.LOG_TAG,"STATION1: " + hex2decimal(bytesToHexString(bArray)));
-            auxInt = ID_STATION.lastIndexOf(hex2decimal(bytesToHexString(bArray)));
-            //Log.v(MainActivity.LOG_TAG,"STATION2: " + auxInt);
-            if (auxInt==-1) {
-                val="\n\t\tNo existe Id de parada";
-            }else{
-                val =
-                        "\n\t\tCódigo: " +CODE_STATION.get(ID_STATION.lastIndexOf(hex2decimal(bytesToHexString(bArray))))+
-                                "\n\t\tNombre: " +DESC_STATION.get(ID_STATION.lastIndexOf(hex2decimal(bytesToHexString(bArray))))+
-                                "\n\t\tAndén: "  +LINE_STATION.get(ID_STATION.lastIndexOf(hex2decimal(bytesToHexString(bArray))))+
-                                "\n\t\tDestino: "+DIR_STATION.get(ID_STATION.lastIndexOf(hex2decimal(bytesToHexString(bArray))));
-            }
-            if (val==null) {
-                val="\n\t\tNo existe Id de parada";
-            }
-        }
-
-        if (type==TdmCard.MOV_CAST){
-            val = String.format("%.2f", ((double) hex2decimal(bytesToHexString(bArray)))/100)+" €";
-        }
-
-        if (type==TdmCard.MOV_BUS){
-            val = String.format("%d", ((int) hex2decimal(bytesToHexString(bArray))));
-        }
-
-        if (type==TdmCard.MOV_OPERATOR){
-            val = bytesToHexString(bArray);
-            if (val.equals("01")) {
-                val = "EPT";
-            }
-            if (val.equals("02")) {
-                val = "TDM";
-            }
-        }
-
-        // ----------------------------DATOS DE TARJETA
-        if ((type==TdmCard.CARD_NUMBER)||(type==TdmCard.CTRL_NUMBER)
-                ||(type==TdmCard.CTRL_PRIO)||(type==TdmCard.CTRL_ORDER)
-                ||(type==TdmCard.CTRL_ID_RECHARGE))
-        {
-            val=String.format("%d",hex2decimal(bytesToHexString(bArray)));
-        }
-
-        if (type==TdmCard.CARD_TYPE){
-            val = bytesToHexString(bArray);
-            if (val.equals("01")) {
-                val = "Monedero";
-            }
-            if (val.equals("41")) {
-                val = "Anónima-c";
-            }
-            if (val.equals("45")) {
-                val = "Anónima-p";
-            }
-            if (val.equals("49")) {
-                val = "b100";
-            }
-            if (val.equals("4B")) {
-                val = "empleado";
-            }
-            if (val.equals("4D")) {
-                val = "General";
-            }
-            if (val.equals("51")) {
-                val = "estudiante-col";
-            }
-            if (val.equals("55")) {
-                val = "estudiante-uni";
-            }
-            if (val.equals("59")) {
-                val = "Campus";
-            }
-            if (val.equals("5D")) {
-                val = "fne";
-            }
-            if (val.equals("61")) {
-                val = "fngu";
-            }
-        }
-
-        if (type==TdmCard.CARD_OWNER){
-            val = bytesToHexString(bArray);
-            if (val.equals("01")) {
-                val = "EPT";
-            }
-            if (val.equals("02")){
-                val = "TDM";
-            }
-        }
-
-
-        // ----------------------------DATOS DE CONTROL
-        if (type==TdmCard.CTRL_TITTLE_CURRENT){
-            val = hex2Binary(bytesToHexString(bArray)).substring(4,6);
-            val = String.format("%d",Integer.parseInt(val,2));
-        }
-
-        if ((type==TdmCard.CTRL_FLAG_END)||(type==TdmCard.CTRL_FLAG_HIS)){
-            val = bytesToHexString(bArray).substring(1,2);
-            if (type==TdmCard.CTRL_FLAG_HIS) {
-                if (val.equals("0")) { val = "NO"; }
-                if (val.equals("1")) { val = "SI"; }
-                if (val.equals("2")) { val = "NO"; }
-                if (val.equals("3")) { val = "SI"; }
-                if (val.equals("4")) { val = "NO"; }
-                if (val.equals("5")) { val = "SI"; }
-                if (val.equals("6")) { val = "NO"; }
-                if (val.equals("7")) { val = "SI"; }
-                if (val.equals("8")) { val = "NO"; }
-                if (val.equals("9")) { val = "SI"; }
-                if (val.equals("A")) { val = "NO"; }
-                if (val.equals("B")) { val = "SI"; }
-                if (val.equals("C")) { val = "NO"; }
-                if (val.equals("D")) { val = "SI"; }
-                if (val.equals("E")) { val = "NO"; }
-                if (val.equals("F")) { val = "SI"; }
-            }
-            if (type==TdmCard.CTRL_FLAG_END) {
-                if (val.equals("0")) { val = "NO"; }
-                if (val.equals("1")) { val = "NO"; }
-                if (val.equals("2")) { val = "SI"; }
-                if (val.equals("3")) { val = "SI"; }
-                if (val.equals("4")) { val = "NO"; }
-                if (val.equals("5")) { val = "NO"; }
-                if (val.equals("6")) { val = "SI"; }
-                if (val.equals("7")) { val = "SI"; }
-                if (val.equals("8")) { val = "NO"; }
-                if (val.equals("9")) { val = "NO"; }
-                if (val.equals("A")) { val = "SI"; }
-                if (val.equals("B")) { val = "SI"; }
-                if (val.equals("C")) { val = "NO"; }
-                if (val.equals("D")) { val = "NO"; }
-                if (val.equals("E")) { val = "SI"; }
-                if (val.equals("F")) { val = "SI"; }
-            }
-        }
-
-        if (type==TdmCard.CTRL_TITTLE_OWN){
-            val = hex2Binary(bytesToHexString(bArray)).substring(4,8);
-            val = String.format("%d",Integer.parseInt(val,2));
-        }
-
-        return val;
     }
 
     public static String bytesToHexString(byte[] bArray) {
@@ -854,278 +159,341 @@ public class TdmCard {
 
     }
 
-    public static final List<String> DESC_STATION = Arrays.asList(
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "La Ladera",
-        "Infantas",
-        "Príncipe Felipe",
-        "Churra",
-        "Alameda",
-        "Los Cubos",
-        "Santiago y Zaraiche",
-        "Príncipe de Asturias",
-        "Abenarabi",
-        "Marina Española",
-        "Plaza Circular",
-        "Juan Carlos I",
-        "Biblioteca Regional",
-        "Senda de Granada",
-        "Parque Empresarial",
-        "El Puntal",
-        "Espinardo",
-        "Los Rectores",
-        "Universidad de Murcia",
-        "Servicios de Investigación",
-        "Centro Social",
-        "Biblioteca General",
-        "Residencia Universitaria",
-        "Los Rectores",
-        "Espinardo",
-        "El Puntal",
-        "Parque Empresarial",
-        "Senda de Granada",
-        "Biblioteca Regional",
-        "Juan Carlos I",
-        "Plaza Circular",
-        "Marina Española",
-        "Abenarabi",
-        "Príncipe de Asturias",
-        "Santiago y Zaraiche",
-        "Los Cubos",
-        "Alameda",
-        "Churra",
-        "Príncipe Felipe",
-        "Infantas",
-        "La Ladera",
-        "Guadalupe",
-        "Reyes Católicos",
-        "El Portón",
-        "UCAM - Los Jerónimos",
-        "UCAM - Los Jerónimos",
-        "Talleres y Cocheras",
-        "Los Rectores - Terra Natura",
-        "Desconocido",
-        "0"
-    );
+    public String getInfoHexByte(){
+        String result = "";
 
-    public static final List<String> LINE_STATION = Arrays.asList(
-        "2",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "2",
-        "1",
-        "1",
-        "1",
-        "1",
-        "2",
-        "Talleres y Cocheras",
-        "3",
-        "n/a",
-        "n/a"
-    );
+        if (infoByte.size()==64) {
+            result= "****** Datos Brutos en Hex. ****** \n";
+            int i = 0;
+            int j = 0;
+            for (byte[] data : infoByte) {
+                if (i%4==0){
+                    result = result + "Sector_"+String.format("%d",j)+"\n";
+                    j++;
+                }
+                result = result + bytesToHexString(data)+ "\n";
+                i++;
+            }
+        }else{
+            result = "";
+        }
+        return result;
+    }
 
-    public static final List<String> DIR_STATION = Arrays.asList(
-        "Universidades",
-        "Universidades",
-        "Universidades",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Uni. UCAM-Los Jerónimos",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Estadio Nueva Condomina",
-        "Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina",
-        "Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina",
-        "Los Rectores-Terra Natura UCAM-Los Jerónimos Estadio Nueva Condomina",
-        "Los Rectores-Terra Natura Estadio Nueva Condomina",
-        "Los Rectores-Terra Natura Estadio Nueva Condomina",
-        "Talleres y Cocheras",
-        "Ninguno",
-        "Desconocido",
-        "Desconocido"
-    );
+    public void readDataJSON(String inFile, Context ctx) {
+        String jsonString = "";
 
-    public static final List<String> CODE_STATION = Arrays.asList(
-        "A12-2",
-        "A12-1",
-        "A11-1",
-        "A10-1",
-        "A9-1",
-        "A8-1",
-        "A7-1",
-        "A6-1",
-        "A5-1",
-        "A4-1",
-        "A3-1",
-        "A2-1",
-        "A1-1",
-        "B1-1",
-        "B2-1",
-        "B3-1",
-        "B4-1",
-        "B5-1",
-        "B6-1",
-        "B7-1",
-        "C1-1",
-        "C2-1",
-        "C3-1",
-        "C4-1",
-        "C5-1",
-        "B7-2",
-        "B6-2",
-        "B5-2",
-        "B4-2",
-        "B3-2",
-        "B2-2",
-        "B1-2",
-        "A1-2",
-        "A2-2",
-        "A3-2",
-        "A4-2",
-        "A5-2",
-        "A6-2",
-        "A7-2",
-        "A8-2",
-        "A9-2",
-        "A10-2",
-        "A11-2",
-        "B8-1",
-        "B9-1",
-        "B10-1",
-        "B11-1",
-        "B11-2",
-        "65535",
-        "B7-3",
-        "n/a",
-        "0"
-    );
+        try {
+            InputStream stream = ctx.getResources().getAssets().open(inFile);
+            int size = stream.available();
+            byte[] buffer = new byte[size];
+            stream.read(buffer);
+            stream.close();
+            jsonString = new String(buffer);
 
-    public static final List<Integer> ID_STATION = Arrays.asList(
-        153,
-        114,
-        118,
-        122,
-        123,
-        125,
-        126,
-        128,
-        129,
-        130,
-        131,
-        132,
-        134,
-        155,
-        157,
-        158,
-        159,
-        161,
-        162,
-        164,
-        187,
-        188,
-        189,
-        190,
-        191,
-        177,
-        179,
-        180,
-        182,
-        183,
-        184,
-        186,
-        135,
-        137,
-        138,
-        139,
-        140,
-        141,
-        143,
-        144,
-        146,
-        147,
-        149,
-        204,
-        169,
-        170,
-        192,
-        172,
-        65535,
-        195,
-        1,
-        0
-    );
+            try {
+                int len = (new JSONObject(jsonString)).optJSONArray("station").length();
+                for (int i = 0; i < len; i++) {
+                    stationsId.add((new JSONObject(jsonString)).optJSONArray("station").getJSONObject(i).getString("id"));
+                    stationsCode.add((new JSONObject(jsonString)).optJSONArray("station").getJSONObject(i).getString("code"));
+                }
+            } catch (final JSONException e) {
+                Log.v(LOG_TAG, e.toString());
+            }
+
+            try {
+                int len = (new JSONObject(jsonString)).optJSONArray("titulos").length();
+                for (int i = 0; i < len; i++) {
+                    titulosId.add((new JSONObject(jsonString)).optJSONArray("titulos").getJSONObject(i).getString("id"));
+                    titulosDesc.add((new JSONObject(jsonString)).optJSONArray("titulos").getJSONObject(i).getString("desc"));
+                    titulosTipo.add((new JSONObject(jsonString)).optJSONArray("titulos").getJSONObject(i).getString("type"));
+                }
+            } catch (final JSONException e) {
+                Log.v(LOG_TAG, e.toString());
+            }
+
+        } catch (IOException e) {
+            Log.v(LOG_TAG, e.toString());
+        }
+    }
+
+    public void calData() {
+
+        byte[] auxBytes;
+        String auxString;
+
+        if (infoByte.size()==64) {
+            uid = bytesToHexString(new byte[]{infoByte.get(0)[0], infoByte.get(0)[1], infoByte.get(0)[2], infoByte.get(0)[3]});
+
+            //ntarjeta
+            auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
+            ntarjeta = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
+
+            //tipoTarjeta
+            auxBytes = new byte[]{infoByte.get(4)[4]};
+            auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
+            if (titulosId.indexOf(auxString)==-1){
+                tipoTarjeta = "No idetificada";
+                tipoTarjetaSaldo = "Monedero";
+            }else {
+                tipoTarjeta = titulosDesc.get(titulosId.indexOf(auxString));
+                tipoTarjetaSaldo = titulosTipo.get(titulosId.indexOf(auxString));
+            }
+            //propietario
+            auxBytes = new byte[]{infoByte.get(4)[5]};
+            auxString = bytesToHexString(auxBytes);
+            if (auxString.equals("01")) {
+                auxString = "EPT";
+            }
+            if (auxString.equals("02")){
+                auxString = "TDM";
+            }
+            propietario = auxString;
+
+
+            //fechaEmision
+            auxBytes = new byte[]{infoByte.get(4)[6], infoByte.get(4)[7]};
+
+            Calendar c1 = GregorianCalendar.getInstance();
+            c1.set(2000, Calendar.JANUARY, 1,0,0,0);
+            SimpleDateFormat format1;
+            c1.add(Calendar.DAY_OF_YEAR, hex2decimal(bytesToHexString(auxBytes)));
+            format1 = new SimpleDateFormat("yyyy-MM-dd");
+            auxString = format1.format(c1.getTime());
+            fechaEmision = auxString;
+
+            //fechaCaducidad
+            auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
+
+            c1.set(2000, Calendar.JANUARY, 1,0,0,0);
+            c1.add(Calendar.DAY_OF_YEAR, hex2decimal(bytesToHexString(auxBytes)));
+            auxString = format1.format(c1.getTime());
+            fechaCaducidad = auxString;
+
+
+            //MOVIMINETOS
+            movList = new ArrayList<Mov>();
+            int[] pos = new int[]{44,45,46,48,49,50,52,53,54,56,57};
+
+            for (int i=0;i<pos.length;i++){
+                Mov mov = new Mov();
+
+                //pos
+                mov.pos = i+1;
+
+                //titulo
+                auxBytes = new byte[]{infoByte.get(pos[i])[0]};
+                auxString = bytesToHexString(auxBytes).substring(0,1);
+                if (auxString.equals("0")) { auxString = "Ninguno";  }
+                if (auxString.equals("1")) { auxString = "4";  }
+                if (auxString.equals("2")) { auxString = "3";  }
+                if (auxString.equals("3")) { auxString = "3 y 4";  }
+                if (auxString.equals("4")) { auxString = "2";  }
+                if (auxString.equals("5")) { auxString = "2 y 4";  }
+                if (auxString.equals("6")) { auxString = "2 y 3";  }
+                if (auxString.equals("7")) { auxString = "2,3 y 4";  }
+                if (auxString.equals("8")) { auxString = "1";  }
+                if (auxString.equals("9")) { auxString = "1 y 4";  }
+                if (auxString.equals("A")) { auxString = "1 y 3";  }
+                if (auxString.equals("B")) { auxString = "1,3 y 4";  }
+                if (auxString.equals("C")) { auxString = "1 y 2";  }
+                if (auxString.equals("D")) { auxString = "1,2 y 4";  }
+                if (auxString.equals("E")) { auxString = "1,2 y 3";  }
+                if (auxString.equals("F")) { auxString = "1,2,3 y 4";  }
+                mov.titulo = auxString;
+
+                //operacion
+                auxBytes = new byte[]{infoByte.get(pos[i])[0]};
+                auxString = bytesToHexString(auxBytes).substring(1,2);
+                if (auxString.equals("1")) { auxString = "Compra"; }
+                if (auxString.equals("2")) { auxString = "Recarga"; }
+                if (auxString.equals("3")) { auxString = "Validación"; }
+                if (auxString.equals("4")) { auxString = "Anulación"; }
+                if (auxString.equals("5")) { auxString = "Reactivación"; }
+                if (auxString.equals("6")) { auxString = "Eliminar"; }
+                mov.operacion = auxString;
+
+                //fechaHora y fechaHoraInt
+                auxBytes = new byte[]{infoByte.get(pos[i])[1], infoByte.get(pos[i])[2], infoByte.get(pos[i])[3]};
+                c1.set(2000, Calendar.JANUARY, 1,0,0,0);
+                c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
+                format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                auxString = format1.format(c1.getTime());
+                mov.fechaHora = auxString;
+                mov.fechaHoraInt = hex2decimal(bytesToHexString(auxBytes));
+
+
+                //tramos
+                auxBytes = new byte[]{infoByte.get(pos[i])[4]};
+                auxString = hex2Binary(bytesToHexString(auxBytes).substring(0,1));
+                auxString = String.format("%d",Integer.parseInt(auxString,2));
+                mov.tramos = auxString;
+
+                //viajeros;
+                auxBytes = new byte[]{infoByte.get(pos[i])[4], infoByte.get(pos[i])[5]};
+                auxString = hex2Binary(bytesToHexString(auxBytes)).substring(5,10);
+                auxString = String.format("%d",Integer.parseInt(auxString,2));
+                mov.viajeros = auxString;
+
+
+                //viajeTransbordo;
+                auxBytes = new byte[]{infoByte.get(pos[i])[5]};
+                auxString = hex2Binary(bytesToHexString(auxBytes)).substring(3,8);
+                auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
+                mov.viajeTransbordo = auxString;
+
+                //ultimaLinea;
+                auxBytes = new byte[]{infoByte.get(pos[i])[6], infoByte.get(pos[i])[7]};
+                auxString = hex2Binary(bytesToHexString(auxBytes)).substring(0,14);
+                auxString = String.format("%d",Integer.parseInt(auxString,2));
+                mov.ultimaLinea = auxString;
+
+                //ultimoSentido;
+                auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
+                auxString = hex2Binary(bytesToHexString(auxBytes)).substring(14,16);
+                auxString = String.format("%d",Integer.parseInt(auxString,2));
+                if (auxString.equals("1")) {
+                    auxString = "Ida";
+                }
+                if (auxString.equals("2")) {
+                    auxString = "Vuelta";
+                }
+                mov.ultimoSentido = auxString;
+
+                //parada;
+                auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
+                auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
+                if (stationsId.indexOf(auxString)==-1){
+                    auxString = "?";
+                }else {
+                    auxString = stationsCode.get(stationsId.indexOf(auxString));
+                }
+                mov.parada = auxString;
+
+
+                //autobusTranvia;
+                auxBytes = new byte[]{infoByte.get(i)[10], infoByte.get(pos[i])[11]};
+                auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
+                mov.autobusTranvia = auxString;
+
+                //saldo;
+                auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
+                if(tipoTarjetaSaldo.equals("Viajes")){
+                    auxString = "Viajes: "+String.format("%d", (int)hex2decimal(bytesToHexString(auxBytes)));
+                }else if(tipoTarjetaSaldo.equals("Temporal")){
+                    //String fechaEmision;
+                    //String fechaCaducidad;
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        double dias = Math.floor(formatter.parse(fechaCaducidad).getTime() - formatter.parse(fechaEmision).getTime() / (1000 * 60 * 60 * 24));
+                        auxString = "Días Restantes: "+String.format("%d", (int) dias);
+                    } catch (ParseException e) {
+                        Log.v(LOG_TAG, e.toString());
+                    }
+                }else{
+                    auxString = "Saldo: "+String.format("%.2f", ((double) hex2decimal(bytesToHexString(auxBytes)))/100)+" Euros";
+                }
+                mov.saldo = auxString;
+
+                //operador;
+                auxBytes = new byte[]{infoByte.get(i)[14]};
+                auxString = bytesToHexString(auxBytes);
+                if (auxString.equals("01")) {
+                    auxString = "EPT";
+                }
+                if (auxString.equals("02")) {
+                    auxString = "TDM";
+                }
+                mov.operador = auxString;
+
+                movList.add(mov);
+            }
+
+            Collections.sort(movList, Collections.reverseOrder());
+
+        }else{
+            uid = "No hay datos";
+        }
+
+        this.isInfo = true;
+
+    }
+
+    public String getMainScreenJSON(String login,String fecha){
+        String s = "";
+        Mov mov = new Mov();
+
+        s = s+"uid="+ntarjeta;
+        s = s+"&fecha="+fecha;
+        s = s+"&login="+login;
+
+        //int i=1;
+        //Log.v(LOG_TAG,"getMainScreenJSON");
+        for (Mov m : movList){
+            //Log.v(LOG_TAG,String.format("%02d",i));
+            //i++;
+            if (m.operacion.equals("Validación")){
+                mov = m;
+                break;
+            }
+        }
+
+        s = s + "&fechaVal="+mov.fechaHora;
+        s = s + "&paradaVal="+mov.parada ;
+        s = s + "&nViajeros="+mov.viajeros ;
+        s = s + "&tranvia="+mov.autobusTranvia ;
+        s = s + "&saldo="+mov.saldo;
+        s = s + "&tipoTarjeta="+tipoTarjetaSaldo;
+        s = s + "&operador="+mov.operador;
+
+        //Log.v(LOG_TAG,s);
+        return s;
+    }
+
+    public String getAllData(){
+        String result = "";
+
+        if (isInfo) {
+            result = result + "Número de tarjeta:\n\t" + ntarjeta + "\n";
+            result = result + "Tipo de tarjeta:\n\t" + tipoTarjeta + " -> " + tipoTarjetaSaldo + "\n";
+            result = result + "Propietario:\n \t" + propietario + "\n";
+            result = result + "Fecha de Emisión:\n\t" + fechaEmision + "\n";
+            result = result + "Fecha de Caducidad:\n\t" + fechaCaducidad + "\n";
+
+            result = result + "\n";
+
+            result = result + getInfoHexByte();
+        }else{
+            result = "";
+        }
+
+        return result;
+    }
+
+    public String getMovData(){
+        String result = "";
+        if (isInfo) {
+            result = result + "Movimientos:\n";
+            for (Mov s : movList) {
+                result = result + String.format("%02d", s.pos) + " - " + s.fechaHora + " - " + s.operacion + "\n";
+                result = result + "\tTitulos: " + s.titulo + "\n";
+                result = result + "\tTramos: " + s.tramos + "\n";
+                result = result + "\tViajeros: " + s.viajeros + "\n";
+                result = result + "\tViajeros Transbordo: " + s.viajeTransbordo + "\n";
+                result = result + "\tÚlt. Linea: " + s.ultimaLinea + "\n";
+                result = result + "\tÚlt. Sentido: " + s.ultimoSentido + "\n";
+                result = result + "\tParada: " + s.parada + "\n";
+                result = result + "\tAutobus: " + s.autobusTranvia + "\n";
+                result = result + "\t" + s.saldo + "\n";
+                result = result + "\tOperador: " + s.operador + "\n";
+
+            }
+            result = result + "\n";
+        }else{
+            result = "";
+        }
+        return result;
+    }
+
 }
