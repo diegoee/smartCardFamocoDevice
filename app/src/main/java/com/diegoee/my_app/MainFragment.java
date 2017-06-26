@@ -98,11 +98,13 @@ public class MainFragment extends Fragment {
             webView.loadUrl("file:///android_asset/webMainScreen/index.html?"+text);
         }
         if (load==MainFragment.DETAIL_MOV){
-            myView.findViewById(R.id.webView).setVisibility(View.GONE);
+            myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
             myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
-            myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.textView).setVisibility(View.GONE);
 
             tittle=getText(R.string.menu_mov).toString();
+
+            webView.loadUrl("file:///android_asset/webMovData/index.html?"+text);
         }
         if (load==MainFragment.DETAIL_CARD){
             myView.findViewById(R.id.webView).setVisibility(View.GONE);
@@ -112,7 +114,6 @@ public class MainFragment extends Fragment {
             tittle=getText(R.string.menu_card).toString();
         }
         if (load==MainFragment.ACTION_USER){
-
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
             myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.GONE);

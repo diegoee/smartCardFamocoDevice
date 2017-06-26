@@ -496,4 +496,30 @@ public class TdmCard {
         return result;
     }
 
+    public String getMovDataJSON(){
+        String str="obj={\"data\":[";
+        if (isInfo) {
+            for (Mov s : movList) {
+                String ss = movList.indexOf(s)<movList.size()-1? ",":"";
+
+                str = str+"{\"pos\": \""+String.format("%02d", s.pos)+"\","+
+                        " \"fechaHora\": \""+s.fechaHora+"\","+
+                        " \"operacion\": \""+s.operacion+"\","+
+                        " \"titulo\": \""+s.titulo+"\","+
+                        " \"tramos\": \""+s.tramos+"\","+
+                        " \"viajeros\": \""+s.viajeros+"\","+
+                        " \"viajeTransbordo\": \""+s.viajeTransbordo+"\","+
+                        " \"ultimaLinea\": \""+s.ultimaLinea+"\","+
+                        " \"ultimoSentido\": \""+s.ultimoSentido+"\","+
+                        " \"autobusTranvia\": \""+s.autobusTranvia+"\","+
+                        " \"saldo\": \""+s.saldo+"\","+
+                        " \"operador\": \""+ s.operador+"\"}"+ss;
+            }
+        }else{
+            str = str+"]}";
+        }
+        str = str+"]}";
+
+        return str;
+    }
 }

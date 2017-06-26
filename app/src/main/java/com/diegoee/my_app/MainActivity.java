@@ -165,7 +165,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
-            s = tdmCard.getMovData();
+            s = tdmCard.getMovDataJSON();
+            //Log.v(LOG_TAG,s);
         } else if (item.getItemId() == R.id.nav_detail_data) {
             fragment.setLoad(MainFragment.DETAIL_CARD);
             s = console+"\n\n"+tdmCard.getAllData();
