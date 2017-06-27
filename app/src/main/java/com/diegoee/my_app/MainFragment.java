@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class MainFragment extends Fragment {
     public static int DETAIL_MOV=4;
     public static int DETAIL_CARD=5;
     public static int ACTION_USER=6;
+    public static int MAIN_BACK_BTN=7;
 
     private String text;
     private int load;
@@ -81,6 +83,15 @@ public class MainFragment extends Fragment {
                 }
             }
         });
+
+        if (load==MainFragment.MAIN_BACK_BTN){
+            myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
+            myView.findViewById(R.id.textView).setVisibility(View.GONE);
+
+            tittle=getText(R.string.menu_main).toString();
+            webView.loadUrl("file:///android_asset/webMainBack/index.html?"+text);
+        }
 
         if (load==MainFragment.MAIN_TEXT){
             myView.findViewById(R.id.webView).setVisibility(View.GONE);

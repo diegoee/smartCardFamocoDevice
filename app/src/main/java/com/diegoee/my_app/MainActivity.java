@@ -129,6 +129,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             resetVar();
             onStop();
             onStart();
+
+            int[] i = {0,0,0};
+            for (ActionUser l : actionUserList) {
+                i[0]++;
+                if(l.isValOK()){
+                    i[1]++;
+                }else{
+                    i[2]++;
+                }
+            }
+            String s = "total="+String.format("%d",i[0])+"&ok="+String.format("%d",i[1])+"&nook="+String.format("%d",i[2]);
+
+            navigationView.getMenu().getItem(0).setChecked(true);
+            MainFragment fragment = new MainFragment();
+            fragment.setText(s);
+            fragment.setLoad(MainFragment.MAIN_BACK_BTN);
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+            drawer.closeDrawer(GravityCompat.START);
         }
     }
 
