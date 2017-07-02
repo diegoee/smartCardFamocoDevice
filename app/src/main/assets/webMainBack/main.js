@@ -8,71 +8,57 @@
     });
 */
 
-    document.getElementById('container').innerHTML ='';
-
     function getUrlVars()
-    {
-        var query = window.location.search.substring(1);
-        query = query.replace(/%20/g,' ')
-            .replace(/%22/g,'"')
-            .replace(/%2C/g,',')
-            .replace(/%7B/g,'{')
-            .replace(/%2C/g,'[')
-            .replace(/%7D/g,'}')
-            .replace(/%5D/g,']')
-            .replace(/%2F/g,'/')
-            .replace(/%3A/g,':')
-            .replace(/%E2/g,'€')
-            .replace(/\+/g,' ');
-        var q = query.split("&");
-        var vars=[];
-        for(var i=0;i<q.length;i++){
-            var x=q[i].split("=");
-            var k=x[0];
-            var v=x[1];
-            vars[k]=v;
-        }
-        return vars;
-    }
+         {
+             var query = window.location.search.substring(1);
+             query = query.replace(/%20/g,' ')
+                 .replace(/%22/g,'"')
+                 .replace(/%2C/g,',')
+                 .replace(/%7B/g,'{')
+                 .replace(/%2C/g,'[')
+                 .replace(/%7D/g,'}')
+                 .replace(/%5D/g,']')
+                 .replace(/%2F/g,'/')
+                 .replace(/%3A/g,':')
+                 .replace(/%E2/g,'€')
+                 .replace(/\+/g,' ');
+             var q = query.split("&");
+             var vars=[];
+             for(var i=0;i<q.length;i++){
+                 var x=q[i].split("=");
+                 var k=x[0];
+                 var v=x[1];
+                 vars[k]=v;
+             }
+             return vars;
+         }
 
-    var div;
-
-    var createDiv = function createDiv(className,html){
-        var div;
-        div = document.createElement('div');
-        div.className = className;
-        div.innerHTML = html;
-        return div;
-    };
-
-    div = createDiv('','Total de Tarjetas: '+getUrlVars().total);
-    document.getElementById('container').appendChild(div);
-    div = createDiv('','noOK/OK = '+getUrlVars().nook+'/'+getUrlVars().ok);
-    document.getElementById('container').appendChild(div);
-    div = createDiv('','');
-    document.getElementById('container').appendChild(div);
-    div = createDiv('','');
-    document.getElementById('container').appendChild(div);
-    div = createDiv('','');
-    document.getElementById('container').appendChild(div);
-    div = createDiv('','');
-    document.getElementById('container').appendChild(div);
+         document.getElementById('total').innerHTML = getUrlVars().total;
+         document.getElementById('noOK_OK').innerHTML = getUrlVars().nook+'/'+getUrlVars().ok;
 
 
-    var resizeElem = function resizeElem(){
-        var ele = document.getElementById('container');
-        ele.style.height = window.innerHeight-6+'px';
-        var divHeight = Math.floor((window.innerHeight-6)/ele.childNodes.length)-2;
 
-        for (var i = 0;i<ele.childNodes.length;i++){
-            ele.childNodes[i].style.height = divHeight+'px';
-            ele.childNodes[i].style.lineHeight = divHeight+'px';
-        }
-    };
+         var resizeElem = function resizeElem(){
+           var ele = document.getElementById('container');
+           ele.style.height = window.innerHeight-6+'px';
 
-    resizeElem();
-    window.addEventListener('resize', function(){
-        resizeElem();
-    });
+           ele = document.getElementsByTagName('td');
+
+           var h = Math.floor((window.innerHeight-6)/(ele.length/1.25));
+
+           for (var i=0;i<ele.length;i++){
+             ele[i].style.height = h +'px';
+           }
+
+
+           console.log(ele.length/2);
+           console.log(h);
+
+         };
+
+         resizeElem();
+         window.addEventListener('resize', function(){
+             resizeElem();
+         });
 
 })();

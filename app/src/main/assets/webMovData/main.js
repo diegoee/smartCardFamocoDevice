@@ -64,6 +64,7 @@
       '<p>Última Linea: '+data[i].ultimaLinea+'</p>'+
       '<p>Último Sentido: '+data[i].ultimoSentido+'</p>'+
       '<p>Tranvia: '+data[i].autobusTranvia+'</p>'+
+      '<p>Parada: '+data[i].parada+'</p>'+
       '<p>'+data[i].saldo+'</p>'+
       '';
     div.className = 'detail';

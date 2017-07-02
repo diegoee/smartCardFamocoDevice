@@ -363,9 +363,7 @@ public class TdmCard {
                 //parada;
                 auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
                 auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
-                if (stationsId.indexOf(auxString)==-1){
-                    auxString = "?";
-                }else {
+                if (stationsId.indexOf(auxString)!=-1){
                     auxString = stationsCode.get(stationsId.indexOf(auxString));
                 }
                 mov.parada = auxString;
@@ -471,31 +469,6 @@ public class TdmCard {
         return result;
     }
 
-    public String getMovData(){
-        String result = "";
-        if (isInfo) {
-            result = result + "Movimientos:\n";
-            for (Mov s : movList) {
-                result = result + String.format("%02d", s.pos) + " - " + s.fechaHora + " - " + s.operacion + "\n";
-                result = result + "\tTitulos: " + s.titulo + "\n";
-                result = result + "\tTramos: " + s.tramos + "\n";
-                result = result + "\tViajeros: " + s.viajeros + "\n";
-                result = result + "\tViajeros Transbordo: " + s.viajeTransbordo + "\n";
-                result = result + "\tÚlt. Linea: " + s.ultimaLinea + "\n";
-                result = result + "\tÚlt. Sentido: " + s.ultimoSentido + "\n";
-                result = result + "\tParada: " + s.parada + "\n";
-                result = result + "\tAutobus: " + s.autobusTranvia + "\n";
-                result = result + "\t" + s.saldo + "\n";
-                result = result + "\tOperador: " + s.operador + "\n";
-
-            }
-            result = result + "\n";
-        }else{
-            result = "";
-        }
-        return result;
-    }
-
     public String getMovDataJSON(){
         String str="obj={\"data\":[";
         if (isInfo) {
@@ -511,6 +484,7 @@ public class TdmCard {
                         " \"viajeTransbordo\": \""+s.viajeTransbordo+"\","+
                         " \"ultimaLinea\": \""+s.ultimaLinea+"\","+
                         " \"ultimoSentido\": \""+s.ultimoSentido+"\","+
+                        " \"parada\": \""+s.parada+"\","+
                         " \"autobusTranvia\": \""+s.autobusTranvia+"\","+
                         " \"saldo\": \""+s.saldo+"\","+
                         " \"operador\": \""+ s.operador+"\"}"+ss;

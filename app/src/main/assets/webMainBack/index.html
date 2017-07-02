@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Web Android App</title>
-    <style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Android App</title>
+  <style>
       body {
         margin: 0;
         padding: 0;
         background: #4F4F4F;
         color: #FEFEFE;
-        font-size: 1.75em;
-      }
-      div{
-        transition: 0.25s;
+        font-size: 1.5em;
       }
       #container {
+        border-radius: 0.25em;
         margin: 2px;
         padding: 0;
+        transition: 1s;
+      }
+      table{
+        width: 100%;
+        border: solid 1px #B7CA3D;
+      }
+      th,td{
+        border: solid 1px #B7CA3D;
+      }
+      td{
+        text-align: left;
+        padding-left: 30px;
       }
     </style>
-  </head>
-  <body>
-    <div id="container"></div>
-    <script type="text/javascript" src="main.js"></script>
-  </body>
+</head>
+<body>
+<div id="container">
+  <table>
+    <tr>
+      <th>Desc.</th>
+      <th>Res.</th>
+    </tr>
+    <tr>
+      <td>Total</td>
+      <td id="total"></td>
+    </tr>
+    <tr>
+      <td>NoOk/OK</td>
+      <td id="noOK_OK"></td>
+    </tr>
+  </table>
+</div>
+<script type="text/javascript" src="main.js"></script>
+</body>
 </html>
