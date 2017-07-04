@@ -59,13 +59,11 @@
 
     div = document.createElement('div');
     div.innerHTML = ''+
-      '<p>pos: '+data[i].pos+'</p>'+
+      '<p>Título: '+data[i].titulo+'</p>'+
       '<p>Viajeros: '+data[i].viajeros+'</p>'+
-      '<p>Última Linea: '+data[i].ultimaLinea+'</p>'+
-      '<p>Último Sentido: '+data[i].ultimoSentido+'</p>'+
-      '<p>Tranvia: '+data[i].autobusTranvia+'</p>'+
+      '<p>Operador: '+data[i].operador+'</p>'+
       '<p>Parada: '+data[i].parada+'</p>'+
-      '<p>'+data[i].saldo+'</p>'+
+      '<p>Tranvia: '+data[i].autobusTranvia+'</p>'+
       '';
     div.className = 'detail';
     div.var=i;
