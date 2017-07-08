@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String s="obj={\"data\":[";
         for (ActionUser l : actionUserList) {
             String ss = actionUserList.indexOf(l)<actionUserList.size()-1? ",":"";
-            s = s+"{\"uid\": \""+l.getId()+"\", \"val\": \""+Boolean.toString(l.isValOK())+"\", \"user\": \""+l.getUser()+"\", \"fecha\": \""+l.getFechaFiscalizadaSeg()+"\"}"+ss;
+            s = s+"{\"uid\": \""+l.getUid()+"\", \"val\": \""+Boolean.toString(l.isValOK())+"\", \"user\": \""+l.getUser()+"\", \"fecha\": \""+l.getFechaFiscalizadaSeg()+"\"}"+ss;
         }
         s = s+"]}";
         //Log.v(LOG_TAG,s);
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         console = console +"\n"+this.resolveIntent(intent);
 
-        actionUserNow.setId(tdmCard.ntarjeta);
+        actionUserNow.setUid(tdmCard.uid);
 
         navigationView.getMenu().getItem(0).setChecked(true);
 

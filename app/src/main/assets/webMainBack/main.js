@@ -34,31 +34,7 @@
          }
 
          document.getElementById('total').innerHTML = getUrlVars().total;
-         document.getElementById('noOK_OK').innerHTML = getUrlVars().nook+'/'+getUrlVars().ok;
-
-
-
-         var resizeElem = function resizeElem(){
-           var ele = document.getElementById('container');
-           ele.style.height = window.innerHeight-6+'px';
-
-           ele = document.getElementsByTagName('td');
-
-           var h = Math.floor((window.innerHeight-6)/(ele.length/1.25));
-
-           for (var i=0;i<ele.length;i++){
-             ele[i].style.height = h +'px';
-           }
-
-
-           console.log(ele.length/2);
-           console.log(h);
-
-         };
-
-         resizeElem();
-         window.addEventListener('resize', function(){
-             resizeElem();
-         });
+         document.getElementById('noOK').innerHTML = getUrlVars().nook;
+         document.getElementById('OK').innerHTML = getUrlVars().ok;
 
 })();

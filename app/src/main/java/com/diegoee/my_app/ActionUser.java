@@ -21,11 +21,11 @@ public class ActionUser {
         fechaFiscalizadaSeg = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(date.getTime());
     }
 
-    public String getId() {
+    public String getUid() {
         return uid;
     }
 
-    public void setId(String uid) {
+    public void setUid(String uid) {
         this.uid = uid;
     }
 

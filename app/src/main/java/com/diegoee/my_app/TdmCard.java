@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -24,6 +25,7 @@ public class TdmCard {
     class Mov implements Comparable<Mov> {
         int pos;
         String titulo;
+        String tipoTitulo;
         String operacion;
         String fechaHora;
         int fechaHoraInt;
@@ -50,19 +52,21 @@ public class TdmCard {
     List<Mov> movList;
 
     String uid;
+
     String ntarjeta;
-    String tipoTarjeta;
-    String tipoTarjetaSaldo;
     String propietario;
     String fechaEmision;
     String fechaCaducidad;
 
-    private List<String> stationsId;
-    private List<String> stationsCode;
+    String codigoTitulo;
+    String tipo;
+    String fechaInicioCaducidad;
 
-    private List<String> titulosId;
-    private List<String> titulosDesc;
-    private List<String> titulosTipo;
+    private List<String> paradaId;
+    private List<String> paradaCode;
+
+    private List<String> codigoTituloId;
+    private List<String> codigoTituloDesc;
 
 
     //Constructor;
@@ -71,11 +75,10 @@ public class TdmCard {
         this.isInfo = false;
         infoByte = new ArrayList<byte[]>();
         movList = new ArrayList<Mov>();
-        stationsId = new ArrayList<String>();
-        stationsCode = new ArrayList<String>();
-        titulosId = new ArrayList<String>();
-        titulosDesc = new ArrayList<String>();
-        titulosTipo = new ArrayList<String>();
+        paradaId = new ArrayList<String>();
+        paradaCode = new ArrayList<String>();
+        codigoTituloId = new ArrayList<String>();
+        codigoTituloDesc = new ArrayList<String>();
         readDataJSON("data/dataTrain.json",ctx);
     }
 
@@ -85,12 +88,12 @@ public class TdmCard {
         movList = new ArrayList<Mov>();
         uid = "";
         ntarjeta = "";
-        tipoTarjeta = "";
-        tipoTarjetaSaldo = "";
         propietario = "";
         fechaEmision = "";
         fechaCaducidad = "";
-
+        codigoTitulo = "";
+        tipo = "";
+        fechaInicioCaducidad = "";
     }
 
     public boolean isInfo() {
@@ -192,21 +195,20 @@ public class TdmCard {
             jsonString = new String(buffer);
 
             try {
-                int len = (new JSONObject(jsonString)).optJSONArray("station").length();
+                int len = (new JSONObject(jsonString)).optJSONArray("paradas").length();
                 for (int i = 0; i < len; i++) {
-                    stationsId.add((new JSONObject(jsonString)).optJSONArray("station").getJSONObject(i).getString("id"));
-                    stationsCode.add((new JSONObject(jsonString)).optJSONArray("station").getJSONObject(i).getString("code"));
+                    paradaId.add((new JSONObject(jsonString)).optJSONArray("paradas").getJSONObject(i).getString("id"));
+                    paradaCode.add((new JSONObject(jsonString)).optJSONArray("paradas").getJSONObject(i).getString("code"));
                 }
             } catch (final JSONException e) {
                 Log.v(LOG_TAG, e.toString());
             }
 
             try {
-                int len = (new JSONObject(jsonString)).optJSONArray("titulos").length();
+                int len = (new JSONObject(jsonString)).optJSONArray("codigosDeTitulos").length();
                 for (int i = 0; i < len; i++) {
-                    titulosId.add((new JSONObject(jsonString)).optJSONArray("titulos").getJSONObject(i).getString("id"));
-                    titulosDesc.add((new JSONObject(jsonString)).optJSONArray("titulos").getJSONObject(i).getString("desc"));
-                    titulosTipo.add((new JSONObject(jsonString)).optJSONArray("titulos").getJSONObject(i).getString("type"));
+                    codigoTituloId.add((new JSONObject(jsonString)).optJSONArray("codigosDeTitulos").getJSONObject(i).getString("id"));
+                    codigoTituloDesc.add((new JSONObject(jsonString)).optJSONArray("codigosDeTitulos").getJSONObject(i).getString("desc"));
                 }
             } catch (final JSONException e) {
                 Log.v(LOG_TAG, e.toString());
@@ -221,35 +223,24 @@ public class TdmCard {
 
         byte[] auxBytes;
         String auxString;
+        int startTittle = 0;
 
         if (infoByte.size()==64) {
-            uid = bytesToHexString(new byte[]{infoByte.get(0)[0], infoByte.get(0)[1], infoByte.get(0)[2], infoByte.get(0)[3]});
+
+            //uid
+            auxBytes = new byte[]{infoByte.get(0)[0], infoByte.get(0)[1], infoByte.get(0)[2], infoByte.get(0)[3]};
+            uid = bytesToHexString(auxBytes);
 
             //ntarjeta
             auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
             ntarjeta = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
 
-            //tipoTarjeta
-            auxBytes = new byte[]{infoByte.get(4)[4]};
-            auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
-            if (titulosId.indexOf(auxString)==-1){
-                tipoTarjeta = "No idetificada";
-                tipoTarjetaSaldo = "Monedero";
-            }else {
-                tipoTarjeta = titulosDesc.get(titulosId.indexOf(auxString));
-                tipoTarjetaSaldo = titulosTipo.get(titulosId.indexOf(auxString));
-            }
             //propietario
             auxBytes = new byte[]{infoByte.get(4)[5]};
-            auxString = bytesToHexString(auxBytes);
-            if (auxString.equals("01")) {
-                auxString = "EPT";
-            }
-            if (auxString.equals("02")){
-                auxString = "TDM";
-            }
+            auxString = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
+            if (auxString.equals("1")){ auxString = "EPT"; }
+            if (auxString.equals("2")){ auxString = "TDM"; }
             propietario = auxString;
-
 
             //fechaEmision
             auxBytes = new byte[]{infoByte.get(4)[6], infoByte.get(4)[7]};
@@ -270,6 +261,50 @@ public class TdmCard {
             auxString = format1.format(c1.getTime());
             fechaCaducidad = auxString;
 
+            //buscamos el inicio del Título
+            if (Arrays.equals(infoByte.get(8), infoByte.get(9))) {
+                startTittle = 8;
+            }
+            if (Arrays.equals(infoByte.get(9), infoByte.get(10))) {
+                startTittle = 9;
+            }
+            if (Arrays.equals(infoByte.get(8), infoByte.get(10))) {
+                startTittle = 8;
+            }
+
+            auxBytes = new byte[]{infoByte.get(startTittle)[3]};
+            auxString = hex2Binary(bytesToHexString(auxBytes)).substring(4,6);
+            auxString = String.format("%d",Integer.parseInt(auxString,2));
+
+            startTittle = 12;
+            if (auxString.equals("0")) {startTittle = 12; }
+            if (auxString.equals("1")) {startTittle = 20; }
+            if (auxString.equals("2")) {startTittle = 28; }
+            if (auxString.equals("3")) {startTittle = 36; }
+
+
+            //codigoTitulo;
+            auxBytes = new byte[]{infoByte.get(startTittle + 2)[0], infoByte.get(startTittle + 2)[1]};
+            auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
+            if (codigoTituloId.indexOf(auxString)==-1){
+                codigoTitulo = auxString;
+            }else {
+                codigoTitulo = codigoTituloDesc.get(codigoTituloId.indexOf(auxString));
+            }
+
+            //tipo;
+            auxBytes = new byte[]{infoByte.get(startTittle + 2)[2]};
+            auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes).substring(0,1))));
+
+            if (auxString.equals("1")) {auxString="Viajes"; }
+            if (auxString.equals("2")) {auxString="Tiempo"; }
+            if (auxString.equals("3")) {auxString="Monedero"; }
+            tipo = auxString;
+
+
+            //fechaInicioCaducidad;
+            //TODO
+
 
             //MOVIMINETOS
             movList = new ArrayList<Mov>();
@@ -284,23 +319,28 @@ public class TdmCard {
                 //titulo
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
                 auxString = bytesToHexString(auxBytes).substring(0,1);
-                if (auxString.equals("0")) { auxString = "Ninguno";  }
-                if (auxString.equals("1")) { auxString = "4";  }
-                if (auxString.equals("2")) { auxString = "3";  }
-                if (auxString.equals("3")) { auxString = "3 y 4";  }
-                if (auxString.equals("4")) { auxString = "2";  }
-                if (auxString.equals("5")) { auxString = "2 y 4";  }
-                if (auxString.equals("6")) { auxString = "2 y 3";  }
-                if (auxString.equals("7")) { auxString = "2,3 y 4";  }
-                if (auxString.equals("8")) { auxString = "1";  }
-                if (auxString.equals("9")) { auxString = "1 y 4";  }
-                if (auxString.equals("A")) { auxString = "1 y 3";  }
-                if (auxString.equals("B")) { auxString = "1,3 y 4";  }
-                if (auxString.equals("C")) { auxString = "1 y 2";  }
-                if (auxString.equals("D")) { auxString = "1,2 y 4";  }
-                if (auxString.equals("E")) { auxString = "1,2 y 3";  }
-                if (auxString.equals("F")) { auxString = "1,2,3 y 4";  }
-                mov.titulo = auxString;
+
+                startTittle = 12;
+                if (auxString.equals("0")) {startTittle = 12; }
+                if (auxString.equals("1")) {startTittle = 20; }
+                if (auxString.equals("2")) {startTittle = 28; }
+                if (auxString.equals("3")) {startTittle = 36; }
+
+                auxBytes = new byte[]{infoByte.get(startTittle + 2)[0], infoByte.get(startTittle + 2)[1]};
+                auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
+                if (codigoTituloId.indexOf(auxString)==-1){
+                    mov.titulo = auxString;
+                }else {
+                    mov.titulo = codigoTituloDesc.get(codigoTituloId.indexOf(auxString));
+                }
+
+                auxBytes = new byte[]{infoByte.get(startTittle + 2)[2]};
+                auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes).substring(0,1))));
+                if (auxString.equals("1")) {auxString="Viajes"; }
+                if (auxString.equals("2")) {auxString="Tiempo"; }
+                if (auxString.equals("3")) {auxString="Monedero"; }
+                mov.tipoTitulo = auxString;
+
 
                 //operacion
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
@@ -363,8 +403,8 @@ public class TdmCard {
                 //parada;
                 auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
                 auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
-                if (stationsId.indexOf(auxString)!=-1){
-                    auxString = stationsCode.get(stationsId.indexOf(auxString));
+                if (paradaId.indexOf(auxString)!=-1){
+                    auxString = paradaCode.get(paradaId.indexOf(auxString));
                 }
                 mov.parada = auxString;
 
@@ -376,9 +416,9 @@ public class TdmCard {
 
                 //saldo;
                 auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
-                if(tipoTarjetaSaldo.equals("Viajes")){
+                if(mov.tipoTitulo.equals("Viajes")){
                     auxString = "Viajes: "+String.format("%d", (int)hex2decimal(bytesToHexString(auxBytes)));
-                }else if(tipoTarjetaSaldo.equals("Temporal")){
+                }else if(mov.tipoTitulo.equals("Tiempo")){
                     //String fechaEmision;
                     //String fechaCaducidad;
 
@@ -396,13 +436,7 @@ public class TdmCard {
 
                 //operador;
                 auxBytes = new byte[]{infoByte.get(i)[14]};
-                auxString = bytesToHexString(auxBytes);
-                if (auxString.equals("01")) {
-                    auxString = "EPT";
-                }
-                if (auxString.equals("02")) {
-                    auxString = "TDM";
-                }
+                auxString = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
                 mov.operador = auxString;
 
                 movList.add(mov);
@@ -422,7 +456,7 @@ public class TdmCard {
         String s = "";
         Mov mov = new Mov();
 
-        s = s+"uid="+ntarjeta;
+        s = s+"uid="+uid;
         s = s+"&fecha="+fecha;
         s = s+"&login="+login;
 
@@ -442,8 +476,8 @@ public class TdmCard {
         s = s + "&nViajeros="+mov.viajeros ;
         s = s + "&tranvia="+mov.autobusTranvia ;
         s = s + "&saldo="+mov.saldo;
-        s = s + "&tipoTarjeta="+tipoTarjetaSaldo;
-        s = s + "&operador="+mov.operador;
+        s = s + "&tipoTarjeta="+tipo;
+        s = s + "&operador="+propietario;
 
         //Log.v(LOG_TAG,s);
         return s;
@@ -454,7 +488,7 @@ public class TdmCard {
 
         if (isInfo) {
             result = result + "Número de tarjeta:\n\t" + ntarjeta + "\n";
-            result = result + "Tipo de tarjeta:\n\t" + tipoTarjeta + " -> " + tipoTarjetaSaldo + "\n";
+            result = result + "Tipo de tarjeta:\n\t" + codigoTitulo + " -> " + tipo + "\n";
             result = result + "Propietario:\n \t" + propietario + "\n";
             result = result + "Fecha de Emisión:\n\t" + fechaEmision + "\n";
             result = result + "Fecha de Caducidad:\n\t" + fechaCaducidad + "\n";
@@ -478,7 +512,7 @@ public class TdmCard {
                 str = str+"{\"pos\": \""+String.format("%02d", s.pos)+"\","+
                         " \"fechaHora\": \""+s.fechaHora+"\","+
                         " \"operacion\": \""+s.operacion+"\","+
-                        " \"titulo\": \""+s.titulo+"\","+
+                        " \"titulo\": \""+s.titulo+" Tipo: "+s.tipoTitulo+"\","+
                         " \"tramos\": \""+s.tramos+"\","+
                         " \"viajeros\": \""+s.viajeros+"\","+
                         " \"viajeTransbordo\": \""+s.viajeTransbordo+"\","+

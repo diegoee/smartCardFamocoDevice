@@ -1,5 +1,5 @@
 {
-	"station": [
+	"paradas": [
 		{
 			"desc": "Estadio Nueva Condomina",
 			"line": 2,
@@ -358,7 +358,7 @@
 			"dir": "Ninguno"
 		}
 	],
-	"titulos": [
+	"codigosDeTitulos": [
 		{
 			"desc": "Billete sencillo zona urbana",
 			"id": 100,
