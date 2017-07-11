@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
-            s = tdmCard.getMovDataJSON();
+            s = tdmCard.getMovDataJSON(actionUserNow.getFechaFiscalizada());
             //Log.v(LOG_TAG,s);
         } else if (item.getItemId() == R.id.nav_detail_data) {
             fragment.setLoad(MainFragment.DETAIL_CARD);
@@ -290,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // 1) Parse the intent and get the action that triggered this intent
         String action = intent.getAction();
 
+
         // 2) Check if it was triggered by a tag discovered interruption.
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) { //ACTION_TECH_DISCOVERED
             try {
@@ -303,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mfc.connect();
 
                 // 5.2) and get the number of sectors this card has..and loop thru these sectors
-                int secCount = mfc.getSectorCount();
+                int secCount = 16;//mfc.getSectorCount();
                 int bCount = 0;
                 int bIndex = 0;
 
@@ -378,7 +379,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                         }
                     }
-
                 } else {
                     cons = cons +"\nError de Autentificación";
                     return cons;

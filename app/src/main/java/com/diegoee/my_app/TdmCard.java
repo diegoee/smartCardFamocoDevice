@@ -129,6 +129,18 @@ public class TdmCard {
         return val;
     }
 
+    public static long hex2decimalLong(String s) {
+        String digits = "0123456789ABCDEF";
+        s = s.toUpperCase();
+        long val = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int d = digits.indexOf(c);
+            val = 16*val + d;
+        }
+        return val;
+    }
+
     public static String hex2Binary(String s) {
         String val="";
         String result="";
@@ -233,7 +245,7 @@ public class TdmCard {
 
             //ntarjeta
             auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
-            ntarjeta = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
+            ntarjeta = String.format("%d",hex2decimalLong(bytesToHexString(auxBytes)));
 
             //propietario
             auxBytes = new byte[]{infoByte.get(4)[5]};
@@ -255,7 +267,6 @@ public class TdmCard {
 
             //fechaCaducidad
             auxBytes = new byte[]{infoByte.get(4)[8], infoByte.get(4)[9]};
-
             c1.set(2000, Calendar.JANUARY, 1,0,0,0);
             c1.add(Calendar.DAY_OF_YEAR, hex2decimal(bytesToHexString(auxBytes)));
             auxString = format1.format(c1.getTime());
@@ -303,7 +314,19 @@ public class TdmCard {
 
 
             //fechaInicioCaducidad;
-            //TODO
+            //TODO leer flag y fecha
+            c1.set(2000, Calendar.JANUARY, 1,0,0,0);
+            c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
+            format1 = new SimpleDateFormat("yyyy-MM-dd");
+            String s = format1.format(c1.getTime());
+            auxBytes = new byte[]{infoByte.get(startTittle + 2)[4]};
+            auxString = hex2Binary(bytesToHexString(auxBytes)).substring(7,8);
+            if(auxString.equals("0")){
+                auxString = "Fecha Inicio: "+s;
+            }else{
+                auxString = "Fecha Caducidad: "+s;
+            }
+            fechaInicioCaducidad = auxString;
 
 
             //MOVIMINETOS
@@ -344,7 +367,7 @@ public class TdmCard {
 
                 //operacion
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
-                auxString = bytesToHexString(auxBytes).substring(1,2);
+                auxString = String.format("%d", (int) hex2decimal(bytesToHexString(auxBytes).substring(1,2)));
                 if (auxString.equals("1")) { auxString = "Compra"; }
                 if (auxString.equals("2")) { auxString = "Recarga"; }
                 if (auxString.equals("3")) { auxString = "Validación"; }
@@ -362,7 +385,6 @@ public class TdmCard {
                 mov.fechaHora = auxString;
                 mov.fechaHoraInt = hex2decimal(bytesToHexString(auxBytes));
 
-
                 //tramos
                 auxBytes = new byte[]{infoByte.get(pos[i])[4]};
                 auxString = hex2Binary(bytesToHexString(auxBytes).substring(0,1));
@@ -374,7 +396,6 @@ public class TdmCard {
                 auxString = hex2Binary(bytesToHexString(auxBytes)).substring(5,10);
                 auxString = String.format("%d",Integer.parseInt(auxString,2));
                 mov.viajeros = auxString;
-
 
                 //viajeTransbordo;
                 auxBytes = new byte[]{infoByte.get(pos[i])[5]};
@@ -423,9 +444,16 @@ public class TdmCard {
                     //String fechaCaducidad;
 
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    Calendar date = Calendar.getInstance();
+                    String now = (new SimpleDateFormat("yyyy-MM-dd")).format(date.getTime());
                     try {
-                        double dias = Math.floor(formatter.parse(fechaCaducidad).getTime() - formatter.parse(fechaEmision).getTime() / (1000 * 60 * 60 * 24));
-                        auxString = "Días Restantes: "+String.format("%d", (int) dias);
+                        double dias = Math.floor((formatter.parse(fechaCaducidad).getTime() - formatter.parse(now).getTime()) / (1000 * 60 * 60 * 24));
+                        //Log.v(LOG_TAG, String.format("%.2f", (double) dias));
+                        if (dias>0){
+                            auxString = "Dias Restantes: "+String.format("%d", (int) dias);
+                        }else{
+                            auxString = "Bono Caducado";
+                        }
                     } catch (ParseException e) {
                         Log.v(LOG_TAG, e.toString());
                     }
@@ -457,6 +485,7 @@ public class TdmCard {
         Mov mov = new Mov();
 
         s = s+"uid="+uid;
+        s = s+"&ntarjeta="+ntarjeta;
         s = s+"&fecha="+fecha;
         s = s+"&login="+login;
 
@@ -503,7 +532,7 @@ public class TdmCard {
         return result;
     }
 
-    public String getMovDataJSON(){
+    public String getMovDataJSON(String fecha){
         String str="obj={\"data\":[";
         if (isInfo) {
             for (Mov s : movList) {
@@ -527,6 +556,12 @@ public class TdmCard {
             str = str+"]}";
         }
         str = str+"]}";
+
+        str = str+"&fechaIniCad="+fechaInicioCaducidad;
+        str = str+"&fechaAct="+fecha;
+        str = str+"&fechaCad="+fechaCaducidad;
+        str = str+"&titulo="+codigoTitulo;
+        str = str+"&tipo="+tipo;
 
         return str;
     }

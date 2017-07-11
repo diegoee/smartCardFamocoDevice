@@ -47,8 +47,12 @@
     };
 
 
+    div1 = createDiv('level1',true, 'Número de Tarjeta: '+getUrlVars().ntarjeta);
+    div1.style.paddingLeft='5px';
+    document.getElementById('container').appendChild(div1);
+
     div1 = createDiv('level1',false);
-    div2 = createDiv('level2',true,'Tarjeta: '+getUrlVars().uid);
+    div2 = createDiv('level2',true,'UID: '+getUrlVars().uid);
     div1.appendChild(div2);
     div2 = createDiv('level2',true,'Usuario: '+getUrlVars().login);
     div1.appendChild(div2);

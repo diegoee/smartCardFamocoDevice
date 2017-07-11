@@ -17,8 +17,8 @@ public class ActionUser {
         this.user = "";
         this.valOK = false;
         Calendar date = Calendar.getInstance();
-        fechaFiscalizada = (new SimpleDateFormat("yyyy/MM/dd-HH:mm")).format(date.getTime());
-        fechaFiscalizadaSeg = (new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")).format(date.getTime());
+        fechaFiscalizada = (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(date.getTime());
+        fechaFiscalizadaSeg = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(date.getTime());
     }
 
     public String getUid() {
