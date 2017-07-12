@@ -1,7 +1,5 @@
 package com.diegoee.my_app;
 
-import android.util.Log;
-
 import com.famoco.secommunication.SmartcardReader;
 
 import java.security.SecureRandom;
