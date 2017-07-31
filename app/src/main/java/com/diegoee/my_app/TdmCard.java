@@ -478,6 +478,75 @@ public class TdmCard {
 
         this.isInfo = true;
 
+        pruebaConsoleData();
+
+    }
+
+    public void pruebaConsoleData(){
+        Log.v(LOG_TAG,"*** Prueba de Datos ***");
+
+        byte[] auxBytes;
+        String auxString;
+
+
+        int[] pos = new int[]{44,45,46,48,49,50,52,53,54,56,57};
+        for (int i=0;i<pos.length;i++) {
+
+            auxBytes = new byte[]{infoByte.get(pos[i])[1], infoByte.get(pos[i])[2], infoByte.get(pos[i])[3]};
+            Calendar c1 = GregorianCalendar.getInstance();
+            c1.set(2000, Calendar.JANUARY, 1,0,0,0);
+            c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
+            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            auxString = "date: "+format1.format(c1.getTime());
+
+            auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
+            auxString += String.format(" saldo: %05d <-> %s <-> %s",hex2decimal(bytesToHexString(auxBytes)),bytesToHexString(auxBytes),hex2Binary(bytesToHexString(auxBytes)));
+
+            auxBytes = new byte[]{infoByte.get(pos[i])[0]};
+            auxString += String.format(" %s ",bytesToHexString(auxBytes));
+            String aux = String.format("%d", (int) hex2decimal(bytesToHexString(auxBytes).substring(1,2)));
+            if (aux.equals("1")) { aux = "Compra"; }
+            if (aux.equals("2")) { aux = "Recarga"; }
+            if (aux.equals("3")) { aux = "Validación"; }
+            if (aux.equals("4")) { aux = "Anulación"; }
+            if (aux.equals("5")) { aux = "Reactivación"; }
+            if (aux.equals("6")) { aux = "Eliminar"; }
+            auxString += " Operación: "+aux;
+
+
+            Log.v(LOG_TAG,"Mov"+String.format("%02d",i+1)+": "+auxString);
+        }
+
+        pos = new int[]{8,9,10};
+        for (int i=0;i<pos.length;i++) {
+            auxBytes = new byte[]{
+                    infoByte.get(pos[i])[6],infoByte.get(pos[i])[7]
+            };
+            auxString = bytesToHexString(auxBytes).substring(0,3);
+            Log.v(LOG_TAG,"CTRL: "+String.format("%d",i)+": "+auxString+" <-> "+hex2Binary(auxString));
+        }
+
+        //pos = new int[]{12,13,14,16,17,18,20,21,22,24,25,26,28,29,30,32,33,34,36,37,38,40,41,42};
+        //int[] posT = new int[]{1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,4,4};
+        pos = new int[]{12,13};
+        int[] posT = new int[]{1,1};
+        for (int i=0;i<pos.length;i++) {
+            auxBytes = new byte[]{
+                    infoByte.get(pos[i])[0],infoByte.get(pos[i])[1],infoByte.get(pos[i])[2],infoByte.get(pos[i])[3],
+                    infoByte.get(pos[i])[4],infoByte.get(pos[i])[5],infoByte.get(pos[i])[6],infoByte.get(pos[i])[7],
+                    infoByte.get(pos[i])[8],infoByte.get(pos[i])[9],infoByte.get(pos[i])[10],infoByte.get(pos[i])[11],
+                    infoByte.get(pos[i])[12],infoByte.get(pos[i])[13],infoByte.get(pos[i])[14],infoByte.get(pos[i])[15]
+            };
+            auxString = bytesToHexString(auxBytes);
+            Log.v(LOG_TAG,String.format("%d-%02d",posT[i],pos[i])+": "+auxString+" <-> "+hex2Binary(auxString));
+            auxBytes = new byte[]{
+                    infoByte.get(pos[i])[3],infoByte.get(pos[i])[2],infoByte.get(pos[i])[1],infoByte.get(pos[i])[0]
+            };
+            auxString = bytesToHexString(auxBytes);
+            Log.v(LOG_TAG,String.format("%d-%02d",posT[i],pos[i])+": Saldo: "+String.format("%06d",hex2decimal(auxString))+" <-> "+auxString);
+
+        }
+
     }
 
     public String getMainScreenJSON(String login,String fecha){
