@@ -25,7 +25,6 @@ public class TdmCard {
     class Mov implements Comparable<Mov> {
         int pos;
         String titulo;
-        String tipoTitulo;
         String operacion;
         String fechaHora;
         int fechaHoraInt;
@@ -61,6 +60,7 @@ public class TdmCard {
     String codigoTitulo;
     String tipo;
     String fechaInicioCaducidad;
+    String saldo;
 
     private List<String> paradaId;
     private List<String> paradaCode;
@@ -94,6 +94,7 @@ public class TdmCard {
         codigoTitulo = "";
         tipo = "";
         fechaInicioCaducidad = "";
+        saldo = "";
     }
 
     public boolean isInfo() {
@@ -272,6 +273,7 @@ public class TdmCard {
             auxString = format1.format(c1.getTime());
             fechaCaducidad = auxString;
 
+            startTittle = 8;
             //buscamos el inicio del Título
             if (Arrays.equals(infoByte.get(8), infoByte.get(9))) {
                 startTittle = 8;
@@ -286,16 +288,32 @@ public class TdmCard {
             auxBytes = new byte[]{infoByte.get(startTittle)[3]};
             auxString = hex2Binary(bytesToHexString(auxBytes)).substring(4,6);
             auxString = String.format("%d",Integer.parseInt(auxString,2));
+            auxBytes = new byte[]{infoByte.get(startTittle)[6],infoByte.get(startTittle)[7]};
 
             startTittle = 12;
-            if (auxString.equals("0")) {startTittle = 12; }
-            if (auxString.equals("1")) {startTittle = 20; }
-            if (auxString.equals("2")) {startTittle = 28; }
-            if (auxString.equals("3")) {startTittle = 36; }
+            int aux =0;
 
+            if (auxString.equals("0")) {startTittle = 12; aux=0;}
+            if (auxString.equals("1")) {startTittle = 20; aux=3;}
+            if (auxString.equals("2")) {startTittle = 28; aux=6;}
+            if (auxString.equals("3")) {startTittle = 36; aux=9;}
+
+            int auxSaldo = hex2decimal(hex2Binary(bytesToHexString(auxBytes)).substring(0+aux,1+aux));
+            if (auxSaldo==0) {
+                auxSaldo=0;
+            }else{
+                auxSaldo=1;
+            }
+
+            int auxDataTitulo = hex2decimal(hex2Binary(bytesToHexString(auxBytes)).substring(1+aux,2+aux));
+            if (auxDataTitulo==0) {
+                auxDataTitulo=2;
+            }else{
+                auxDataTitulo=3;
+            }
 
             //codigoTitulo;
-            auxBytes = new byte[]{infoByte.get(startTittle + 2)[0], infoByte.get(startTittle + 2)[1]};
+            auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[0], infoByte.get(startTittle + auxDataTitulo)[1]};
             auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
             if (codigoTituloId.indexOf(auxString)==-1){
                 codigoTitulo = auxString;
@@ -304,7 +322,7 @@ public class TdmCard {
             }
 
             //tipo;
-            auxBytes = new byte[]{infoByte.get(startTittle + 2)[2]};
+            auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[2]};
             auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes).substring(0,1))));
 
             if (auxString.equals("1")) {auxString="Viajes"; }
@@ -319,7 +337,7 @@ public class TdmCard {
             c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
             format1 = new SimpleDateFormat("yyyy-MM-dd");
             String s = format1.format(c1.getTime());
-            auxBytes = new byte[]{infoByte.get(startTittle + 2)[4]};
+            auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[4]};
             auxString = hex2Binary(bytesToHexString(auxBytes)).substring(7,8);
             if(auxString.equals("0")){
                 auxString = "Fecha Inicio: "+s;
@@ -327,6 +345,17 @@ public class TdmCard {
                 auxString = "Fecha Caducidad: "+s;
             }
             fechaInicioCaducidad = auxString;
+
+
+            int posSaldo = startTittle + auxSaldo;
+            auxBytes = new byte[]{ infoByte.get(posSaldo)[3],infoByte.get(posSaldo)[2],infoByte.get(posSaldo)[1],infoByte.get(posSaldo)[0] };
+
+            saldo = "0.00-Euros";
+            if (tipo.equals("Viajes")||tipo.equals("Tiempo")){
+                saldo = String.format("%d-Viajes", hex2decimal(bytesToHexString(auxBytes)));
+            }else{
+                saldo = String.format("%.2f-Euros", ((float) hex2decimal(bytesToHexString(auxBytes))/100));
+            }
 
 
             //MOVIMINETOS
@@ -342,28 +371,6 @@ public class TdmCard {
                 //titulo
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
                 auxString = bytesToHexString(auxBytes).substring(0,1);
-
-                startTittle = 12;
-                if (auxString.equals("0")) {startTittle = 12; }
-                if (auxString.equals("1")) {startTittle = 20; }
-                if (auxString.equals("2")) {startTittle = 28; }
-                if (auxString.equals("3")) {startTittle = 36; }
-
-                auxBytes = new byte[]{infoByte.get(startTittle + 2)[0], infoByte.get(startTittle + 2)[1]};
-                auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
-                if (codigoTituloId.indexOf(auxString)==-1){
-                    mov.titulo = auxString;
-                }else {
-                    mov.titulo = codigoTituloDesc.get(codigoTituloId.indexOf(auxString));
-                }
-
-                auxBytes = new byte[]{infoByte.get(startTittle + 2)[2]};
-                auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes).substring(0,1))));
-                if (auxString.equals("1")) {auxString="Viajes"; }
-                if (auxString.equals("2")) {auxString="Tiempo"; }
-                if (auxString.equals("3")) {auxString="Monedero"; }
-                mov.tipoTitulo = auxString;
-
 
                 //operacion
                 auxBytes = new byte[]{infoByte.get(pos[i])[0]};
@@ -437,9 +444,9 @@ public class TdmCard {
 
                 //saldo;
                 auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
-                if(mov.tipoTitulo.equals("Viajes")){
+                if(tipo.equals("Viajes")){
                     auxString = "Viajes: "+String.format("%d", (int)hex2decimal(bytesToHexString(auxBytes)));
-                }else if(mov.tipoTitulo.equals("Tiempo")){
+                }else if(tipo.equals("Tiempo")){
                     //String fechaEmision;
                     //String fechaCaducidad;
 
@@ -524,6 +531,7 @@ public class TdmCard {
             };
             auxString = bytesToHexString(auxBytes).substring(0,3);
             Log.v(LOG_TAG,"CTRL: "+String.format("%d",i)+": "+auxString+" <-> "+hex2Binary(auxString));
+
         }
 
         //pos = new int[]{12,13,14,16,17,18,20,21,22,24,25,26,28,29,30,32,33,34,36,37,38,40,41,42};
@@ -543,7 +551,7 @@ public class TdmCard {
                     infoByte.get(pos[i])[3],infoByte.get(pos[i])[2],infoByte.get(pos[i])[1],infoByte.get(pos[i])[0]
             };
             auxString = bytesToHexString(auxBytes);
-            Log.v(LOG_TAG,String.format("%d-%02d",posT[i],pos[i])+": Saldo: "+String.format("%06d",hex2decimal(auxString))+" <-> "+auxString);
+            Log.v(LOG_TAG,String.format("%d-%02d",posT[i],pos[i])+": Saldo: "+String.format("%06d",hex2decimal(auxString))+" <-> "+auxString +"  "+ String.format("%.2f Euros", ((float) hex2decimal(bytesToHexString(auxBytes))/100)));
 
         }
 
@@ -573,9 +581,10 @@ public class TdmCard {
         s = s + "&paradaVal="+mov.parada ;
         s = s + "&nViajeros="+mov.viajeros ;
         s = s + "&tranvia="+mov.autobusTranvia ;
-        s = s + "&saldo="+mov.saldo;
         s = s + "&tipoTarjeta="+tipo;
         s = s + "&operador="+propietario;
+
+        s = s + "&saldo="+saldo;
 
         //Log.v(LOG_TAG,s);
         return s;
@@ -610,7 +619,7 @@ public class TdmCard {
                 str = str+"{\"pos\": \""+String.format("%02d", s.pos)+"\","+
                         " \"fechaHora\": \""+s.fechaHora+"\","+
                         " \"operacion\": \""+s.operacion+"\","+
-                        " \"titulo\": \""+s.titulo+" Tipo: "+s.tipoTitulo+"\","+
+                        " \"titulo\": \""+s.titulo+" Tipo: "+tipo+"\","+
                         " \"tramos\": \""+s.tramos+"\","+
                         " \"viajeros\": \""+s.viajeros+"\","+
                         " \"viajeTransbordo\": \""+s.viajeTransbordo+"\","+
