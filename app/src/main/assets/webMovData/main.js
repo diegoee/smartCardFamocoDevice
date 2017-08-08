@@ -73,6 +73,7 @@
       '<p>Operador: '+data[i].operador+'</p>'+
       '<p>Parada: '+data[i].parada+'</p>'+
       '<p>Tranvia: '+data[i].autobusTranvia+'</p>'+
+      '<p>'+data[i].saldo+'</p>'+
       '';
     div.className = 'detail';
     div.var=i;

@@ -89,7 +89,7 @@
     document.getElementById('container').appendChild(div1);
 
     div1 = createDiv('level1',false);
-    div2 = createDiv('level2',true,'Tipo: '+getUrlVars().tipoTarjeta);
+    div2 = createDiv('level2',true,'Título: '+getUrlVars().tipoTarjeta);
     div1.appendChild(div2);
     div2 = createDiv('level2',true,'Operador: '+getUrlVars().operador);
     div1.appendChild(div2);
