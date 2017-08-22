@@ -485,12 +485,20 @@ public class TdmCard {
             Collections.sort(movList, Collections.reverseOrder());
 
         }else{
-            uid = "No hay datos";
+            uid = "NoData";
+            ntarjeta = "NoData";
+            propietario = "NoData";
+            fechaEmision = "NoData";
+            fechaCaducidad= "NoData";
+            codigoTitulo = "NoData";
+            tipo = "NoData";
+            fechaInicioCaducidad = "NoData";
+            saldo = "NoData";
         }
 
         this.isInfo = true;
 
-        pruebaConsoleData();
+        //pruebaConsoleData();
 
     }
 
@@ -560,7 +568,7 @@ public class TdmCard {
 
         s = s + "&saldo="+saldo;
 
-        //Log.v(LOG_TAG,s);
+        Log.v(LOG_TAG,s);
         return s;
     }
 

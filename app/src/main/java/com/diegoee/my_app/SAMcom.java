@@ -95,7 +95,7 @@ public class SAMcom {
         this.initVar();
 
         if (colorCard) {
-            c = c +"\nSAM Request";
+            c = c +"\nSAM Keys Request";
 
             byte[] apduRequest, apduResponse;
             byte[] aux;
