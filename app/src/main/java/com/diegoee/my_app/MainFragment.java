@@ -3,12 +3,9 @@ package com.diegoee.my_app;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -40,7 +37,8 @@ public class MainFragment extends Fragment {
         this.load=load;
     }
 
-    private InterfaceFragmentActivity listener;
+    private InterfaceMainActivity listener;
+    public WebAppInterface wepAppInt;
 
     @Override
     public void onAttach(Activity activity) {
@@ -48,7 +46,8 @@ public class MainFragment extends Fragment {
         // Nos aseguramos de que la actividad contenedora haya implementado la
         // interfaz de retrollamada. Si no, lanzamos una excepción
         try {
-            listener = (InterfaceFragmentActivity) activity;
+            listener = (InterfaceMainActivity) activity;
+            wepAppInt = new WebAppInterface(listener);
 
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()+ " debe implementar InterfaceFragmentActivity");
@@ -66,23 +65,6 @@ public class MainFragment extends Fragment {
         webView.getSettings().setJavaScriptEnabled(true);
 
         String tittle="";
-
-        myView.findViewById(R.id.buttonOK).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener!=null) {
-                    listener.writeActionUser(true);
-                }
-            }
-        });
-        myView.findViewById(R.id.buttonNOOK).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener!=null) {
-                    listener.writeActionUser(false);
-                }
-            }
-        });
 
         if (load==MainFragment.MAIN_BACK_BTN){
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
@@ -102,8 +84,10 @@ public class MainFragment extends Fragment {
         }
         if (load==MainFragment.MAIN_BTN){
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.buttonsView).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.GONE);
+
+            webView.addJavascriptInterface(wepAppInt, "Android");
 
             tittle=getText(R.string.menu_main).toString();
             webView.loadUrl("file:///android_asset/webMainScreen/index.html?"+text);

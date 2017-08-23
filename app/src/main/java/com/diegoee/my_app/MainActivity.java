@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener ,InterfaceFragmentActivity{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,InterfaceMainActivity{
 
     public static final String LOG_TAG = "log_app";
 
@@ -98,17 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.getMenu().getItem(0).setChecked(true);
 
-/*
-        MainFragment fragment = new MainFragment();
-        fragment.setText(console);
-        fragment.setLoad(MainFragment.MAIN_TEXT);
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-*/
         actionUserNow = new ActionUser();
         actionUserNow.setUser(login);
-
 
         MainFragment fragment = new MainFragment();
         fragment.setLoad(MainFragment.MAIN_BTN);
@@ -116,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-
 
     }
 
@@ -226,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Tarjeta fiscalizada: "+res, Snackbar.LENGTH_SHORT).show();
 
         resetVar();
-        onStop();
         onStart();
     }
 
@@ -347,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if (auth) {
                     for (int j = 0; j < secCount; j++) {
-                        Log.v(LOG_TAG, Integer.toString(j) + " - " + tdmCard.bytesToHexString(samCom.keys[j]) + " - " + Boolean.toString(samCom.ab[j]));
+                        //Log.v(LOG_TAG, Integer.toString(j) + " - " + tdmCard.bytesToHexString(samCom.keys[j]) + " - " + Boolean.toString(samCom.ab[j]));
                         auth = false;
 
                         // 6.1) authenticate the sector

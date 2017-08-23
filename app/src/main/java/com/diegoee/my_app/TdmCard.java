@@ -568,7 +568,7 @@ public class TdmCard {
 
         s = s + "&saldo="+saldo;
 
-        Log.v(LOG_TAG,s);
+        //Log.v(LOG_TAG,s);
         return s;
     }
 
