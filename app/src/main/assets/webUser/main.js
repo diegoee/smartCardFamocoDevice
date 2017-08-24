@@ -17,18 +17,14 @@ require([
 	'dynatable'
 	],
 	function(
-		$,
-		moment
+		$
 	){
 	'use strict';
-
-
-
+/*
 	$('body').before($('<input type="button" value="EXE" style="width: 100%;"/>').on('click',function(){
 			window.location.search ='?obj='+'{"data":[{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "false", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "false", "user": "testUser", "fecha": "2017/06/18-15:04"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:03"},{"uid": "BDAAA4E6", "val": "true", "user": "testUser", "fecha": "2017/06/18-15:04"}]}';
 		}));
-
-
+*/
 	function getUrlVars()
 	{
 			var query = window.location.search.substring(1);

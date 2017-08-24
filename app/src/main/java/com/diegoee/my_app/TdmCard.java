@@ -486,14 +486,6 @@ public class TdmCard {
 
         }else{
             uid = "NoData";
-            ntarjeta = "NoData";
-            propietario = "NoData";
-            fechaEmision = "NoData";
-            fechaCaducidad= "NoData";
-            codigoTitulo = "NoData";
-            tipo = "NoData";
-            fechaInicioCaducidad = "NoData";
-            saldo = "NoData";
         }
 
         this.isInfo = true;

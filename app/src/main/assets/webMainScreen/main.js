@@ -72,103 +72,114 @@ require([
           }
           return div;
       };
+      var noCard = function noCard(){
+          $('#container').html('Tarjeta no leida o esperando lectura de tarjeta...');
+          $('#container').css({'font-size': '1.5em'});
+          $('#div1').remove();
+      }
 
+      if((getUrlVars().uid===undefined)||(getUrlVars().uid==='NoData')||(getUrlVars().uid===null)||(getUrlVars().uid==='')||(getUrlVars().uid==='null')){
+            noCard();
+      }else{
 
-      div1 = createDiv('level1',true, 'Número de Tarjeta: '+getUrlVars().ntarjeta);
-      div1.style.paddingLeft='5px';
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',true, 'Número de Tarjeta: '+getUrlVars().ntarjeta);
+          div1.style.paddingLeft='5px';
+          document.getElementById('container').appendChild(div1);
 
-      div1 = createDiv('level1',false);
-      div2 = createDiv('level2',true,'UID: '+getUrlVars().uid);
-      div1.appendChild(div2);
-      div2 = createDiv('level2',true,'Usuario: '+getUrlVars().login);
-      div1.appendChild(div2);
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',false);
+          div2 = createDiv('level2',true,'UID: '+getUrlVars().uid);
+          div1.appendChild(div2);
+          div2 = createDiv('level2',true,'Usuario: '+getUrlVars().login);
+          div1.appendChild(div2);
+          document.getElementById('container').appendChild(div1);
 
-      div1 = createDiv('level1',false);
-      div2 = createDiv('level2',true,'Fecha Act.: ');
-      div1.appendChild(div2);
-      div2 = createDiv('level2',true,getUrlVars().fecha);
-      div1.appendChild(div2);
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',false);
+          div2 = createDiv('level2',true,'Fecha Act.: ');
+          div1.appendChild(div2);
+          div2 = createDiv('level2',true,getUrlVars().fecha);
+          div1.appendChild(div2);
+          document.getElementById('container').appendChild(div1);
 
-      div1 = createDiv('level1',false);
-      div2 = createDiv('level2',true,'Fecha Val.: ');
-      div1.appendChild(div2);
-      div2 = createDiv('level2',true,getUrlVars().fechaVal);
-      div2.style.fontSize='1.5em';
-      div2.style.backgroundColor='#B7CA3D';
-      div1.appendChild(div2);
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',false);
+          div2 = createDiv('level2',true,'Fecha Val.: ');
+          div1.appendChild(div2);
+          div2 = createDiv('level2',true,getUrlVars().fechaVal);
+          div2.style.fontSize='1.5em';
+          div2.style.backgroundColor='#B7CA3D';
+          div1.appendChild(div2);
+          document.getElementById('container').appendChild(div1);
 
-      div1 = createDiv('level1',false);
-      div2 = createDiv('level2',true,'Parada: '+getUrlVars().paradaVal);
-      div2.style.fontSize='1.5em';
-      div1.appendChild(div2);
-      div2 = createDiv('level2',true,'Tranvia: '+getUrlVars().tranvia);
-      div2.style.fontSize='1.75em';
-      div1.appendChild(div2);
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',false);
+          div2 = createDiv('level2',true,'Parada: '+getUrlVars().paradaVal);
+          div2.style.fontSize='1.5em';
+          div1.appendChild(div2);
+          div2 = createDiv('level2',true,'Tranvia: '+getUrlVars().tranvia);
+          div2.style.fontSize='1.75em';
+          div1.appendChild(div2);
+          document.getElementById('container').appendChild(div1);
 
-      div1 = createDiv('level1',true,'Nº Viajeros: '+getUrlVars().nViajeros);
-      div1.style.paddingLeft='5px';
-      div1.style.fontSize='1.5em';
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',true,'Nº Viajeros: '+getUrlVars().nViajeros);
+          div1.style.paddingLeft='5px';
+          div1.style.fontSize='1.5em';
+          document.getElementById('container').appendChild(div1);
 
-      div1 = createDiv('level1',false);
-      div2 = createDiv('level2',true,'Título: '+getUrlVars().tipoTarjeta);
-      div1.appendChild(div2);
-      div2 = createDiv('level2',true,'Operador: '+getUrlVars().operador);
-      div1.appendChild(div2);
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',false);
+          div2 = createDiv('level2',true,'Título: '+getUrlVars().tipoTarjeta);
+          div1.appendChild(div2);
+          div2 = createDiv('level2',true,'Operador: '+getUrlVars().operador);
+          div1.appendChild(div2);
+          document.getElementById('container').appendChild(div1);
 
-      div1 = createDiv('level1',true, getUrlVars().saldo);
-      div1.style.paddingLeft='5px';
-      document.getElementById('container').appendChild(div1);
+          div1 = createDiv('level1',true, getUrlVars().saldo);
+          div1.style.paddingLeft='5px';
+          document.getElementById('container').appendChild(div1);
 
-      var hEle = 80;
-      $('.buttonCSS').css({'height': hEle+'px'});
-      $('#div1').css({'height': hEle+'px'});
-      var resizeElem = function resizeElem(){
-          var ele = document.getElementById('container');
-          var h = window.innerHeight-5-hEle;
-          ele.style.height = h+'px';
-          var divHeight = Math.floor((h)/ele.childNodes.length)-2;
+          var hEle = 80;
+          $('.buttonCSS').css({'height': hEle+'px'});
+          $('#div1').css({'height': hEle+'px'});
+          var resizeElem = function resizeElem(){
+              var ele = document.getElementById('container');
+              var h = window.innerHeight-5-hEle;
+              ele.style.height = h+'px';
+              var divHeight = Math.floor((h)/ele.childNodes.length)-2;
 
-          for (var i = 0;i<ele.childNodes.length;i++){
-              ele.childNodes[i].style.height = divHeight+'px';
-              ele.childNodes[i].style.lineHeight = divHeight+'px';
-          }
-      };
+              for (var i = 0;i<ele.childNodes.length;i++){
+                  ele.childNodes[i].style.height = divHeight+'px';
+                  ele.childNodes[i].style.lineHeight = divHeight+'px';
+              }
+          };
 
-      var colorRedBtn = function colorRedBtn(){
-        var f = moment(getUrlVars().fecha);//.format('YYYY-MM-DD hh:mm'); //second
-        var fv= moment(getUrlVars().fechaVal);//.format('YYYY-MM-DD hh:mm');
+          var colorRedBtn = function colorRedBtn(){
+            var f = moment(getUrlVars().fecha);//.format('YYYY-MM-DD hh:mm'); //second
+            var fv= moment(getUrlVars().fechaVal);//.format('YYYY-MM-DD hh:mm');
 
-        console.log(f);
-        console.log(fv);
+            console.log(f);
+            console.log(fv);
 
-        var diff = Math.abs(f.diff(fv,'minutes'));
-        console.log(diff);
+            var diff = Math.abs(f.diff(fv,'minutes'));
+            console.log(diff);
 
-        if (diff>=90){ //90min
-          $('#cancelBtn').removeClass('btn-default').addClass('btn-danger').html('<p>Rechazar.</p><p>Fecha Val.</p> <p>diff > 90 min</p>');
-        }
-      };
+            if (diff>=90){ //90min
+              $('#cancelBtn').removeClass('btn-default').addClass('btn-danger').html('<p>Rechazar.</p><p>Fecha Val.</p> <p>diff > 90 min</p>');
+            }
+          };
 
-      $('#okBtn').on('click',function(){
-        Android.writeActionOK();
-      });
-      $('#noOkBtn').on('click',function(){
-        Android.writeActionNoOK();
-      });
+          $('#okBtn').on('click',function(){
+            noCard();
+            Android.writeActionOK();
+          });
+          $('#noOkBtn').on('click',function(){
+            noCard();
+            Android.writeActionNoOK();
+          });
 
-      colorRedBtn();
-      resizeElem();
-      window.addEventListener('resize', function(){
+          colorRedBtn();
           resizeElem();
-      });
+          window.addEventListener('resize', function(){
+              resizeElem();
+          });
 
+        }
 
 });
 
