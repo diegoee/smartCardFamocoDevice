@@ -53,8 +53,7 @@
   div='<div class="head">';
   div+='<div>'+getUrlVars().titulo+' - '+getUrlVars().tipo+'</div>';
   div+='<div>Fecha Actual: '+getUrlVars().fechaAct+'</div>';
-  div+='<div>Fecha Caducidad de Tarjeta: '+getUrlVars().fechaCad+'</div>';
-  div+='<div>Título, '+getUrlVars().fechaIniCad+'</div>';
+  div+='<div>Fecha Caduc: '+getUrlVars().fechaCad+'</div>';
   div+="</div>";
   document.getElementById('container').innerHTML +=div;
 

@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //Log.v(LOG_TAG,s);
         } else if (item.getItemId() == R.id.nav_detail_data) {
             fragment.setLoad(MainFragment.DETAIL_CARD);
-            s = console+"\n\n"+tdmCard.getAllData();
+            s = tdmCard.getAllData(console);
         } else if (item.getItemId() == R.id.nav_action_user) {
             fragment.setLoad(MainFragment.ACTION_USER);
             s = getActionUserJSON(actionUserList);
@@ -228,11 +228,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         byte [] uid = null;
 
         Bundle bundle = intent.getExtras();
-        console = console + "Tarjeta descubierta ->";
+        console = console + "Tarjeta descubierta: ";
         for (String key : bundle.keySet()) {
             if (key.equals("android.nfc.extra.ID")) {
                 uid = bundle.getByteArray(key);
-                console = console + String.format(" ID-NFC: %s",TdmCard.bytesToHexString(uid));
+                console = console + String.format("ID-NFC: %s",TdmCard.bytesToHexString(uid));
             }
         }
 
@@ -330,8 +330,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 data = mfc.readBlock(mfc.sectorToBlock(0)+1);
                 bVers[0]=data[0];
 
-
-                cons = cons + "uId (invertido) (Hex): "+  tdmCard.bytesToHexString(uIdInv) + "\nVer: " + Character.toString(TdmCard.bytesToHexString(bVers).charAt(1)) + " \nTarjeta color: " + Boolean.toString(colorCard);
+                cons = cons + "Ver: " + Character.toString(TdmCard.bytesToHexString(bVers).charAt(1)) + " \nTarjeta color: " + Boolean.toString(colorCard);
                 cons = cons + samCom.setKeysFromSAM(colorCard,uId,bVers);
 
                 if (auth) {
@@ -390,6 +389,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } catch (IOException e) {
                 cons = cons +"\nIOException Error:";
                 cons = cons +"\n"+e.getLocalizedMessage();
+                //Log.v(LOG_TAG, e.getLocalizedMessage());
+                //Log.v(LOG_TAG, e.getMessage());
                 return cons;
             } catch (NullPointerException e) {
                 cons = cons +"\nNullPointerException Error:";

@@ -73,9 +73,9 @@ require([
           return div;
       };
       var noCard = function noCard(){
+          $('#div1').remove();
           $('#container').html('Tarjeta no leida o esperando lectura de tarjeta...');
           $('#container').css({'font-size': '1.5em'});
-          $('#div1').remove();
       }
 
       if((getUrlVars().uid===undefined)||(getUrlVars().uid==='NoData')||(getUrlVars().uid===null)||(getUrlVars().uid==='')||(getUrlVars().uid==='null')){

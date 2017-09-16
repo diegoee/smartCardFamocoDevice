@@ -68,7 +68,6 @@ public class MainFragment extends Fragment {
 
         if (load==MainFragment.MAIN_BACK_BTN){
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.GONE);
 
             tittle=getText(R.string.menu_main).toString();
@@ -77,14 +76,12 @@ public class MainFragment extends Fragment {
 
         if (load==MainFragment.MAIN_TEXT){
             myView.findViewById(R.id.webView).setVisibility(View.GONE);
-            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
 
             tittle=getText(R.string.menu_main).toString();
         }
         if (load==MainFragment.MAIN_BTN){
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.GONE);
 
             webView.addJavascriptInterface(wepAppInt, "Android");
@@ -94,7 +91,6 @@ public class MainFragment extends Fragment {
         }
         if (load==MainFragment.DETAIL_MOV){
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.GONE);
 
             tittle=getText(R.string.menu_mov).toString();
@@ -103,14 +99,12 @@ public class MainFragment extends Fragment {
         }
         if (load==MainFragment.DETAIL_CARD){
             myView.findViewById(R.id.webView).setVisibility(View.GONE);
-            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
 
             tittle=getText(R.string.menu_card).toString();
         }
         if (load==MainFragment.ACTION_USER){
             myView.findViewById(R.id.webView).setVisibility(View.VISIBLE);
-            myView.findViewById(R.id.buttonsView).setVisibility(View.GONE);
             myView.findViewById(R.id.textView).setVisibility(View.GONE);
 
             tittle=getText(R.string.menu_user).toString();
