@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -234,7 +235,6 @@ public class TdmCard {
 
     public void calData() {
 
-
         byte[] auxBytes;
         String auxString;
         int startTittle = 0;
@@ -260,7 +260,6 @@ public class TdmCard {
 
             //fechaEmision
             auxBytes = new byte[]{infoByte.get(4)[6], infoByte.get(4)[7]};
-
             Calendar c1 = GregorianCalendar.getInstance();
             c1.set(2000, Calendar.JANUARY, 1,0,0,0);
             SimpleDateFormat format1;
@@ -325,13 +324,14 @@ public class TdmCard {
             c1.set(2000, Calendar.JANUARY, 1,0,0,0);
             c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
             format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            auxString = format1.format(c1.getTime());
 
             if (auxString.equals("0")) {
+                auxString = format1.format(c1.getTime());
                 fechaCaducidad = auxString;
             }
             if (auxString.equals("1")) {
-                fechaCaducidad = auxString+" Hay que sumar perido"; // TODO: LEER Número de periodo y SUMARLO!!!
+                auxString = format1.format(c1.getTime());
+                fechaCaducidad = auxString+" Hay que sumar periodo!"; // TODO: LEER Número de periodo y SUMARLO!!!
             }
 
             //tipo;
@@ -351,7 +351,16 @@ public class TdmCard {
             if (tipo.equals("Viajes")){
                 saldo = String.format("%d-Viajes", hex2decimal(bytesToHexString(auxBytes)));
             }else if (tipo.equals("Tiempo")){
-                saldo = "fecha da caducidad - fecha actual"; //TODO: pendiente de calcular fecha da caducidad - fecha actual
+                aux = Math.round(((c1.getTime()).getTime()-((Calendar.getInstance()).getTime()).getTime())/60000);
+                if (aux>0){
+                    c1.set(0000, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                    format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    auxString = format1.format(c1.getTime());
+                    saldo = "Tiempo Restante: "+auxString; //TODO: pendiente de calcular fecha da caducidad - fecha actual
+                }else{
+                    saldo = "Bono Caducado";
+                }
             }else{
                 saldo = String.format("%.2f-Euros", ((float) hex2decimal(bytesToHexString(auxBytes))/100));
             }
@@ -401,7 +410,6 @@ public class TdmCard {
 
                 //viajeTransbordo;
                 auxBytes = new byte[]{infoByte.get(pos[i])[5]};
-                auxString = hex2Binary(bytesToHexString(auxBytes)).substring(3,8);
                 auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
                 mov.viajeTransbordo = auxString;
 
@@ -439,27 +447,19 @@ public class TdmCard {
                 //saldo;
                 auxBytes = new byte[]{infoByte.get(pos[i])[12], infoByte.get(pos[i])[13]};
                 if(tipo.equals("Viajes")){
-                    auxString = "Viajes de la operación: "+String.format("%d", (int)hex2decimal(bytesToHexString(auxBytes)));
+                    auxString = "(Viajes): "+String.format("%d", (int)hex2decimal(bytesToHexString(auxBytes)));
                 }else if(tipo.equals("Tiempo")){
-                    //String fechaEmision;
-                    //String fechaCaducidad;
-
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                     Calendar date = Calendar.getInstance();
                     String now = (new SimpleDateFormat("yyyy-MM-dd")).format(date.getTime());
                     try {
                         double dias = Math.floor((formatter.parse(fechaCaducidad).getTime() - formatter.parse(now).getTime()) / (1000 * 60 * 60 * 24));
-                        //Log.v(LOG_TAG, String.format("%.2f", (double) dias));
-                        if (dias>0){
-                            auxString = "Dias de la operación: "+String.format("%d", (int) dias);
-                        }else{
-                            auxString = "Bono Caducado";
-                        }
+                        auxString = "(Tiempo): "+String.format("%d", (int) dias);
                     } catch (ParseException e) {
                         Log.v(LOG_TAG, e.toString());
                     }
                 }else{
-                    auxString = "Saldo de la operación: "+String.format("%.2f", ((double) hex2decimal(bytesToHexString(auxBytes)))/100)+" Euros";
+                    auxString = "(Monedero) Saldo de la oper.: "+String.format("%.2f", ((double) hex2decimal(bytesToHexString(auxBytes)))/100)+" Euros";
                 }
                 mov.saldo = auxString;
 
