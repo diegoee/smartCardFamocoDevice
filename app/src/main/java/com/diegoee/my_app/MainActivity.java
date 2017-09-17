@@ -176,15 +176,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (item.getItemId() == R.id.nav_main) {
             fragment.setLoad(MainFragment.MAIN_BTN);
             s = tdmCard.getMainScreenJSON(login,actionUserNow.getFechaFiscalizada());
-            /*
-            if(tdmCard.isInfo()) {
-                fragment.setLoad(MainFragment.MAIN_BTN);
-                s = tdmCard.getMainScreenJSON(login,actionUserNow.getFechaFiscalizada());
-            }else{
-                fragment.setLoad(MainFragment.MAIN_TEXT);
-                s = console;
-            }
-            */
         } else if (item.getItemId() == R.id.nav_detail_mov) {
             fragment.setLoad(MainFragment.DETAIL_MOV);
             s = tdmCard.getMovDataJSON(actionUserNow.getFechaFiscalizada());
@@ -216,7 +207,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Tarjeta fiscalizada: "+res, Snackbar.LENGTH_SHORT).show();
 
         resetVar();
-        onStart();
+        //onStart();
+
+        navigationView.getMenu().getItem(0).setChecked(true);
+
+        actionUserNow = new ActionUser();
+        actionUserNow.setUser(login);
+
+        MainFragment fragment = new MainFragment();
+        fragment.setLoad(MainFragment.ACTION_USER);
+        fragment.setText(getActionUserJSON(actionUserList));
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override
@@ -245,8 +248,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MainFragment fragment = new MainFragment();
          fragment.setLoad(MainFragment.MAIN_BTN);
         fragment.setText(tdmCard.getMainScreenJSON(login,actionUserNow.getFechaFiscalizada()));
-        //fragment.setLoad(MainFragment.DETAIL_MOV);
-        //fragment.setText(tdmCard.getMovData());
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
