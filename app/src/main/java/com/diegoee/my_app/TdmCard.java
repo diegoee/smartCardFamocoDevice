@@ -325,14 +325,74 @@ public class TdmCard {
             c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
             format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-            if (auxString.equals("0")) {
+            auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[8], infoByte.get(startTittle + auxDataTitulo)[9]};
+            //Log.v(LOG_TAG,"FECH: "+format1.format(c1.getTime()));
+            //Log.v(LOG_TAG,"BINA: "+hex2Binary(bytesToHexString(auxBytes)));
+            //Log.v(LOG_TAG,"SUB1: "+hex2Binary(bytesToHexString(auxBytes)).substring(0,6)+" -- "+String.format("%d", Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)).substring(0,6),2)));
+            //Log.v(LOG_TAG,"SUB2: "+hex2Binary(bytesToHexString(auxBytes)).substring(6,12)+" -- "+String.format("%d",Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)).substring(6,12),2)));
+
+            auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[8], infoByte.get(startTittle + auxDataTitulo)[9]};
+            int numPer =Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)).substring(0,6),2);
+            int tipoPer=Integer.parseInt(hex2Binary(bytesToHexString(auxBytes)).substring(6,12),2);
+
+            if (auxString.equals("1")) {
+                //Log.v(LOG_TAG,"1");
                 auxString = format1.format(c1.getTime());
                 fechaCaducidad = auxString;
             }
-            if (auxString.equals("1")) {
+            if (auxString.equals("0")) {
+                //Log.v(LOG_TAG,"0");
+
+                if (tipoPer==1){ //HORAS
+                    aux = (int) Math.round((c1.getTime().getTime() + (long) numPer*(1000*60*60))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                }
+                if (tipoPer==2){ //DIAS
+                    aux = (int) Math.floor((c1.getTime().getTime()+ (long) numPer*(1000*60*60*24))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE,aux);
+                    //Log.v(LOG_TAG,String.format("%d", c1.getTime().getTime()));
+                    //Log.v(LOG_TAG,String.format("%d", 24*(1000*60*60*24)));
+                    //Log.v(LOG_TAG,String.format("%d", (long) numPer*(1000*60*60*24)));
+                    //Log.v(LOG_TAG,String.format("%d", aux));
+                }
+                if (tipoPer==3){ //SEMANAS
+                    aux = (int) Math.round((c1.getTime().getTime() +(long)  numPer*(1000*60*60*24*7))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                }
+                if (tipoPer==4){ //SEMANAS NATURALES
+                    aux = (int) Math.round((c1.getTime().getTime() + (long) numPer*(1000*60*60*24*7))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                }
+                if (tipoPer==5){ //MESES
+                    aux = (int) Math.round((c1.getTime().getTime() + (long) numPer*(1000*60*60*24*31))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                }
+                if (tipoPer==6){ //MESES NATURALES
+                    aux = (int) Math.round((c1.getTime().getTime() + (long) numPer*(1000*60*60*24*31))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                }
+                if (tipoPer==7){ //AÑO
+                    aux = (int) Math.round((c1.getTime().getTime() + (long) numPer*(1000*60*60*24*31*365))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                }
+                if (tipoPer==8){ //AÑO NATURALES
+                    aux = (int) Math.round((c1.getTime().getTime() + (long) numPer*(1000*60*60*24*31*365))/(1000*60));
+                    c1.set(1970, Calendar.JANUARY, 1,0,0,0);
+                    c1.add(Calendar.MINUTE, aux);
+                }
+
                 auxString = format1.format(c1.getTime());
-                fechaCaducidad = auxString+" Hay que sumar periodo!"; // TODO: LEER Número de periodo y SUMARLO!!!
+                fechaCaducidad = auxString; // TODO: LEER Número de periodo y SUMARLO!!!
             }
+
+            //Log.v(LOG_TAG,"FECH: "+format1.format(c1.getTime()));
 
             //tipo;
             auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[2]};
@@ -453,7 +513,7 @@ public class TdmCard {
                     Calendar date = Calendar.getInstance();
                     String now = (new SimpleDateFormat("yyyy-MM-dd")).format(date.getTime());
                     try {
-                        double dias = Math.floor((formatter.parse(fechaCaducidad).getTime() - formatter.parse(now).getTime()) / (1000 * 60 * 60 * 24));
+                        double dias = Math.round((formatter.parse(fechaCaducidad).getTime() - formatter.parse(now).getTime()) / (1000 * 60 * 60 * 24));
                         auxString = "(Tiempo): "+String.format("%d", (int) dias);
                     } catch (ParseException e) {
                         Log.v(LOG_TAG, e.toString());
