@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class TdmCard {
     String uid;
 
     String ntarjeta;
-    String propietario;
+    //String propietario;
     String fechaEmision;
     String fechaCaducidad;
 
@@ -89,7 +88,7 @@ public class TdmCard {
         movList = new ArrayList<Mov>();
         uid = "";
         ntarjeta = "";
-        propietario = "";
+        //propietario = "";
         fechaEmision = "";
         fechaCaducidad = "";
         codigoTitulo = "";
@@ -250,13 +249,13 @@ public class TdmCard {
             ntarjeta = String.format("%d",hex2decimalLong(bytesToHexString(auxBytes)));
 
             //propietario
-            auxBytes = new byte[]{infoByte.get(4)[5]};
-            auxString = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
-            if (auxString.equals("1")){ auxString = "TM"; }
-            if (auxString.equals("2")){ auxString = "TDM"; }
-            if (auxString.equals("0")){ auxString = "TDM"; }
-            if (auxString.equals("3")){ auxString = "LAT"; }
-            propietario = auxString;
+            //auxBytes = new byte[]{infoByte.get(4)[5]};
+            //auxString = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
+            //if (auxString.equals("1")){ auxString = "TM"; }
+            //if (auxString.equals("2")){ auxString = "TDM"; }
+            //if (auxString.equals("0")){ auxString = "TDM"; }
+            //if (auxString.equals("3")){ auxString = "LAT"; }
+            //propietario = auxString;
 
             //fechaEmision
             auxBytes = new byte[]{infoByte.get(4)[6], infoByte.get(4)[7]};
@@ -425,7 +424,7 @@ public class TdmCard {
                 saldo = String.format("%.2f-Euros", ((float) hex2decimal(bytesToHexString(auxBytes))/100));
             }
 
-            //MOVIMINETOS
+            //MOVIMIENTOS
             movList = new ArrayList<Mov>();
             int[] pos = new int[]{44,45,46,48,49,50,52,53,54,56,57};
 
@@ -492,7 +491,9 @@ public class TdmCard {
                 mov.ultimoSentido = auxString;
 
                 //parada;
-                auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
+                //Según Correo
+                //auxBytes = new byte[]{infoByte.get(i)[8], infoByte.get(pos[i])[9]};
+                auxBytes = new byte[]{infoByte.get(pos[i])[9]};
                 auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
                 if (paradaId.indexOf(auxString)!=-1){
                     auxString = paradaCode.get(paradaId.indexOf(auxString));
@@ -500,7 +501,8 @@ public class TdmCard {
                 mov.parada = auxString;
 
                 //autobusTranvia;
-                auxBytes = new byte[]{infoByte.get(i)[10], infoByte.get(pos[i])[11]};
+                //auxBytes = new byte[]{infoByte.get(i)[10], infoByte.get(pos[i])[11]};
+                auxBytes = new byte[]{infoByte.get(pos[i])[11]};
                 auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
                 mov.autobusTranvia = auxString;
 
@@ -611,7 +613,7 @@ public class TdmCard {
         s = s + "&nViajeros="+mov.viajeros ;
         s = s + "&tranvia="+mov.autobusTranvia ;
         s = s + "&tipoTarjeta="+codigoTitulo;
-        s = s + "&operador="+propietario;
+        s = s + "&operador="+mov.operador;
 
         s = s + "&saldo="+saldo;
 
