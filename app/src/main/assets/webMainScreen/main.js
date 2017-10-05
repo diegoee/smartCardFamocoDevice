@@ -31,8 +31,6 @@ require([
       });
   */
 
-
-
       //$('body').html('<div id="container"></div>');
       document.getElementById('container').innerHTML ='';
 
@@ -81,6 +79,7 @@ require([
       if((getUrlVars().uid===undefined)||(getUrlVars().uid==='NoData')||(getUrlVars().uid===null)||(getUrlVars().uid==='')||(getUrlVars().uid==='null')){
             noCard();
       }else{
+          var aux = ' ';
 
           div1 = createDiv('level1',true, 'Número de Tarjeta: '+getUrlVars().ntarjeta);
           div1.style.paddingLeft='5px';
@@ -96,29 +95,53 @@ require([
           div1 = createDiv('level1',false);
           div2 = createDiv('level2',true,'Fecha Act.: ');
           div1.appendChild(div2);
-          div2 = createDiv('level2',true,getUrlVars().fecha);
+
+          aux = getUrlVars().fecha;
+          aux = aux.substr(8,2)+aux.substr(4,4)+aux.substr(0,4)+' '+aux.substr(11,5);
+          div2 = createDiv('level2',true,aux);
           div1.appendChild(div2);
           document.getElementById('container').appendChild(div1);
 
           div1 = createDiv('level1',false);
           div2 = createDiv('level2',true,'Fecha Val.: ');
           div1.appendChild(div2);
-          div2 = createDiv('level2',true,getUrlVars().fechaVal);
+          if((getUrlVars().fechaVal===undefined)||(getUrlVars().fechaVal==='NoData')||(getUrlVars().fechaVal===null)||(getUrlVars().fechaVal==='')||(getUrlVars().fechaVal==='null')){
+            aux = ' ';
+          }else{
+            aux = getUrlVars().fechaVal;
+          }
+          aux = aux.substr(8,2)+aux.substr(4,4)+aux.substr(0,4)+' '+aux.substr(11,5);
+          div2 = createDiv('level2',true,aux);
           div2.style.fontSize='1.5em';
           div2.style.backgroundColor='#B7CA3D';
           div1.appendChild(div2);
           document.getElementById('container').appendChild(div1);
 
           div1 = createDiv('level1',false);
-          div2 = createDiv('level2',true,'Parada: '+getUrlVars().paradaVal);
+          if((getUrlVars().paradaVal===undefined)||(getUrlVars().paradaVal==='NoData')||(getUrlVars().paradaVal===null)||(getUrlVars().paradaVal==='')||(getUrlVars().paradaVal==='null')){
+            aux = ' ';
+          }else{
+            aux = getUrlVars().paradaVal;
+          }
+          div2 = createDiv('level2',true,'Parada: '+aux);
           div2.style.fontSize='1.5em';
           div1.appendChild(div2);
-          div2 = createDiv('level2',true,'Tranvia: '+getUrlVars().tranvia);
+          if((getUrlVars().tranvia===undefined)||(getUrlVars().tranvia==='NoData')||(getUrlVars().tranvia===null)||(getUrlVars().tranvia==='')||(getUrlVars().tranvia==='null')){
+            aux = ' ';
+          }else{
+            aux = getUrlVars().tranvia;
+          }
+          div2 = createDiv('level2',true,'Tranvia: '+aux);
           div2.style.fontSize='1.75em';
           div1.appendChild(div2);
           document.getElementById('container').appendChild(div1);
 
-          div1 = createDiv('level1',true,'Nº Viajeros: '+getUrlVars().nViajeros);
+          if((getUrlVars().nViajeros===undefined)||(getUrlVars().nViajeros==='NoData')||(getUrlVars().nViajeros===null)||(getUrlVars().nViajeros==='')||(getUrlVars().nViajeros==='null')){
+            aux = ' ';
+          }else{
+            aux = getUrlVars().nViajeros;
+          }
+          div1 = createDiv('level1',true,'Nº Viajeros: '+aux);
           div1.style.paddingLeft='5px';
           div1.style.fontSize='1.5em';
           document.getElementById('container').appendChild(div1);
@@ -126,7 +149,13 @@ require([
           div1 = createDiv('level1',false);
           div2 = createDiv('level2',true,'Título: '+getUrlVars().tipoTarjeta);
           div1.appendChild(div2);
-          div2 = createDiv('level2',true,'Operador: '+getUrlVars().operador);
+
+          if((getUrlVars().operador===undefined)||(getUrlVars().operador==='NoData')||(getUrlVars().operador===null)||(getUrlVars().operador==='')||(getUrlVars().operador==='null')){
+              aux = ' ';
+            }else{
+              aux = getUrlVars().operador;
+            }
+          div2 = createDiv('level2',true,'Operador: '+aux);
           div1.appendChild(div2);
           document.getElementById('container').appendChild(div1);
 

@@ -53,7 +53,6 @@ public class TdmCard {
     String uid;
 
     String ntarjeta;
-    //String propietario;
     String fechaEmision;
     String fechaCaducidad;
 
@@ -88,7 +87,6 @@ public class TdmCard {
         movList = new ArrayList<Mov>();
         uid = "";
         ntarjeta = "";
-        //propietario = "";
         fechaEmision = "";
         fechaCaducidad = "";
         codigoTitulo = "";
@@ -248,14 +246,6 @@ public class TdmCard {
             auxBytes = new byte[]{infoByte.get(4)[0], infoByte.get(4)[1], infoByte.get(4)[2], infoByte.get(4)[3]};
             ntarjeta = String.format("%d",hex2decimalLong(bytesToHexString(auxBytes)));
 
-            //propietario
-            //auxBytes = new byte[]{infoByte.get(4)[5]};
-            //auxString = String.format("%d",hex2decimal(bytesToHexString(auxBytes)));
-            //if (auxString.equals("1")){ auxString = "TM"; }
-            //if (auxString.equals("2")){ auxString = "TDM"; }
-            //if (auxString.equals("0")){ auxString = "TDM"; }
-            //if (auxString.equals("3")){ auxString = "LAT"; }
-            //propietario = auxString;
 
             //fechaEmision
             auxBytes = new byte[]{infoByte.get(4)[6], infoByte.get(4)[7]};
@@ -292,6 +282,7 @@ public class TdmCard {
             if (auxString.equals("2")) {startTittle = 28; aux=6;}
             if (auxString.equals("3")) {startTittle = 36; aux=9;}
 
+            Log.v(LOG_TAG,"2: "+String.format("%d",startTittle ));
             int auxSaldo = hex2decimal(hex2Binary(bytesToHexString(auxBytes)).substring(0+aux,1+aux));
             if (auxSaldo==0) {
                 auxSaldo=0;
@@ -308,6 +299,14 @@ public class TdmCard {
 
             //codigoTitulo;
             auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[0], infoByte.get(startTittle + auxDataTitulo)[1]};
+
+            // si el titulo es 0 cogemos el primeros sectores (S3 y/o S4) para determinar la información de Titulo
+            if (hex2decimal(bytesToHexString(auxBytes))==0) {
+                startTittle=12;
+                auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[0], infoByte.get(startTittle + auxDataTitulo)[1]};
+            }
+
+
             auxString = String.format("%d", ((int) hex2decimal(bytesToHexString(auxBytes))));
             if (codigoTituloId.indexOf(auxString)==-1){
                 codigoTitulo = auxString;

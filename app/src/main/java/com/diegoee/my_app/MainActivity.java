@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             mySnackbar.show();
 
-            resetVar();
             onStop();
             onStart();
 
@@ -207,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Tarjeta fiscalizada: "+res, Snackbar.LENGTH_SHORT).show();
 
         resetVar();
-        //onStart();
 
         navigationView.getMenu().getItem(0).setChecked(true);
 
