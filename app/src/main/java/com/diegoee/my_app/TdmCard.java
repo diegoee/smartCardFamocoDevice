@@ -409,12 +409,12 @@ public class TdmCard {
             if (tipo.equals("Viajes")){
                 saldo = String.format("%d-Viajes", hex2decimal(bytesToHexString(auxBytes)));
             }else if (tipo.equals("Tiempo")){
-                aux = Math.round(((c1.getTime()).getTime()-((Calendar.getInstance()).getTime()).getTime())/60000);
+                aux = Math.round(((c1.getTime()).getTime()-((Calendar.getInstance()).getTime()).getTime())/(60000*60*24));
                 if (aux>0){
-                    c1.set(0000, Calendar.JANUARY, 1,0,0,0);
-                    c1.add(Calendar.MINUTE, aux);
-                    format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                    auxString = format1.format(c1.getTime());
+                    //c1.set(0000, Calendar.JANUARY, 1,0,0,0);
+                    //c1.add(Calendar.MINUTE, aux);
+                    //format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                     auxString = String.format("%d dias", aux);
                     saldo = "Tiempo Restante: "+auxString; //TODO: pendiente de calcular fecha da caducidad - fecha actual
                 }else{
                     saldo = "Bono Caducado";
