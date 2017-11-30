@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import static com.diegoee.my_app.MainActivity.LOG_TAG;
 
@@ -282,7 +283,7 @@ public class TdmCard {
             if (auxString.equals("2")) {startTittle = 28; aux=6;}
             if (auxString.equals("3")) {startTittle = 36; aux=9;}
 
-            Log.v(LOG_TAG,"2: "+String.format("%d",startTittle ));
+            //Log.v(LOG_TAG,"2: "+String.format("%d",startTittle ));
             int auxSaldo = hex2decimal(hex2Binary(bytesToHexString(auxBytes)).substring(0+aux,1+aux));
             if (auxSaldo==0) {
                 auxSaldo=0;
@@ -322,6 +323,7 @@ public class TdmCard {
             c1.set(2000, Calendar.JANUARY, 1,0,0,0);
             c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
             format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            format1.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 
             auxBytes = new byte[]{infoByte.get(startTittle + auxDataTitulo)[8], infoByte.get(startTittle + auxDataTitulo)[9]};
             //Log.v(LOG_TAG,"FECH: "+format1.format(c1.getTime()));
@@ -411,9 +413,6 @@ public class TdmCard {
             }else if (tipo.equals("Tiempo")){
                 aux = Math.round(((c1.getTime()).getTime()-((Calendar.getInstance()).getTime()).getTime())/(60000*60*24));
                 if (aux>0){
-                    //c1.set(0000, Calendar.JANUARY, 1,0,0,0);
-                    //c1.add(Calendar.MINUTE, aux);
-                    //format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                      auxString = String.format("%d dias", aux);
                     saldo = "Tiempo Restante: "+auxString; //TODO: pendiente de calcular fecha da caducidad - fecha actual
                 }else{
@@ -450,9 +449,32 @@ public class TdmCard {
                 c1.set(2000, Calendar.JANUARY, 1,0,0,0);
                 c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
                 format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                format1.setTimeZone(TimeZone.getTimeZone("GMT+1"));
                 auxString = format1.format(c1.getTime());
                 mov.fechaHora = auxString;
                 mov.fechaHoraInt = mov.fechaHoraInt + hex2decimal(bytesToHexString(auxBytes))*10;
+
+                /*
+                //BORRAR!!!!!!!!!
+                format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Calendar caux1 = GregorianCalendar.getInstance();
+                caux1.set(2000, Calendar.JANUARY, 1,0,0,0);
+                caux1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
+                Calendar caux2 = GregorianCalendar.getInstance();
+                caux2.set(2000, Calendar.JANUARY, 1,0,0,0);
+                caux2.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
+                if (mov.pos<=3) {
+                c1.add(Calendar.MINUTE, hex2decimal(bytesToHexString(auxBytes)));
+                Log.v(LOG_TAG,
+                    "RES:"
+                    + "\nDATE2:" + format1.format(caux2.getTime())+" HV: "+caux2.getTimeZone().useDaylightTime()
+                    + "\nDATE1:" + format1.format(caux1.getTime())+" HV: "+caux1.getTimeZone().useDaylightTime()
+                    +"\n\tMIN:"+hex2decimal(bytesToHexString(auxBytes))
+                    +"\n\tSEC:"+hex2decimal(bytesToHexString(auxBytes))*60
+                    +"\n\tHEX:"+bytesToHexString(auxBytes)
+                );
+                }
+                */
 
                 //tramos
                 auxBytes = new byte[]{infoByte.get(pos[i])[4]};
@@ -550,6 +572,8 @@ public class TdmCard {
 
     }
 
+    /*
+    //BORRAR!!!!
     public void pruebaConsoleData(){
         Log.v(LOG_TAG,"*** Prueba de Datos ***");
 
@@ -581,11 +605,10 @@ public class TdmCard {
             if (aux.equals("7")) { aux = "Transbordo"; }
             auxString += " Operación: "+aux;
 
-
             Log.v(LOG_TAG,"Mov"+String.format("%02d",i+1)+": "+auxString);
         }
-
     }
+    */
 
     public String getMainScreenJSON(String login,String fecha){
         String s = "";
@@ -596,11 +619,7 @@ public class TdmCard {
         s = s+"&fecha="+fecha;
         s = s+"&login="+login;
 
-        //int i=1;
-        //Log.v(LOG_TAG,"getMainScreenJSON");
         for (Mov m : movList){
-            //Log.v(LOG_TAG,String.format("%02d",i));
-            //i++;
             if (m.operacion.equals("Validación")){
                 mov = m;
                 break;
